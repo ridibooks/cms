@@ -3,7 +3,7 @@ require_once(__DIR__ . "/../../../include/config.php");
 
 // PSR-4 autoload
 $autoloader = require __DIR__ . "/../../../vendor/autoload.php";
-$autoloader->add('Ridibooks', __DIR__ . '/../cp/src');
+$autoloader->add('Ridibooks', __DIR__ . '/../../cp/src');
 
 ini_set('max_execution_time', 300);
 ini_set('max_input_time', 60);
