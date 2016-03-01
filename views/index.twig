@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title ? title ~ ' - ' }}Ridibooks CMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  {% if BASE_HREF %}
+    <base href="//{{ BASE_HREF }}"/>
+  {% endif %}
+  {% block head %}
+    <link href="{{ STATIC_URL }}/css/admin/admin.css" type="text/css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/lib/bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/css/datepicker.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/css/datepicker.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/bower_components/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}/bower_components/select2/select2.css" rel="stylesheet">
+  {% block style %}
+    <style>
+      #mainWrap {
+        width: auto !important;
+        position: absolute;
+        margin-left: 300px;
+      }
+
+      .boardWrap, .boardList {
+        width: auto !important;
+      }
+    </style>
+  {% endblock %}
+
+    <style>
+      .DEV_environment_ribbon, .STAGING_environment_ribbon {
+        position: fixed; left: -30px; top: 10px; z-index: 99999;
+        width: 100px; height: 24px; margin: 0; padding: 0;
+        line-height: 25px; text-align: center;
+        font-size: 14px; font-weight: 700; color: white; letter-spacing: 0;
+
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+
+        box-shadow: 0 2px 2px rgba(0,0,0,.3);
+        -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+        -moz-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+      }
+      .DEV_environment_ribbon{
+        background: #5fce0c;
+      }
+      .STAGING_environment_ribbon {
+        background: #e74c3c; font-size: 11px;
+      }
+    </style>
+
+    <script src="{{ STATIC_URL }}/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}/js/jquery.tmpl.min.js"></script>
+    <script src="{{ STATIC_URL }}/js/bootstrap-datepicker.js"></script>
+    <script src="{{ STATIC_URL }}/js/validate.js"></script>
+    <script src="{{ STATIC_URL }}/bower_components/spin.js/spin.js"></script>
+    <script src="{{ STATIC_URL }}/lib/bootstrap/docs/assets/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="{{ STATIC_URL }}/bower_components/requirejs/require.js"></script>
+    <script src="{{ STATIC_URL }}/bower_components/ace-builds/src/ace.js"></script>
+    <script>
+      requirejs.config({
+        baseUrl: "{{ STATIC_URL }}",
+        waitSeconds: 14,
+        urlArgs: 'bust=' + (new Date()).getTime(), //cache bust setting
+        paths: {
+          "jquery": "bower_components/jquery/dist/jquery.min",
+          // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
+          'jquery-ui': "bower_components/jquery-ui/ui",
+          // jquery.fileupload에서 아래 이름으로 하드코딩되어 있어서
+          "jquery.ui.widget": "bower_components/jquery-ui/ui/widget",
+
+          "bootstrap": "lib/bootstrap/docs/assets/js/bootstrap.min",
+          "stickytable": "bower_components/StickyTableHeaders/js/jquery.stickytableheaders",
+          "jquery.fileupload": "bower_components/jquery-file-upload/js/jquery.fileupload",
+          "jquery.fileupload-process": "bower_components/jquery-file-upload/js/jquery.fileupload-process",
+          "jquery.fileupload-validate": "bower_components/jquery-file-upload/js/jquery.fileupload-validate",
+          "jquery.iframe-transport": "bower_components/jquery-file-upload/js/jquery.iframe-transport",
+          "cookie": "bower_components/jquery.cookie/jquery.cookie",
+          "atagToDownloadTable": "js/jquery.atag.to.download.table",
+          "jquery.form": "bower_components/jquery-form/jquery.form",
+          "jquery.browser": "bower_components/jquery.browser/dist/jquery.browser.min",
+          "jquery.tmpl": "js/jquery.tmpl.min",
+          "attrajax": "bower_components/AttrAjax/attrajax",
+          "iframeAutoHeight": "bower_components/jquery-iframe-auto-height/dist/jquery-iframe-auto-height.min",
+          "datatables.net": "bower_components/datatables/media/js/jquery.dataTables",
+          "highlight": "bower_components/jquery-highlight/jquery.highlight",
+          "select2": "bower_components/select2/select2.min",
+
+          "comm": "js/comm"
+        },
+        shim: {
+          "stickytable": ["jquery"],
+          "cookie": ["jquery"],
+          "atagToDownloadTable": ["jquery"],
+          "jquery.form": ["jquery"],
+          "jquery.browser": ["jquery"],
+          "jquery.tmpl": ["jquery"],
+          "attrajax": ["jquery", 'jquery.form'],
+          "iframeAutoHeight": ["jquery", 'jquery.browser'],
+          "datatables.net": ["jquery"],
+          "highlight": ["jquery"],
+          "select2": ["jquery"]
+        }
+      });
+
+      requirejs(["jquery", 'comm/common'], function ($, common) {
+        {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+        common.showAlertIfIe();
+      });
+    </script>
+    <script src="{{ STATIC_URL }}/js/common.js"></script>
+  {% endblock %}
+</head>
+
+<body>
+
+{% if ENV_NAME and ENV_NAME != 'REAL' %}
+  <div class="{{ ENV_NAME }}_environment_ribbon">{{ ENV_NAME }}</div>
+{% endif %}
+
+<div class="container-fluid marginBottom30">
+  <div class="row-fluid marginTop20">
+    <div class="span1" style="width: 190px">
+      {% include '/comm/left_menu.twig' %}
+    </div>
+    <div class="span9 marginTop20">
+      {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+      <div hidden class="offset6" id="js_ie_alert" style="position: fixed; z-index: 10; opacity: 0.75;">
+        <div class="alert alert-error">
+          <strong>경고!</strong> Internet Explorer 에서는 일부 기능이 정상적으로 작동하지 않을 수 있습니다. <a href="https://www.google.co.kr/chrome/browser/desktop/">Chrome 브라우저</a>를 사용해주세요.
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        </div>
+      </div>
+
+      <ul class="breadcrumb">
+        <li><i class="icon-chevron-right"></i>{% block title %}{% endblock %}</li>
+      </ul>
+
+      {% block body %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+
+{% block script %}
+{% endblock %}
+</body>
+</html>

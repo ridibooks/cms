@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title ? title ~ ' - ' }}Ridibooks CMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  {% if BASE_HREF %}
+    <base href="//{{ BASE_HREF }}"/>
+  {% endif %}
+
+  {% block style %}
+    <style>
+      .DEV_environment_ribbon, .STAGING_environment_ribbon {
+        position: fixed; left: -30px; top: 10px; z-index: 99999;
+        width: 100px; height: 24px; margin: 0; padding: 0;
+        line-height: 25px; text-align: center;
+        font-size: 14px; font-weight: 700; color: white; letter-spacing: 0;
+
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+
+        box-shadow: 0 2px 2px rgba(0,0,0,.3);
+        -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+        -moz-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+      }
+      .DEV_environment_ribbon{
+        background: #5fce0c;
+      }
+      .STAGING_environment_ribbon {
+        background: #e74c3c; font-size: 11px;
+      }
+    </style>
+  {% endblock %}
+
+  {% block head %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    {#<link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">#}
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/datepicker.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/select2/select2.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/select2-bootstrap-css/select2-bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/css/datepicker3.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/cms-bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/jquery.monthpicker-0.1.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/lib/logiform/logiform.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+
+    <script type="text/javascript" src="{{ STATIC_URL }}/bower_components/requirejs/require.js"></script>
+    <script>
+      requirejs.config({
+        baseUrl: "{{ STATIC_URL }}",
+        waitSeconds: 14,
+        urlArgs: 'bust=' + (new Date()).getTime(), //cache bust setting
+        paths: {
+          "jquery": "bower_components/jquery/dist/jquery.min",
+          // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
+          "jquery-ui": "bower_components/jquery-ui/ui",
+
+          "bootstrap": "bower_components/bootstrap/dist/js/bootstrap.min",
+          "bootstrap.datepicker": "bower_components/bootstrap-datepicker/js/bootstrap-datepicker",
+          "bootstrap.datetimepicker": "bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker",
+          "bootstrap.lightbox": "bower_components/ekko-lightbox/dist/ekko-lightbox",
+          "bootstrap.datatables": "bower_components/datatables/media/js/dataTables.bootstrap",
+          "bootstrap.fileinput": "bower_components/bootstrap-fileinput/js/fileinput.min",
+
+          "d3": "bower_components/d3/d3.min",
+          "datatables.net": "bower_components/datatables/media/js/jquery.dataTables",
+          "select2": "bower_components/select2/select2",
+          "moment": "bower_components/moment/moment",
+          "ckeditor": "bower_components/ckeditor/ckeditor",
+          "stickyTableHeaders": "bower_components/StickyTableHeaders/js/jquery.stickytableheaders",
+          "highlight": "bower_components/jquery-highlight/jquery.highlight",
+          "ace": "bower_components/ace-builds/src",
+          "spin": "bower_components/spin.js/spin",
+          "jquery.form": "bower_components/jquery-form/jquery.form",
+          "attrajax": "bower_components/AttrAjax/attrajax",
+          'jquery.tmpl': 'js/jquery.tmpl.min',
+          'tinyMCE': 'bower_components/tinymce/tinymce.min',
+          "lazyload": "bower_components/vanilla-lazyload/dist/lazyload.min",
+
+          "atagToDownloadTable": "js/jquery.atag.to.download.table",
+          "monthpicker": "js/jquery.monthpicker-0.1",
+
+          "shortcut": "lib/shortcut",
+          "logiform": "lib/logiform/logiform",
+
+          "admin": "js/admin",
+
+          "comm": "js/comm",
+          "publisher": "js/publisher",
+          "super": "js/super",
+          "linegraph": "js/admin/line_graph"
+        },
+        shim: {
+          "bootstrap": ["jquery"],
+          "bootstrap.datepicker": ["jquery"],
+          "bootstrap.datatables": ["datatables.net"],
+
+          "attrajax": ["jquery"],
+          "datatables.net": ["jquery"],
+          "jquery.form": ["jquery"],
+          "logiform": ["jquery"],
+          "monthpicker": ["jquery"],
+          "select2": ["jquery"],
+          "stickyTableHeaders": ["jquery"],
+          "atagToDownloadTable": ["jquery"],
+          'jquery.tmpl': ['jquery'],
+          'tinyMCE': {
+            exports: 'tinyMCE',
+            init: function () {
+              this.tinyMCE.DOM.events.domLoaded = true;
+              return this.tinyMCE;
+            }
+          }
+        }
+      });
+
+      requirejs(["jquery", "comm/common", "select2", "bootstrap"], function ($, common) {
+        {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+        common.showAlertIfIe();
+
+        $(function () {
+          var menu_select = $(".menu_select");
+          menu_select.select2({
+            placeholder: "메뉴를 검색하세요"
+          });
+
+          menu_select.on("select2-selecting", function (event) {
+            window.location.href = event.choice.id;
+          });
+
+          {#glyphicon-question-sign popover 설정#}
+          $(".glyphicon-question-sign").popover({trigger: "hover", container: "body", html: "true"});
+        });
+      });
+
+      require(['datatables.net'], function () {
+        $('*[datatable]').dataTable({"bPaginate": false});
+      });
+    </script>
+  {% endblock %}
+</head>
+<body>
+
+{% if ENV_NAME and ENV_NAME != 'REAL' %}
+  <div class="{{ ENV_NAME }}_environment_ribbon">{{ ENV_NAME }}</div>
+{% endif %}
+
+<div class="container-fluid marginBottom30 marginTop20">
+  {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+  <div hidden class="col-xs-push-8" id="js_ie_alert" style="position: fixed; z-index: 10; opacity: 0.75;">
+    <div class="alert alert-danger">
+      <strong>경고!</strong> Internet Explorer 에서는 일부 기능이 정상적으로 작동하지 않을 수 있습니다. <a href="https://www.google.co.kr/chrome/browser/desktop/" class="alert-link">Chrome 브라우저</a>를 사용해주세요.
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    </div>
+  </div>
+
+  <div class="row"> {# 메뉴가 좌측 #}
+    <div class="col-xs-12 col-lg-2">
+      {% include '/comm/left_menu_new.twig' %}
+    </div>
+    <div class="col-xs-12 col-lg-10 marginTop20">
+      <div class="col-xs-12">
+        <ul class="breadcrumb">
+          <li><i class="glyphicon glyphicon-chevron-right"></i>{% block title %}{% endblock %}</li>
+        </ul>
+      </div>
+      {% block body %}
+      {% endblock %}
+    </div>
+  </div> {# 메뉴가 좌측 - 여기까지 #}
+
+  {#<div class="row"> &#123;&#35; 메뉴가 우측 &#35;&#125;#}
+  {#<div class="col-md-10 col-lg-8 col-sm-10 col-md-offset-0 col-lg-offset-1 col-sm-offset-1">#}
+  {#<blockquote>#}
+  {#<h2>{% block title %}{% endblock %}#}
+  {#</h2>#}
+  {#</blockquote>#}
+  {#{% block body %}#}
+  {#{% endblock %}#}
+  {#</div>#}
+  {#<div class="col-md-2 col-lg-2 hidden-sm hidden-xs">#}
+  {#{% include '/comm/left_menu_new.twig' %}#}
+  {#</div> &#123;&#35; 메뉴가 우측 - 여기까지 &#35;&#125;#}
+  {#</div>#}
+</div>
+
+{% block script %}
+{% endblock %}
+</body>
+</html>
