@@ -67,7 +67,6 @@
       requirejs.config({
         baseUrl: "{{ STATIC_URL }}",
         waitSeconds: 14,
-        urlArgs: 'bust=' + (new Date()).getTime(), //cache bust setting
         paths: {
           "jquery": "bower_components/jquery/dist/jquery.min",
           // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
