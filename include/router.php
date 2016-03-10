@@ -1,10 +1,10 @@
 <?php
-use Ridibooks\Library\TwigHelper;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\AdminAuthService;
+use Ridibooks\Platform\Cms\CmsApplication;
 use Symfony\Component\HttpFoundation\Request;
 
-function selfRouting()
+function selfRouting($twig_path, $twig_args = [])
 {
 	$query = $_SERVER['QUERY_STRING'];
 
@@ -55,7 +55,9 @@ function selfRouting()
 		}
 	}
 
-	return callController($query);
+	$return_value = callController($query);
+
+	return callView($query, $twig_path, array_merge($twig_args, $return_value));
 }
 
 /**
@@ -84,46 +86,26 @@ function callController($query)
 	}
 
 	// View 처리
-	return callView($query, $return_value);
+	return $return_value;
 }
 
-function callView($query, $return_value)
+function callView($query, $twig_path, $twig_args)
 {
 	$view_file_name = $query . '.twig';
-	if (!is_file(Env::$HOST_ROOT . "/views/" . $view_file_name)) {
+	if (!is_file($twig_path . '/' . $view_file_name)) {
 		return false;
 	}
 
-	global $TWIG_ARGS;
+	$app = new CmsApplication();
+	$app['twig.path'] = [
+		$twig_path,
+		__DIR__ . '/../views/'
+	];
+	$app['twig.env.globals'] = $twig_args;
 
-	$TWIG_ARGS['FRONT_URL'] = 'http://' . Config::$DOMAIN;
-	$TWIG_ARGS['STATIC_URL'] = '/admin/static';
-	$TWIG_ARGS['MISC_URL'] = Config::$MISC_URL;
-	$TWIG_ARGS['BANNER_URL'] = Config::$ACTIVE_URL . '/ridibooks_banner/';
-	$TWIG_ARGS['ACTIVE_URL'] = Config::$ACTIVE_URL;
-	$TWIG_ARGS['DM_IMAGE_URL'] = Config::$ACTIVE_URL . '/ridibooks_dm/';
-
-	$TWIG_ARGS['PHP_SELF'] = $_SERVER['PHP_SELF'];
-	$TWIG_ARGS['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
-
-	$TWIG_ARGS["HTTP_HOST_LINK"] = Config::$HTTP_HOST_LINK;
-	$TWIG_ARGS["SSL_HOST_LINK"] = Config::$SSL_HOST_LINK;
-
-	//for compatible
-	$TWIG_ARGS['base_url'] = Config::$DOMAIN;
-
-	$TWIG_ARGS['session_user_menu'] = $_SESSION['session_user_menu'];
-
-	$args = array_merge($TWIG_ARGS, $return_value);
-
-	$twig_helper = TwigHelper::createForAdmin();
-	$twig_helper->addFunction(new Twig_SimpleFunction('strtotime', 'strtotime'));
-	$twig_helper->addFilter(new Twig_SimpleFilter('strtotime', 'strtotime'));
-	$twig_helper->addFilter(
-		new Twig_SimpleFilter('filterBookdesc', 'filterBookdesc', ['is_safe' => ['html']])
-	);
-
-	$twig_helper->loadTemplate($view_file_name)->display($args);
+	/** @var \Twig_Environment $twig_helper */
+	$twig_helper = $app['twig'];
+	$twig_helper->display($view_file_name);
 
 	if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && Config::$ENABLE_DB_LOGGER) {
 		echo \Ridibooks\Library\DB\Profiler::getInstance()->buildQueryHtml();
