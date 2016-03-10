@@ -4,7 +4,7 @@ use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Ridibooks\Platform\Cms\CmsApplication;
 use Symfony\Component\HttpFoundation\Request;
 
-function selfRouting($twig_path, $twig_args = [])
+function selfRouting($controller_path, $twig_path, $twig_args = [])
 {
 	$query = $_SERVER['QUERY_STRING'];
 
@@ -55,7 +55,7 @@ function selfRouting($twig_path, $twig_args = [])
 		}
 	}
 
-	$return_value = callController($query);
+	$return_value = callController($query, $controller_path);
 
 	return callView($query, $twig_path, array_merge($twig_args, $return_value));
 }
@@ -70,10 +70,9 @@ function onHttps($request)
 		|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'));
 }
 
-function callController($query)
+function callController($query, $controller_path)
 {
-	$controller_file_path = Env::$HOST_ROOT . "/controls/" . $query . ".php";
-
+	$controller_file_path = $controller_path . '/' . $query . ".php";
 	if (!is_file($controller_file_path)) {
 		return false;
 	}
