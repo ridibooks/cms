@@ -56,6 +56,9 @@ function selfRouting($controller_path, $twig_path, $twig_args = [])
 	}
 
 	$return_value = callController($query, $controller_path);
+	if ($return_value === false) {
+		return false;
+	}
 
 	return callView($query, $twig_path, array_merge($twig_args, $return_value));
 }
