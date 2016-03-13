@@ -103,10 +103,7 @@ class MiniRouter
 		}
 
 		$app = new CmsApplication();
-		$app['twig.path'] = [
-			$twig_path,
-			__DIR__ . '/../../../../views/'
-		];
+		$app['twig.path'] = [$twig_path];
 		$app['twig.env.globals'] = $twig_args;
 
 		/** @var \Twig_Environment $twig_helper */

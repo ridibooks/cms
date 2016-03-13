@@ -18,27 +18,46 @@ class CmsApplication extends Application
 
 	private function registerTwigServiceProvider()
 	{
-		$this->register(new TwigServiceProvider(), [
-			'twig.env.globals' => [],
-			'twig.options' => [
-				'cache' => sys_get_temp_dir() . '/twig_cache_v12',
-				'auto_reload' => true
+		$this->register(
+			new TwigServiceProvider(),
+			[
+				'twig.env.globals' => [],
+				'twig.options' => [
+					'cache' => sys_get_temp_dir() . '/twig_cache_v12',
+					'auto_reload' => true
+				]
 			]
-		]);
+		);
 
 		// see http://silex.sensiolabs.org/doc/providers/twig.html#customization
-		$this->share($this->extend('twig', function (\Twig_Environment $twig) {
-			$globals = array_merge($this->getTwigGlobalVariables(), $this['twig.env.globals']);
-			foreach ($globals as $k => $v) {
-				$twig->addGlobal($k, $v);
-			}
+		$this['twig'] = $this->share(
+			$this->extend(
+				'twig',
+				function (\Twig_Environment $twig) {
+					$globals = array_merge($this->getTwigGlobalVariables(), $this['twig.env.globals']);
+					foreach ($globals as $k => $v) {
+						$twig->addGlobal($k, $v);
+					}
 
-			foreach ($this->getTwigGlobalFilters() as $filter) {
-				$twig->addFilter($filter);
-			}
+					foreach ($this->getTwigGlobalFilters() as $filter) {
+						$twig->addFilter($filter);
+					}
 
-			return $twig;
-		}));
+					return $twig;
+				}
+			)
+		);
+
+		$this['twig.loader.filesystem'] = $this->share(
+			$this->extend(
+				'twig.loader.filesystem',
+				function (\Twig_Loader_Filesystem $loader) {
+					$loader->addPath(__DIR__ . '/../../../../views/');
+
+					return $loader;
+				}
+			)
+		);
 	}
 
 	private function getTwigGlobalVariables()
