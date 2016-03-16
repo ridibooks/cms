@@ -9,8 +9,8 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
+use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -408,6 +408,9 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		$auths = $_SESSION['session_user_auth'];
+		if (!is_array($auths)) {
+			$auths = [];
+		}
 		$hash_array = self::getHashesFromMenus($check_url, $auths);
 		return $hash_array;
 	}
@@ -425,7 +428,8 @@ class AdminAuthService extends AdminBaseService
 	 */
 	public static function isValidLogin()
 	{
-		return LoginService::GetAdminID() && isset($_SESSION['session_user_auth']) && isset($_SESSION['session_user_menu']);
+		return LoginService::GetAdminID()
+			&& isset($_SESSION['session_user_auth']) && isset($_SESSION['session_user_menu']);
 	}
 
 	/**적합한 유저인지 검사한다.
