@@ -2,6 +2,7 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
+use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTag;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenu;
@@ -55,7 +56,7 @@ class AdminTagService extends AdminBaseService
 		//태그에 매핑된 메뉴 리스트
 		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
 
-		$mapped_menu_tag_list = array();
+		$mapped_menu_tag_list = [];
 		foreach ($menu_list as $menu) {
 			foreach ($menu_tag_list as $menu_tag) {
 				if ($menu['id'] == $menu_tag['menu_id']) {
@@ -79,7 +80,7 @@ class AdminTagService extends AdminBaseService
 		//태그에 매핑된 메뉴 리스트
 		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
 
-		$mapped_menu_tag_list = array();
+		$mapped_menu_tag_list = [];
 		foreach ($menu_list as $menu) {
 			foreach ($menu_tag_list as $menu_tag) {
 				if ($menu['id'] == $menu_tag['menu_id']) {
@@ -180,5 +181,24 @@ class AdminTagService extends AdminBaseService
 	{
 		ValidationUtils::checkNullField($tagArray['tag_id'], "태그 ID가 없습니다.");
 		ValidationUtils::checkNullField($tagArray['menu_id'], "메뉴 ID가 없습니다.");
+	}
+
+	/**
+	 * @return AdminTagDetailViewDto[]
+	 */
+	public function getTagListWithUseCount()
+	{
+		$tags = $this->getTagList();
+		$returns = [];
+
+		foreach ($tags as $tag) {
+			$tag_id = $tag['id'];
+			$returns[] = AdminTagDetailViewDto::importFromDatabaseRow(
+				$tag,
+				$this->adminUserTags->getAdminUserTaggedCount($tag_id),
+				$this->adminTagMenus->getAdminMenuTagCountByTagId($tag_id)
+			);
+		}
+		return $returns;
 	}
 }

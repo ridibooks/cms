@@ -26,10 +26,26 @@ class AdminTagMenus extends AdminBaseModel
 	 */
 	public function getAdminMenuTagCount($tag_id, $menu_id)
 	{
-		$whereArray = array();
+		$whereArray = [];
 		$whereArray['tag_id'] = $tag_id;
 		$whereArray['menu_id'] = $menu_id;
-		return (int)$this->db->sqlData("SELECT COUNT(tag_id) FROM tb_admin2_tag_menu ?",
-			sqlWhereWithClause($whereArray));
+		return (int)$this->db->sqlData(
+			"SELECT COUNT(tag_id) FROM tb_admin2_tag_menu ?",
+			sqlWhereWithClause($whereArray)
+		);
+	}
+
+	/**해당 태그에 메뉴가 매핑되어있는지 여부를 count 한다.
+	 * @param int $tag_id
+	 * @return int
+	 */
+	public function getAdminMenuTagCountByTagId($tag_id)
+	{
+		$whereArray = [];
+		$whereArray['tag_id'] = $tag_id;
+		return (int)$this->db->sqlData(
+			"SELECT COUNT(tag_id) FROM tb_admin2_tag_menu ?",
+			sqlWhereWithClause($whereArray)
+		);
 	}
 }
