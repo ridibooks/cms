@@ -15,6 +15,8 @@ class AdminAuthConstants extends AdminBaseConst
 {
 
 	const EDIT_SET_BOOK = 'EDIT_세트도서';
+	/*
+	 * Valid PHP >= 7
 	const LIST_FILE_EDITABLE = [
 		'EDIT_FORMAT_VERSION',
 		'EDIT_파일타입',
@@ -37,5 +39,6 @@ class AdminAuthConstants extends AdminBaseConst
 		'EDIT_EPUB변환',
 		'EDIT_파일변경불가'
 	];
+	*/
 	const EDIT_EPUB_CONVERTER = 'EDIT_EPUB변환';
 }
