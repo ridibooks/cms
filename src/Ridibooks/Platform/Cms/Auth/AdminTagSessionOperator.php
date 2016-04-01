@@ -2,19 +2,19 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Platform\Production\Constants\ProductAuthHash;
+use Ridibooks\Platform\Production\Constants\ProductAuthTag;
 
 /**
  * 유저 Tag 관련 Class
  */
-class AdminTagUtils
+class AdminTagSessionOperator
 {
 	/**로그인 한 유저가 매니저인지 확인한다.
 	 * @return bool
 	 */
 	public static function isManager()
 	{
-		return self::hasTagId(ProductAuthHash::MANAGER);
+		return self::hasTagId(ProductAuthTag::MANAGER);
 	}
 
 	/**로그인 한 유저가 인턴인지 확인한다.
@@ -22,7 +22,7 @@ class AdminTagUtils
 	 */
 	public static function isInternship()
 	{
-		return self::hasTagId(ProductAuthHash::INTERNSHIP);
+		return self::hasTagId(ProductAuthTag::INTERNSHIP);
 	}
 
 	/**로그인 한 유저가 등록 아르바이트인지 확인한다.
@@ -30,7 +30,7 @@ class AdminTagUtils
 	 */
 	public static function isPartRegister()
 	{
-		return self::hasTagId(ProductAuthHash::PART_REGISTER);
+		return self::hasTagId(ProductAuthTag::PART_REGISTER);
 	}
 
 	/**로그인 한 유저가 제작 아르바이트인지 확인한다.
@@ -38,7 +38,7 @@ class AdminTagUtils
 	 */
 	public static function isPartMake()
 	{
-		return self::hasTagId(ProductAuthHash::PART_MAKE);
+		return self::hasTagId(ProductAuthTag::PART_MAKE);
 	}
 
 	/**로그인 한 유저가 1차검수 아르바이트인지 확인한다.
@@ -46,7 +46,7 @@ class AdminTagUtils
 	 */
 	public static function isPart1stCheck()
 	{
-		return self::hasTagId(array(ProductAuthHash::PART_1ST_CHECK, ProductAuthHash::PART_1ST_CHECK_TEMP));
+		return self::hasTagId([ProductAuthTag::PART_1ST_CHECK, ProductAuthTag::PART_1ST_CHECK_TEMP]);
 	}
 
 	/**로그인 한 유저가 2차검수 아르바이트인지 확인한다.
@@ -54,7 +54,7 @@ class AdminTagUtils
 	 */
 	public static function isPart2ndCheck()
 	{
-		return self::hasTagId(ProductAuthHash::PART_2ND_CHECK);
+		return self::hasTagId(ProductAuthTag::PART_2ND_CHECK);
 	}
 
 	/**로그인 한 유저가 반장 아르바이트인지 확인한다.
@@ -62,7 +62,7 @@ class AdminTagUtils
 	 */
 	public static function isPartPrincipal()
 	{
-		return self::hasTagId(ProductAuthHash::PART_PRINCIPAL);
+		return self::hasTagId(ProductAuthTag::PART_PRINCIPAL);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class AdminTagUtils
 	 */
 	public static function isPartAuthorDb()
 	{
-		return self::hasTagId(ProductAuthHash::PART_AUTHOR);
+		return self::hasTagId(ProductAuthTag::PART_AUTHOR);
 	}
 
 	/**
@@ -89,13 +89,13 @@ class AdminTagUtils
 	public static function isParttimeJob()
 	{
 		$parttime_array = [
-			ProductAuthHash::PART_PRINCIPAL,
-			ProductAuthHash::PART_REGISTER,
-			ProductAuthHash::PART_1ST_CHECK,
-			ProductAuthHash::PART_1ST_CHECK_TEMP,
-			ProductAuthHash::PART_2ND_CHECK,
-			ProductAuthHash::PART_MAKE,
-			ProductAuthHash::PART_AUTHOR
+			ProductAuthTag::PART_PRINCIPAL,
+			ProductAuthTag::PART_REGISTER,
+			ProductAuthTag::PART_1ST_CHECK,
+			ProductAuthTag::PART_1ST_CHECK_TEMP,
+			ProductAuthTag::PART_2ND_CHECK,
+			ProductAuthTag::PART_MAKE,
+			ProductAuthTag::PART_AUTHOR
 		];
 
 		return self::hasTagId($parttime_array);
@@ -106,7 +106,7 @@ class AdminTagUtils
 	 */
 	public static function isDevCenter()
 	{
-		return self::hasTagId(CommConstants::PLATFORMTEAM_TAG) || self::hasTagId(CommConstants::DEVCENTER_TAG);
+		return self::hasTagId(AdminTagConstants::PLATFORMTEAM_TAG) || self::hasTagId(AdminTagConstants::DEVCENTER_TAG);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class AdminTagUtils
 	 */
 	public static function isStoreOperationTeam()
 	{
-		return self::hasTagId(ProductAuthHash::STORE_FANTASY) || self::hasTagId(ProductAuthHash::STORE_ROMANCE);
+		return self::hasTagId(ProductAuthTag::STORE_FANTASY) || self::hasTagId(ProductAuthTag::STORE_ROMANCE);
 	}
 
 	/**입력 받은 TagId 있는지 확인한다.
