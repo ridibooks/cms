@@ -22,8 +22,6 @@ class AdminTagDto extends AdminBaseDto
 		$this->name = $request->get('name');
 		$this->is_use = $request->get('is_use');
 
-		if ($request->get('tag_list') != null) {
-			$this->tag_list = $request->get('tag_list');
-		}
+		$this->tag_list = $request->get('tag_list', []);
 	}
 }
