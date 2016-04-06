@@ -1,0 +1,50 @@
+<?php
+
+namespace Ridibooks\Platform\Common\Base;
+
+use Ridibooks\Library\DB\GnfConnectionProvider;
+use Ridibooks\Library\DB\ConnectionProvider;
+
+/**Admin 에서 사용되는 Base Model
+ * Class AdminBaseModel
+ * @package Ridibooks\Platform\Common\Base
+ */
+class AdminBaseModel
+{
+	protected $db;
+	protected $read_db;
+
+	public function __construct()
+	{
+		$this->db = self::getDb();
+		$this->read_db = self::getReadDb();
+	}
+
+	protected static function getDb()
+	{
+		return GnfConnectionProvider::getConnection(ConnectionProvider::CONNECTION_GROUP_PLATFORM_WRITE);
+	}
+
+	protected static function getReadDb()
+	{
+		return GnfConnectionProvider::getConnection(ConnectionProvider::CONNECTION_GROUP_PLATFORM_READ);
+	}
+
+	/**
+	 * 트랜잭션 시작(모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
+	 */
+	public static function startTransaction()
+	{
+		$db = self::getDb();
+		$db->sqlBegin();
+	}
+
+	/**
+	 * 트랜잭션 종료(모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
+	 */
+	public static function endTransaction()
+	{
+		$db = self::getDb();
+		return $db->sqlEnd();
+	}
+}
