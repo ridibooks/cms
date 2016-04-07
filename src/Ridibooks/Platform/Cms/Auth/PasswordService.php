@@ -16,17 +16,28 @@ class PasswordService
 	public static function isPasswordMatchToHashed($plain_password, $hashed_password)
 	{
 		//v3
-		if (hash_equals($hashed_password, self::getPasswordAsHashed($plain_password))) {
+		if (self::hash_equals($hashed_password, self::getPasswordAsHashed($plain_password))) {
 			return true;
 		}
 		//v2
-		if (hash_equals($hashed_password, hash('sha256', $plain_password))) {
+		if (self::hash_equals($hashed_password, hash('sha256', $plain_password))) {
 			return true;
 		}
 		//v1
-		if (hash_equals($hashed_password, crypt($plain_password, $hashed_password))) {
+		if (self::hash_equals($hashed_password, crypt($plain_password, $hashed_password))) {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * deprecated on php7
+	 * @param $a
+	 * @param $b
+	 * @return bool
+	 */
+	public static function hash_equals($a, $b)
+	{
+		return $a == $b;
 	}
 }
