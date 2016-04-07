@@ -12,9 +12,9 @@ use Ridibooks\Platform\Cms\Auth\Model\AdminTags;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUser;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTag;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
+use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -170,7 +170,7 @@ class AdminUserService extends AdminBaseService
 
 		$this->_validateAdminUserInsert($adminUserDto);
 		//password encrypt
-		$adminUserDto->passwd = hash('sha256', $adminUserDto->passwd);
+		$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
 
 		if (TbAdminUserModel::getAdminUserIdCount($adminUserDto->id) > 0) { //ID로 카운트 하여 값이 0 이상일 경우
 			throw new MsgException('동일한 ID가 있습니다.');
@@ -191,7 +191,7 @@ class AdminUserService extends AdminBaseService
 		$this->_validateAdminUserUpdate($adminUserDto);
 
 		if (isset($adminUserDto->passwd) && trim($adminUserDto->passwd) !== '') {
-			$adminUserDto->passwd = hash('sha256', $adminUserDto->passwd);
+			$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
 		}
 		$adminUserDto->id = trim($adminUserDto->id);
 		$adminUserDto->last_id = trim($adminUserDto->last_id);

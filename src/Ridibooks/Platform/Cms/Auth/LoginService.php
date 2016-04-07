@@ -37,10 +37,8 @@ class LoginService extends AdminBaseService
 	 */
 	private function validatePassword($inputPassword, $storedPassword)
 	{
-		if ($storedPassword != crypt($inputPassword, $storedPassword)) { //기존 암호화 방식이 맞지 않을 경우
-			if ($storedPassword != hash('sha256', $inputPassword)) { // sha256으로도 매칭이 되지 않으면 비밀번호가 틀렸거나 유저가 없는 경우
-				throw new \Exception('잘못된 계정정보입니다.');
-			}
+		if (!PasswordService::isPasswordMatchToHashed($inputPassword, $storedPassword)) {
+			throw new \Exception('잘못된 계정정보입니다.');
 		}
 	}
 
