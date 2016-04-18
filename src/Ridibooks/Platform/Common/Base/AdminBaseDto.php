@@ -93,9 +93,13 @@ class AdminBaseDto
 	/**
 	 * 배열을 이용하여 클래스를 초기화한다
 	 * @param array $array
+	 * @throws \Exception
 	 */
 	public function importFromArray($array)
 	{
+		if (!is_array($array)) {
+			throw new \Exception('invalid array');
+		}
 		$reflect = new ReflectionClass(get_called_class());
 		$properties = $reflect->getDefaultProperties();
 		foreach ($properties as $key => $value) {
@@ -140,7 +144,7 @@ class AdminBaseDto
 			if ($value === null) {
 				unset($columns[$key]);
 			}
-	}
+		}
 
 		return $columns;
 	}
