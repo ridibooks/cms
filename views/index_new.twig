@@ -145,7 +145,7 @@
         });
       });
 
-      require(['datatables.net'], function () {
+      requirejs(['jquery', 'bootstrap.datatables'], function ($) {
         $('*[datatable]').dataTable({"bPaginate": false});
       });
     </script>
