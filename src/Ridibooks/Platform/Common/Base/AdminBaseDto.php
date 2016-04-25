@@ -53,6 +53,7 @@ class AdminBaseDto
 	/**
 	 * Request class를 이용하여 클래스를 초기화한다.
 	 * @param Request $request
+	 * @internal public 이 아닌 protected 로 변경필요
 	 */
 	public function importFromRequest($request)
 	{
@@ -65,6 +66,7 @@ class AdminBaseDto
 
 	/**stdClass 일 경우 클래스 초기화
 	 * @param \stdClass $stdClass
+	 * @internal public 이 아닌 protected 로 변경필요
 	 */
 	public function importFromStdClass($stdClass)
 	{
@@ -94,6 +96,7 @@ class AdminBaseDto
 	 * 배열을 이용하여 클래스를 초기화한다
 	 * @param array $array
 	 * @throws \Exception
+	 * @internal public 이 아닌 protected 로 변경필요
 	 */
 	public function importFromArray($array)
 	{
@@ -112,6 +115,7 @@ class AdminBaseDto
 	/**
 	 * 함수를 호출한 클래스의 기본 멤버변수만을(동적, 부모 멤버변수 제외) 리턴한다.
 	 * @return array
+	 * @internal public 이 아닌 protected 로 변경필요
 	 */
 	public function exportAsArray()
 	{
@@ -135,6 +139,7 @@ class AdminBaseDto
 	 * 함수를 호출한 클래스의 기본 멤버변수만큼(동적, 부모 멤버변수 제외) 리턴한다.
 	 * 단, Null값을 가진 column은 제외한다.
 	 * @return array
+	 * @internal public 이 아닌 protected 로 변경필요
 	 */
 	public function exportAsArrayExceptNull()
 	{
