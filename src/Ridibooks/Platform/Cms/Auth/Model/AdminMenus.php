@@ -52,5 +52,4 @@ class AdminMenus extends AdminBaseModel
 	{
 		return (int)$this->db->sqlData("SELECT menu_order FROM tb_admin2_menu WHERE id=?", $id);
 	}
-
 }

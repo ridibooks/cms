@@ -15,7 +15,7 @@ class AdminMenuAjax extends AdminBaseModel
 	 */
 	public function insertAdminMenuAjax($menuAjaxDto)
 	{
-		$column_array = array();
+		$column_array = [];
 		$column_array['menu_id'] = $menuAjaxDto->menu_id;
 		$column_array['ajax_url'] = $menuAjaxDto->ajax_url;
 		$this->db->sqlInsert("tb_admin2_menu_ajax", $column_array);
@@ -26,8 +26,11 @@ class AdminMenuAjax extends AdminBaseModel
 	 */
 	public function updateAdminMenuAjax($menuAjaxArray)
 	{
-		$this->db->sqlUpdate("tb_admin2_menu_ajax", $menuAjaxArray,
-			array('id' => $menuAjaxArray['id'], 'menu_id' => $menuAjaxArray['menu_id']));
+		$this->db->sqlUpdate(
+			"tb_admin2_menu_ajax",
+			$menuAjaxArray,
+			['id' => $menuAjaxArray['id'], 'menu_id' => $menuAjaxArray['menu_id']]
+		);
 	}
 
 	/**메뉴 Ajax 삭제한다.
@@ -35,7 +38,9 @@ class AdminMenuAjax extends AdminBaseModel
 	 */
 	public function deleteAdminMenuAjax($menuAjaxArray)
 	{
-		$this->db->sqlDelete("tb_admin2_menu_ajax",
-			array('id' => $menuAjaxArray['id'], 'menu_id' => $menuAjaxArray['menu_id']));
+		$this->db->sqlDelete(
+			"tb_admin2_menu_ajax",
+			['id' => $menuAjaxArray['id'], 'menu_id' => $menuAjaxArray['menu_id']]
+		);
 	}
 }

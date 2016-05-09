@@ -8,7 +8,6 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-
 use Ridibooks\Platform\Common\Base\AdminBaseConst;
 
 class AdminAuthConstants extends AdminBaseConst

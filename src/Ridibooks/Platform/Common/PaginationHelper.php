@@ -40,7 +40,7 @@ class PaginationHelper
 
 		$limit_start = ($cur_page - 1) * $rows_per_page;
 
-		if($limit_start < 0) {
+		if ($limit_start < 0) {
 			$limit_start = 0;
 		}
 

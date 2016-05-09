@@ -95,7 +95,6 @@ class MenuService extends AdminBaseService
 				}
 			}
 			$this->adminMenu->updateMenu($menu);
-
 		}
 		$this->endTransaction();
 	}
@@ -163,7 +162,7 @@ class MenuService extends AdminBaseService
 	 */
 	private function assertAjaxMenuArray($menu_ajax_dto)
 	{
-		if(count($menu_ajax_dto->menu_ajax_list) === 0){
+		if (count($menu_ajax_dto->menu_ajax_list) === 0) {
 			throw new MsgException('수정할 Ajax 메뉴 URL이 없습니다.');
 		}
 	}
@@ -183,9 +182,10 @@ class MenuService extends AdminBaseService
 	 */
 	private function _validateMenuAjax($menuAjaxArray)
 	{
-		ValidationUtils::checkNullField($menuAjaxArray['menu_id'],
-			'잘못된 메뉴 ID 입니다.' . ' / ' . $menuAjaxArray['menu_id']);
+		ValidationUtils::checkNullField(
+			$menuAjaxArray['menu_id'],
+			'잘못된 메뉴 ID 입니다.' . ' / ' . $menuAjaxArray['menu_id']
+		);
 		ValidationUtils::checkNullField($menuAjaxArray['ajax_url'], '메뉴 Ajax URL을 입력하여 주십시오.');
 	}
-
 }

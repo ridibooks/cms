@@ -69,6 +69,4 @@ class PagingUtil
 
 		$this->limit = $this->line_per_page;
 	}
-
-
 }

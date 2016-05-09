@@ -8,7 +8,6 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-
 class AdminAuthOperator
 {
 
