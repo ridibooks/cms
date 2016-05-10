@@ -31,7 +31,7 @@ class MenuService extends AdminBaseService
 	}
 
 	/**메뉴 리스트 가져온다.
-	 * @param string $is_use
+	 * @param int|null $is_use
 	 * @param string $search_text
 	 * @return array
 	 */

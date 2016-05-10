@@ -478,9 +478,9 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
-			$login_url = '/admin/login';
+			$login_url = '/login';
 			$request_uri = $request->server->get('REQUEST_URI');
-			if (!empty($request_uri) && $request_uri != '/admin/login') {
+			if (!empty($request_uri) && $request_uri != '/login') {
 				$login_url .= '?return_url=' . urlencode($request_uri);
 			}
 			if (\Config::$ENABLE_SSL) {

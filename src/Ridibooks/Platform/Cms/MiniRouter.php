@@ -26,7 +26,7 @@ class MiniRouter
 
 		$request = Request::createFromGlobals();
 
-		$login_url = '/admin/login';
+		$login_url = '/login';
 		$on_login_page = (strncmp($_SERVER['REQUEST_URI'], $login_url, strlen($login_url)) === 0);
 
 		if ($on_login_page) {
@@ -34,7 +34,7 @@ class MiniRouter
 				$request_uri = $request->server->get('REQUEST_URI');
 
 				if (!empty($request_uri) && $request_uri != $login_url) {
-					$request_uri = str_replace('/admin/login?return_url=', '', $request_uri);
+					$request_uri = str_replace('/login?return_url=', '', $request_uri);
 					$login_url .= '?return_url=' . urlencode($request_uri);
 				}
 

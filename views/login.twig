@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ridibooks CMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+
+  <style>
+    body {
+      padding-top: 120px;
+      padding-bottom: 40px;
+      background-color: #ddd;
+    }
+
+    .form-signin {
+      max-width: 330px;
+      padding: 15px;
+      margin: 0 auto;
+      background-color: #f3f3f3;
+    }
+
+    .form-signin .form-control {
+      -webkit-touch-callout: none;
+      /*-webkit-user-select: none;*/
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      position: relative;
+      font: 15px 'Segoe UI', Arial, sans-serif;
+      background-color: #EAEBE5;
+      height: auto;
+      padding: 10px;
+      color: #7e8c8d;
+      outline: none;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    .form-signin input[type="text"] {
+      margin-bottom: -1px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+      margin-bottom: 10px;
+    }
+
+    .container {
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+      width: 288px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="container" id="formContainer">
+
+      <form method="post" class="form-signin" role="form">
+        <h3 class="form-signin-heading">Ridibooks CMS</h3>
+        <input type="hidden" name="cmd" value="login">
+        <input type="text" class="form-control" name="id" placeholder="ID" required autofocus>
+        <input type="password" class="form-control" name="passwd" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+      </form>
+
+    </div>
+    <!-- /container -->
+  </div>
+</div>
+
+</body>
+</html>
