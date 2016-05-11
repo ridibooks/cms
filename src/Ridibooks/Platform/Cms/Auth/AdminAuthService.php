@@ -364,8 +364,8 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		$allowed_urls = [
-			'/admin/welcome',
-			'/admin/logout'
+			'/welcome',
+			'/logout'
 		];
 
 		// welcome 페이지는 항상 허용
