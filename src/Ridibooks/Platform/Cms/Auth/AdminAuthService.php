@@ -364,6 +364,7 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		$allowed_urls = [
+			'/admin/welcome',	// deprecated
 			'/welcome',
 			'/logout'
 		];
