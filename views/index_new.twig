@@ -173,12 +173,16 @@
     <div class="col-xs-12 col-lg-2">
       {% include '/comm/left_menu_new.twig' %}
     </div>
-    <div class="col-xs-12 col-lg-10 marginTop20">
-      <div class="col-xs-12">
-        <ul class="breadcrumb">
-          <li><i class="glyphicon glyphicon-chevron-right"></i>{% block title %}{% endblock %}</li>
-        </ul>
-      </div>
+    <div class="col-xs-12 col-lg-10">
+      <ul>
+        <li><h4>{% block title %}{% endblock %}</h4></li>
+        {% if purpose %}
+        <li>사용목적: {% block purpose %}{% endblock %}</li>
+        {% endif %}
+        {% if usage %}
+        <li>사용방법: {% block usage %}{% endblock %}</li>
+        {% endif %}
+      </ul>
       {% block body %}
       {% endblock %}
     </div>
