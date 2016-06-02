@@ -10,11 +10,11 @@
   {% block head %}
     <link href="{{ STATIC_URL }}/css/admin/admin.css" type="text/css" rel="stylesheet">
     <link href="{{ STATIC_URL }}/lib/bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/css/datepicker.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/bower_components/bootstrap-datepicker/css/datepicker.css" rel="stylesheet">
+    <link href="/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}/css/datepicker.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}/bower_components/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}/bower_components/select2/select2.css" rel="stylesheet">
+    <link href="/static/bower_components/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="/static/bower_components/select2/select2.css" rel="stylesheet">
   {% block style %}
     <style>
       #mainWrap {
@@ -54,43 +54,42 @@
       }
     </style>
 
-    <script src="{{ STATIC_URL }}/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}/js/jquery.tmpl.min.js"></script>
     <script src="{{ STATIC_URL }}/js/bootstrap-datepicker.js"></script>
-    <script src="{{ STATIC_URL }}/bower_components/spin.js/spin.js"></script>
+    <script src="/static/bower_components/spin.js/spin.js"></script>
     <script src="{{ STATIC_URL }}/lib/bootstrap/docs/assets/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-    <script src="{{ STATIC_URL }}/bower_components/requirejs/require.js"></script>
-    <script src="{{ STATIC_URL }}/bower_components/ace-builds/src/ace.js"></script>
+    <script src="/static/bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="/static/bower_components/requirejs/require.js"></script>
+    <script src="/static/bower_components/ace-builds/src/ace.js"></script>
     <script>
       requirejs.config({
-        baseUrl: "{{ STATIC_URL }}",
         waitSeconds: 14,
         paths: {
-          "jquery": "bower_components/jquery/dist/jquery.min",
+          'jquery': '/static/bower_components/jquery/dist/jquery.min',
           // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
-          'jquery-ui': "bower_components/jquery-ui/ui",
+          'jquery-ui': '/static/bower_components/jquery-ui/ui',
           // jquery.fileupload에서 아래 이름으로 하드코딩되어 있어서
-          "jquery.ui.widget": "bower_components/jquery-ui/ui/widget",
+          'jquery.ui.widget': '/static/bower_components/jquery-ui/ui/widget',
 
-          "bootstrap": "lib/bootstrap/docs/assets/js/bootstrap.min",
-          "stickytable": "bower_components/StickyTableHeaders/js/jquery.stickytableheaders",
-          "jquery.fileupload": "bower_components/jquery-file-upload/js/jquery.fileupload",
-          "jquery.fileupload-process": "bower_components/jquery-file-upload/js/jquery.fileupload-process",
-          "jquery.fileupload-validate": "bower_components/jquery-file-upload/js/jquery.fileupload-validate",
-          "jquery.iframe-transport": "bower_components/jquery-file-upload/js/jquery.iframe-transport",
-          "cookie": "bower_components/jquery.cookie/jquery.cookie",
-          "atagToDownloadTable": "js/jquery.atag.to.download.table",
-          "jquery.form": "bower_components/jquery-form/jquery.form",
-          "jquery.browser": "bower_components/jquery.browser/dist/jquery.browser.min",
-          "jquery.tmpl": "js/jquery.tmpl.min",
-          "jquery.attrajax": "bower_components/jquery.attrajax/jquery.attrajax",
-          "iframeAutoHeight": "bower_components/jquery-iframe-auto-height/dist/jquery-iframe-auto-height.min",
-          "datatables.net": "bower_components/datatables/media/js/jquery.dataTables",
-          "highlight": "bower_components/jquery-highlight/jquery.highlight",
-          "select2": "bower_components/select2/select2.min",
+          'bootstrap': '{{ STATIC_URL }}/lib/bootstrap/docs/assets/js/bootstrap.min',
+          'stickytable': '/static/bower_components/StickyTableHeaders/js/jquery.stickytableheaders',
+          'jquery.fileupload': '/static/bower_components/jquery-file-upload/js/jquery.fileupload',
+          'jquery.fileupload-process': '/static/bower_components/jquery-file-upload/js/jquery.fileupload-process',
+          'jquery.fileupload-validate': '/static/bower_components/jquery-file-upload/js/jquery.fileupload-validate',
+          'jquery.iframe-transport': '/static/bower_components/jquery-file-upload/js/jquery.iframe-transport',
+          'cookie': '/static/bower_components/jquery.cookie/jquery.cookie',
+          'atagToDownloadTable': '{{ STATIC_URL }}/js/jquery.atag.to.download.table',
+          'jquery.form': '/static/bower_components/jquery-form/jquery.form',
+          'jquery.browser': '/static/bower_components/jquery.browser/dist/jquery.browser.min',
+          'jquery.tmpl': '{{ STATIC_URL }}/js/jquery.tmpl.min',
+          'jquery.attrajax': '/static/bower_components/jquery.attrajax/jquery.attrajax',
+          'iframeAutoHeight': '/static/bower_components/jquery-iframe-auto-height/dist/jquery-iframe-auto-height.min',
+          'datatables.net': '/static/bower_components/datatables/media/js/jquery.dataTables',
+          'highlight': '/static/bower_components/jquery-highlight/jquery.highlight',
+          'select2': '/static/bower_components/select2/select2.min',
 
-          "comm": "js/comm"
+          'comm': '{{ STATIC_URL }}/js/comm'
         },
         shim: {
           "stickytable": ["jquery"],
