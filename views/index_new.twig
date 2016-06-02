@@ -49,60 +49,58 @@
 
   {% block head %}
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/datepicker.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/datatables/media/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/select2/select2.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/select2-bootstrap-css/select2-bootstrap.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap-datepicker/css/datepicker3.css">
+    <link rel="stylesheet" href="/static/bower_components/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bower_components/select2/select2.css">
+    <link rel="stylesheet" href="/static/bower_components/select2-bootstrap-css/select2-bootstrap.css">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap-datepicker/css/datepicker3.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/cms-bootstrap.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/jquery.monthpicker-0.1.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}/bower_components/bootstrap-fileinput/css/fileinput.min.css">
-    <link rel="stylesheet"
-          href="{{ STATIC_URL }}/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="/static/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 
-    <script type="text/javascript" src="{{ STATIC_URL }}/bower_components/requirejs/require.js"></script>
+    <script type="text/javascript" src="/static/bower_components/requirejs/require.js"></script>
     <script>
       requirejs.config({
-        baseUrl: "{{ STATIC_URL }}",
         waitSeconds: 14,
         paths: {
-          "jquery": "bower_components/jquery/dist/jquery.min",
+          'jquery': '/static/bower_components/jquery/dist/jquery.min',
           // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
-          "jquery-ui": "bower_components/jquery-ui/ui",
+          'jquery-ui': '/static/bower_components/jquery-ui/ui',
 
-          "bootstrap": "bower_components/bootstrap/dist/js/bootstrap.min",
-          "bootstrap.datepicker": "bower_components/bootstrap-datepicker/js/bootstrap-datepicker",
-          "bootstrap.datetimepicker": "bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker",
-          "bootstrap.lightbox": "bower_components/ekko-lightbox/dist/ekko-lightbox",
-          "bootstrap.datatables": "bower_components/datatables/media/js/dataTables.bootstrap",
-          "bootstrap.fileinput": "bower_components/bootstrap-fileinput/js/fileinput.min",
+          'bootstrap': '/static/bower_components/bootstrap/dist/js/bootstrap.min',
+          'bootstrap.datepicker': '/static/bower_components/bootstrap-datepicker/js/bootstrap-datepicker',
+          'bootstrap.datetimepicker': '/static/bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+          'bootstrap.lightbox': '/static/bower_components/ekko-lightbox/dist/ekko-lightbox',
+          'bootstrap.datatables': '/static/bower_components/datatables/media/js/dataTables.bootstrap',
+          'bootstrap.fileinput': '/static/bower_components/bootstrap-fileinput/js/fileinput.min',
 
-          "datatables.net": "bower_components/datatables/media/js/jquery.dataTables",
-          "select2": "bower_components/select2/select2",
-          "moment": "bower_components/moment/moment",
-          "ckeditor": "bower_components/ckeditor/ckeditor",
-          "stickyTableHeaders": "bower_components/StickyTableHeaders/js/jquery.stickytableheaders",
-          "highlight": "bower_components/jquery-highlight/jquery.highlight",
-          "ace": "bower_components/ace-builds/src",
-          "spin": "bower_components/spin.js/spin",
-          "jquery.form": "bower_components/jquery-form/jquery.form",
-          "jquery.attrajax": "bower_components/jquery.attrajax/jquery.attrajax",
-          'jquery.tmpl': 'js/jquery.tmpl.min',
-          'tinyMCE': 'bower_components/tinymce/tinymce.min',
-          "lazyload": "bower_components/vanilla-lazyload/dist/lazyload.min",
+          'datatables.net': '/static/bower_components/datatables/media/js/jquery.dataTables',
+          'select2': '/static/bower_components/select2/select2',
+          'moment': '/static/bower_components/moment/moment',
+          'ckeditor': '/static/bower_components/ckeditor/ckeditor',
+          'stickyTableHeaders': '/static/bower_components/StickyTableHeaders/js/jquery.stickytableheaders',
+          'highlight': '/static/bower_components/jquery-highlight/jquery.highlight',
+          'ace': '/static/bower_components/ace-builds/src',
+          'spin': '/static/bower_components/spin.js/spin',
+          'jquery.form': '/static/bower_components/jquery-form/jquery.form',
+          'jquery.attrajax': '/static/bower_components/jquery.attrajax/jquery.attrajax',
+          'jquery.tmpl': '{{ STATIC_URL }}/js/jquery.tmpl.min',
+          'tinyMCE': '/static/bower_components/tinymce/tinymce.min',
+          'lazyload': '/static/bower_components/vanilla-lazyload/dist/lazyload.min',
 
-          "atagToDownloadTable": "js/jquery.atag.to.download.table",
-          "monthpicker": "js/jquery.monthpicker-0.1",
+          'atagToDownloadTable': '{{ STATIC_URL }}/js/jquery.atag.to.download.table',
+          'monthpicker': '{{ STATIC_URL }}/js/jquery.monthpicker-0.1',
 
-          "shortcut": "lib/shortcut",
+          'shortcut': '{{ STATIC_URL }}/lib/shortcut',
 
-          "admin": "js/admin",
+          'admin': '{{ STATIC_URL }}/js/admin',
 
-          "comm": "js/comm",
-          "publisher": "js/publisher",
-          "super": "js/super"
+          'comm': '{{ STATIC_URL }}/js/comm',
+          'publisher': '{{ STATIC_URL }}/js/publisher',
+          'super': '{{ STATIC_URL }}/js/super'
         },
         shim: {
           "bootstrap": ["jquery"],
