@@ -5,6 +5,7 @@ use Ridibooks\Library\DB\Profiler;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MiniRouter
 {
@@ -60,11 +61,15 @@ class MiniRouter
 		}
 
 		$return_value = self::callController($query, $controller_path);
-		if ($return_value === false) {
-			return false;
+		if (is_array($return_value)) {
+			return self::callView($query, $twig_path, array_merge($twig_args, $return_value));
+		} elseif ($return_value instanceof Response) {
+			$return_value->send();
+
+			return true;
 		}
 
-		return self::callView($query, $twig_path, array_merge($twig_args, $return_value));
+		return false;
 	}
 
 	/**
@@ -85,14 +90,7 @@ class MiniRouter
 		}
 
 		// Controller 호출
-		$return_value = include($controller_file_path);
-
-		if (!is_array($return_value)) {
-			exit($return_value);
-		}
-
-		// View 처리
-		return $return_value;
+		return include($controller_file_path);
 	}
 
 	private static function callView($query, $twig_path, $twig_args)
