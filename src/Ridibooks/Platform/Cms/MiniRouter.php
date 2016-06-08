@@ -69,9 +69,12 @@ class MiniRouter
 		} elseif ($return_value instanceof Response) {
 			$return_value->send();
 			return true;
+		} elseif ($return_value === false) {
+			return false;
 		}
 
-		return false;
+		// 리턴값이 아예 없는 페이지도 있어서 호환성 유지 위해
+		return true;
 	}
 
 	/**
