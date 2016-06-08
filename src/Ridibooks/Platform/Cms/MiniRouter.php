@@ -63,9 +63,11 @@ class MiniRouter
 		$return_value = self::callController($query, $controller_path);
 		if (is_array($return_value)) {
 			return self::callView($query, $twig_path, array_merge($twig_args, $return_value));
+		} elseif (is_string($return_value)) {
+			echo $return_value;
+			return true;
 		} elseif ($return_value instanceof Response) {
 			$return_value->send();
-
 			return true;
 		}
 
