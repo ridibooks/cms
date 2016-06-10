@@ -179,7 +179,7 @@ class StringUtils
 
 	public static function explodeByLine($new_values_by_line)
 	{
-		return preg_split("/[^\n\S]*\r?\n[^\n\S]*/", $new_values_by_line);
+		return preg_split("/[^\n\S]*\r?\n[^\n\S]*/", $new_values_by_line, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
 	public static function decodeCsv($input)
