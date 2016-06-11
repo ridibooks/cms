@@ -1,11 +1,13 @@
 <?php
 use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 require_once __DIR__ . '/include/bootstrap_cms.php';
 
-if (basename($_SERVER['SCRIPT_NAME']) == basename(__FILE__)) {
-	if (!MiniRouter::selfRouting(__DIR__ . '/controls', __DIR__ . '/views')) {
-		return RedirectResponse::create('/welcome')->send();
-	}
+$router = new MiniRouter(__DIR__ . '/controls', __DIR__ . '/views');
+$response = $router->route(Request::createFromGlobals());
+if ($response->isNotFound()) {
+	$response = new RedirectResponse('/welcome');
 }
+$response->send();
