@@ -508,7 +508,7 @@ class AdminAuthService extends AdminBaseService
 
 	public static function isSecureOnlyUri($request_uri)
 	{
-		$secure_prefix = ['/stat/', '/bi/', '/store-operation/', '/cs/'];
+		$secure_prefix = ['/stat/', '/bi/', '/store-operation/', '/cs/', '/admin/comm/user_info'];
 		foreach ($secure_prefix as $prefix) {
 			if (strncmp($request_uri, $prefix, strlen($prefix)) === 0) {
 				return true;
