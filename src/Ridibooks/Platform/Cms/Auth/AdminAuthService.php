@@ -12,6 +12,7 @@ use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -480,15 +481,14 @@ class AdminAuthService extends AdminBaseService
 
 		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
 			$login_url = '/login';
-			$request_uri = $request->server->get('REQUEST_URI');
+			$request_uri = $request->getRequestUri();
 			if (!empty($request_uri) && $request_uri != '/login') {
 				$login_url .= '?return_url=' . urlencode($request_uri);
 			}
-			if (\Config::$ENABLE_SSL) {
-				UrlHelper::redirectHttps($login_url);
-			} else {
-				UrlHelper::redirect($login_url);
-			}
+
+			$protocol = \Config::$ENABLE_SSL ? 'https' : 'http';
+
+			return RedirectResponse::create($protocol . '://' . $request->getHttpHost() . $login_url);
 		}
 
 		try {
@@ -505,11 +505,11 @@ class AdminAuthService extends AdminBaseService
 		return null;
 	}
 
-	public static function isSecureOnlyUri()
+	public static function isSecureOnlyUri($request_uri)
 	{
 		$secure_prefix = ['/stat/', '/bi/', '/store-operation/', '/cs/'];
 		foreach ($secure_prefix as $prefix) {
-			if (strncmp($_SERVER['REQUEST_URI'], $prefix, strlen($prefix)) === 0) {
+			if (strncmp($request_uri, $prefix, strlen($prefix)) === 0) {
 				return true;
 			}
 		}
