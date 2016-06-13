@@ -24,7 +24,10 @@ class CmsApplication extends Application
 				'twig.env.globals' => [],
 				'twig.options' => [
 					'cache' => sys_get_temp_dir() . '/twig_cache_v12',
-					'auto_reload' => true
+					'auto_reload' => true,
+					// TwigServiceProvider에서 기본으로 $app['debug']와 같게 설정되어 있는데 true 일경우
+					// if xxx is defined로 변수를 일일이 체크해줘야 하는 문제가 있어서 override 함
+					'strict_variables' => false
 				]
 			]
 		);
