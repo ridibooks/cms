@@ -33,6 +33,7 @@ class MiniRouter
 	{
 		$request_uri = $request->getRequestUri();
 		$request_uri_wo_qs = self::getNormalizedUri($request_uri);
+		$_SERVER['PHP_SELF'] = $request_uri_wo_qs;
 
 		// 보안상 URL에 .나 ..가 있으면 무조건 404 표시
 		if (preg_match('/\/\.+/', $request_uri_wo_qs) > 0) {
