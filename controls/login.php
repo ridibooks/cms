@@ -2,6 +2,7 @@
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\AdminTagSessionOperator;
 use Ridibooks\Platform\Cms\Auth\LoginService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 //TODO Session을 관리하는 Util class 하나 만들까
@@ -37,7 +38,7 @@ if ($cmd) {
 			$return_url = "/admin/book/withholdList?type=withhold";
 		}
 
-		UrlHelper::redirect($return_url);
+		return RedirectResponse::create($return_url);
 	} catch (Exception $e) {
 		return UrlHelper::printAlertRedirect("/login?return_url=" . urlencode($return_url), $e->getMessage());
 	}
