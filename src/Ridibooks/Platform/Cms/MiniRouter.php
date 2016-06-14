@@ -33,6 +33,11 @@ class MiniRouter
 	{
 		$request_uri = $request->getRequestUri();
 		$request_uri_wo_qs = self::getNormalizedUri($request_uri);
+
+		// 기존 Router에서는 PHP_SELF와 Query String제외된 REQUEST_URI가 서로 같았으나
+		// Routing 방식이 변경되면서 PHP_SELF는 이제 mini_router.php가 들어감
+		// (PHP_SELF의 정확한 정의는 "The filename of the currently executing script, relative to the document root")
+		// 하지만 CMS에서 해당 변수를 REQUEST_URI대신 사용하는 곳이 많아 호환성 위해 여기서 강제로 세팅
 		$_SERVER['PHP_SELF'] = $request_uri_wo_qs;
 
 		// 보안상 URL에 .나 ..가 있으면 무조건 404 표시
