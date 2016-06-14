@@ -1,0 +1,172 @@
+{% extends 'index_new.twig' %}
+{% block title %}
+  어드민 유저 상세
+{% endblock %}
+
+{% block script %}
+  <script type="text/javascript">
+    requirejs(["jquery", "admin/user_tag", "admin/user_menu", "admin/user_action", "comm/jquery.cp_user"], function ($) {
+      var user_tag = requirejs("admin/user_tag");
+      var user_menu = requirejs("admin/user_menu");
+      var user_action = requirejs("admin/user_action");
+
+      function setManagingCpList(target, type) {
+        const data = {
+          id: '{{ admin_id }}',
+          type: type
+        };
+
+        $.get('/admin/publisher/managers.ajax', data, function (res) {
+          target.attr('value', res);
+          target.setCpUserMultipleSelect2();
+        }, 'json').fail(function (xhr) {
+          alert(xhr.responseText);
+        });
+      }
+
+      $(function () {
+        // 태그 관리
+        user_tag.setSelect2($("#js_tag_id_array"));
+        // 메뉴 관리
+        user_menu.setSelect2($("#js_menu_id_array"));
+
+        // 제휴CP 관리
+        setManagingCpList($("#js_partner_cp_id_array"), 2);
+
+        // 운영CP 관리
+        setManagingCpList($("#js_operator_cp_id_array"), 3);
+
+        // 제작CP 관리
+        setManagingCpList($("#js_production_cp_id_array"), 1);
+
+        // 유저 정보 저장
+        $("#btn_info_save").on("click", function () {
+          user_action.insertUserInfo();
+        });
+
+        // 권한 관리 저장
+        $("#btn_auth_save").on("click", function () {
+          user_action.insertUserAuth();
+        });
+
+        // 유저 정보, 권한 관리 취소
+        $("#btn_info_cancel, #btn_auth_cancel").on("click", function () {
+          history.back();
+        });
+      });
+    });
+  </script>
+{% endblock %}
+{% block body %}
+  <form class="form-horizontal">
+
+    <input type="hidden" id="last_user_id" value="{{ userDetail.id }}">
+
+    <div class="col-xs-12 col-md-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h4 class="panel-title">유저 정보 관리</h4>
+        </div>
+        <div class="panel-body">
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">ID</label>
+            <div class="col-xs-10">
+              <input type="text" id="js_user_id" class="form-control" value="{{ userDetail.id }}"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">비밀번호</label>
+            <div class="col-xs-10">
+              <input type="password" id="passwd" class="form-control"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">이름</label>
+            <div class="col-xs-10">
+              <input type="text" id="name" class="form-control" value="{{ userDetail.name }}"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">팀</label>
+            <div class="col-xs-10">
+              <input type="text" id="team" class="form-control" value="{{ userDetail.team }}"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">사용여부</label>
+            <div class="col-xs-10">
+              <select id="is_use" class="form-control">
+                <option value='1' {% if userDetail.is_use == 1 %}selected="selected"{% endif %}>Y</option>
+                <option value='0' {% if userDetail.is_use == 0 %}selected="selected"{% endif %}>N</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group btn-group-sm pull-right">
+            <button type="button" class="btn btn-default" id="btn_info_save"><i class="glyphicon glyphicon-file"></i> 저장
+            </button>
+            <button type="button" class="btn btn-default" id="btn_info_cancel"><i
+                class="glyphicon glyphicon-repeat"></i> 취소
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h4 class="panel-title">유저 권한 관리</h4>
+        </div>
+        <div class="panel-body">
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">태그</label>
+            <div class="col-xs-10">
+              <input type="hidden" id="js_tag_id_array" class="form-control select2-offscreen" value="{{ userTag }}"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">메뉴</label>
+            <div class="col-xs-10">
+              <input type="hidden" id="js_menu_id_array" class="form-control select2-offscreen" value="{{ userMenu }}"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">제휴담당 CP</label>
+            <div class="col-xs-10">
+              <input type="hidden" id="js_partner_cp_id_array" class="form-control select2-offscreen"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">운영담당 CP</label>
+            <div class="col-xs-10">
+              <input type="hidden" id="js_operator_cp_id_array" class="form-control select2-offscreen"/>
+            </div>
+          </div>
+
+          <div class="form-group form-group-sm">
+            <label class="col-xs-2 control-label">제작 CP</label>
+            <div class="col-xs-10">
+              <input type="hidden" id="js_production_cp_id_array" class="form-control select2-offscreen"/>
+            </div>
+          </div>
+
+          <div class="btn-group btn-group-sm pull-right">
+            <button type="button" class="btn btn-default" id="btn_auth_save"><i class="glyphicon glyphicon-file"></i> 저장
+            </button>
+            <button type="button" class="btn btn-default" id="btn_auth_cancel"><i
+                class="glyphicon glyphicon-repeat"></i> 취소
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

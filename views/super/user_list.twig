@@ -1,0 +1,85 @@
+{% extends 'index_new.twig' %}
+
+{% block title %}
+  어드민 유저 관리
+{% endblock %}
+{% block script %}
+  <script>
+    requirejs(["jquery"], function($){
+      $(function () {
+        {# 검색결과 clean #}
+        $("#cleanBtn").on("click", function() {
+          $('#search_text').val('');
+          $('#pageNaviForm').submit();
+        });
+
+        {#등록#}
+        $("#registBtn").on("click", function(){
+          window.location.href = "/super/user_detail";
+        })
+      });
+    });
+
+    {# 페이징 #}
+    function fn_search(page) {
+      requirejs(["jquery"], function($) {
+        $('#page').val(page);
+        $('#pageNaviForm').submit();
+      });
+    }
+  </script>
+{% endblock %}
+{% block body %}
+  <div class="col-xs-12 marginBottom10">
+  <form class="form-inline text-right" id="pageNaviForm" method="get">
+  <input type="hidden" name="page" id="page" value="{{ page }}"/>
+
+  <div class="form-group form-group-sm">
+    <div class="input-group input-group-sm">
+      <input class="form-control" id="search_text" name="search_text" type="text" placeholder="ID / 이름" value="{{ search_text }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+        </span>
+    </div>
+    <button class="btn btn-primary input-sm" type="button" id="cleanBtn"><i class="glyphicon glyphicon-repeat"></i> Clean</button>
+    <button class="btn btn-primary input-sm" type="button" id="registBtn"><i class="glyphicon glyphicon-save"></i> 등록</button>
+  </div>
+  </form>{#pageNaviForm form#}
+  </div>{#col-xs-12#}
+
+  <table class="table table-striped table-bordered table-hover" id="admin_user_table">
+    <colgroup>
+      <col width="150"/>
+      <col width=""/>
+      <col width="150"/>
+      <col width="80"/>
+    </colgroup>
+    <thead>
+    <tr>
+      <th>계정 ID</th>
+      <th>이름</th>
+      <th>팀</th>
+      <th>사용여부</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if admin_user_list is empty %}
+      <tr>
+        <td colspan="4" class="center">등록된 어드민 계정이 없습니다.</td>
+      </tr>
+    {% endif %}
+    {% for admin_user in admin_user_list %}
+      <tr {% if admin_user.is_use == 0 %}class="danger"{% endif %}>
+        <td>{{ admin_user.id }}</td>
+        <td><a href="/super/user_detail?id={{ admin_user.id }}">{{ admin_user.name }}</a></td>
+        <td>{{ admin_user.team }}</td>
+        <td>{{ admin_user.is_use == 1? 'Y' : 'N' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <nav class="text-center">
+    {{ paging|raw }}
+  </nav>
+{% endblock %}
