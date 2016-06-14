@@ -12,10 +12,6 @@ use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
-/**Tag Service
- * Class TagService
- * @package Ridibooks\Platform\Cms\Auth
- */
 class AdminTagService extends AdminBaseService
 {
 
@@ -36,9 +32,6 @@ class AdminTagService extends AdminBaseService
 		$this->adminMenus = new AdminMenus();
 	}
 
-	/**태그 리스트 가져온다.
-	 * @return array
-	 */
 	public function getTagList()
 	{
 		return $this->adminTags->getTagList();
@@ -68,11 +61,11 @@ class AdminTagService extends AdminBaseService
 		return $mapped_menu_tag_list;
 	}
 
-	/**태그에 매핑된 메뉴 리스트 가져온다.
-	 * @param $tag_id
-	 * @return array
-	 * @throws
-	 */
+	public function getMappedAdmins($tag_id)
+	{
+		return $this->adminUserTags->getAdminIdFromUserTag($tag_id);
+	}
+
 	public function getMappedAdminMenuList($tag_id)
 	{
 		//메뉴 리스트
@@ -98,9 +91,6 @@ class AdminTagService extends AdminBaseService
 		return $ret;
 	}
 
-	/**태그 등록한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminTagDto $tagDto
-	 */
 	public function insertTag($tagDto)
 	{
 		$this->startTransaction();
@@ -111,10 +101,6 @@ class AdminTagService extends AdminBaseService
 		$this->endTransaction();
 	}
 
-	/**태그 수정한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminTagDto $tagDto
-	 * @throws \Ridibooks\Exception\MsgException
-	 */
 	public function updateTag($tagDto)
 	{
 		$this->startTransaction();
@@ -132,9 +118,6 @@ class AdminTagService extends AdminBaseService
 		$this->endTransaction();
 	}
 
-	/**태그에 메뉴를 매핑시킨다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto $tagMenuDto
-	 */
 	public function insertTagMenu($tagMenuDto)
 	{
 		$this->startTransaction();
@@ -150,9 +133,6 @@ class AdminTagService extends AdminBaseService
 		$this->endTransaction();
 	}
 
-	/**태그에 등록된 메뉴 삭제한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto $tagMenuDto
-	 */
 	public function deleteTagMenu($tagMenuDto)
 	{
 		$this->startTransaction();
@@ -160,10 +140,6 @@ class AdminTagService extends AdminBaseService
 		$this->endTransaction();
 	}
 
-	/**태그 입력값 검사
-	 * @param array $tagArray
-	 * @throws \Ridibooks\Exception\MsgException
-	 */
 	private function _validateTag($tagArray)
 	{
 		ValidationUtils::checkNullField($tagArray['name'], '태그 이름을 입력하여 주십시오.');
@@ -174,18 +150,12 @@ class AdminTagService extends AdminBaseService
 		}
 	}
 
-	/**태그 메뉴 입력값 검사
-	 * @param $tagArray
-	 */
 	private function _validateTagMenu($tagArray)
 	{
 		ValidationUtils::checkNullField($tagArray['tag_id'], "태그 ID가 없습니다.");
 		ValidationUtils::checkNullField($tagArray['menu_id'], "메뉴 ID가 없습니다.");
 	}
 
-	/**
-	 * @return AdminTagDetailViewDto[]
-	 */
 	public function getTagListWithUseCount()
 	{
 		$tags = $this->getTagList();

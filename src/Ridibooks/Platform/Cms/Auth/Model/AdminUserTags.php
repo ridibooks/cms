@@ -30,7 +30,7 @@ class AdminUserTags extends AdminBaseModel
 	 */
 	public function checkAdminUserHasTag($user_id, $tag_id)
 	{
-		$whereArray = array();
+		$whereArray = [];
 		$whereArray['user_id'] = $user_id;
 		$whereArray['tag_id'] = $tag_id;
 
@@ -43,7 +43,7 @@ class AdminUserTags extends AdminBaseModel
 	 */
 	public function getAdminIdFromUserTag($tag_id)
 	{
-		$whereArray = array();
+		$whereArray = [];
 		$whereArray['tag_id'] = $tag_id;
 
 		return $this->db->sqlDatas("SELECT user_id FROM tb_admin2_user_tag ?", sqlWhereWithClause($whereArray));
@@ -55,8 +55,8 @@ class AdminUserTags extends AdminBaseModel
 	 */
 	public function updateUserOfTags($old_id, $new_id)
 	{
-		$column_array = array();
+		$column_array = [];
 		$column_array['user_id'] = $new_id;
-		$this->db->sqlUpdate('tb_admin2_user_tag', $column_array, array('user_id' => $old_id));
+		$this->db->sqlUpdate('tb_admin2_user_tag', $column_array, ['user_id' => $old_id]);
 	}
 }
