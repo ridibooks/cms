@@ -5,64 +5,65 @@
 
 {% block script %}
   <script type="text/javascript">
-    requirejs(["jquery", "admin/user_tag", "admin/user_menu", "admin/user_action", "comm/jquery.cp_user"], function ($) {
-      var user_tag = requirejs("admin/user_tag");
-      var user_menu = requirejs("admin/user_menu");
-      var user_action = requirejs("admin/user_action");
+    requirejs(
+      ["jquery", "admin/user_tag", "admin/user_menu", "/static/js/super/user_action.js", "comm/jquery.cp_user"],
+      function ($, user_tag, user_menu, user_action) {
 
-      function setManagingCpList(target, type) {
-        const data = {
-          id: '{{ admin_id }}',
-          type: type
-        };
+        function setManagingCpList(target, type) {
+          const data = {
+            id: '{{ admin_id }}',
+            type: type
+          };
 
-        $.get('/admin/publisher/managers.ajax', data, function (res) {
-          target.attr('value', res);
-          target.setCpUserMultipleSelect2();
-        }, 'json').fail(function (xhr) {
-          alert(xhr.responseText);
+          $.get('/admin/publisher/managers.ajax', data, function (res) {
+            target.attr('value', res);
+            target.setCpUserMultipleSelect2();
+          }, 'json').fail(function (xhr) {
+            alert(xhr.responseText);
+          });
+        }
+
+        $(function () {
+          // 태그 관리
+          user_tag.setSelect2($("#js_tag_id_array"));
+          // 메뉴 관리
+          user_menu.setSelect2($("#js_menu_id_array"));
+
+          // 제휴CP 관리
+          setManagingCpList($("#js_partner_cp_id_array"), 2);
+
+          // 운영CP 관리
+          setManagingCpList($("#js_operator_cp_id_array"), 3);
+
+          // 제작CP 관리
+          setManagingCpList($("#js_production_cp_id_array"), 1);
+
+          // 유저 정보 저장
+          $("#btn_info_save").on("click", function () {
+            user_action.insertUserInfo();
+          });
+
+          // 권한 관리 저장
+          $("#btn_auth_save").on("click", function () {
+            user_action.insertUserAuth();
+          });
+
+          // 유저 정보, 권한 관리 취소
+          $("#btn_info_cancel, #btn_auth_cancel").on("click", function () {
+            history.back();
+          });
+
+          $('#js_delete_admin').click(function () {
+            if (confirm('삭제하시겠습니까')) {
+              user_action.deleteAdmin(function () {
+                history.back();
+              });
+            }
+          });
         });
+
       }
-
-      $(function () {
-        // 태그 관리
-        user_tag.setSelect2($("#js_tag_id_array"));
-        // 메뉴 관리
-        user_menu.setSelect2($("#js_menu_id_array"));
-
-        // 제휴CP 관리
-        setManagingCpList($("#js_partner_cp_id_array"), 2);
-
-        // 운영CP 관리
-        setManagingCpList($("#js_operator_cp_id_array"), 3);
-
-        // 제작CP 관리
-        setManagingCpList($("#js_production_cp_id_array"), 1);
-
-        // 유저 정보 저장
-        $("#btn_info_save").on("click", function () {
-          user_action.insertUserInfo();
-        });
-
-        // 권한 관리 저장
-        $("#btn_auth_save").on("click", function () {
-          user_action.insertUserAuth();
-        });
-
-        // 유저 정보, 권한 관리 취소
-        $("#btn_info_cancel, #btn_auth_cancel").on("click", function () {
-          history.back();
-        });
-
-        $('#js_delete_admin').click(function () {
-          if (confirm('삭제하시겠습니까')) {
-            user_action.deleteAdmin(function () {
-              history.back();
-            });
-          }
-        });
-      });
-    });
+    );
   </script>
 {% endblock %}
 {% block body %}
