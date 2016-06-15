@@ -53,6 +53,14 @@
         $("#btn_info_cancel, #btn_auth_cancel").on("click", function () {
           history.back();
         });
+
+        $('#js_delete_admin').click(function () {
+          if (confirm('삭제하시겠습니까')) {
+            user_action.deleteAdmin(function () {
+              history.back();
+            });
+          }
+        });
       });
     });
   </script>
@@ -168,5 +176,12 @@
         </div>
       </div>
     </div>
+
+    <div class="col-xs-12 col-md-6">
+      <button id="js_delete_admin" class="btn btn-default btn-danger pull-right">
+        삭제
+      </button>
+    </div>
   </form>
+
 {% endblock %}
