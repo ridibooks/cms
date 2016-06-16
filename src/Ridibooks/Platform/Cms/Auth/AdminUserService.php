@@ -229,6 +229,11 @@ class AdminUserService extends AdminBaseService
 		$this->endTransaction();
 	}
 
+	public function deleteAdmin($adminUserDto)
+	{
+		$this->adminUser->deleteAdmin($adminUserDto->id);
+	}
+
 	/**어드민 계정에 권한정보를 입력한다.
 	 * @param AdminUserAuthDto $adminUserAuthDto
 	 */
