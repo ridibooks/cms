@@ -147,7 +147,7 @@ class MiniRouter
 	private static function notFound()
 	{
 		return Response::create('<meta http-equiv="refresh" content="5;url=' . htmlspecialchars('http://' . \Config::$ADMIN_DOMAIN) .
-			'"> 페이지를 찾을 수 없습니다. 오류라고 생각되시면 담당자에게 문의해 주세요.<br />' .
+			'"> 페이지를 찾을 수 없습니다. URL이 변경되었을 수 있습니다. 오류라고 생각되시면 담당자에게 문의해 주세요.<br />' .
 			'5초 후 자동으로 메인 페이지로 이동합니다.', Response::HTTP_NOT_FOUND);
 	}
 

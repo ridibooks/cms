@@ -15,11 +15,18 @@
             type: type
           };
 
-          $.get('/admin/publisher/managers.ajax', data, function (res) {
-            target.attr('value', res);
-            target.setCpUserMultipleSelect2();
-          }, 'json').fail(function (xhr) {
-            alert(xhr.responseText);
+          $.ajax({
+            url: '/admin/publisher/managers.ajax',
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (res) {
+              target.attr('value', res);
+              target.setCpUserMultipleSelect2();
+            },
+            error: function (xhr) {
+              alert(xhr.responseText);
+            }
           });
         }
 
