@@ -91,7 +91,7 @@
 
         const admins = returnData.data.admins;
         const admins_html = admins.map(function (admin) {
-          return `<li class="label label-default">${admin}</li>`;
+          return `<span><a class="label label-default" href="/super/user_detail?id=${admin}" target="_blank">${admin}</a></span>`;
         }).join(' ');
 
         $('#tag_admins').html(admins_html);
@@ -239,6 +239,7 @@
         </div>
         <div class="modal-body">
           <ul id="tag_admins"></ul>
+          <hr>
           <select id="tag_menu_select" class="input-block-level" multiple data-placeholder="권한 추가하기"></select>
         </div>
       </div>

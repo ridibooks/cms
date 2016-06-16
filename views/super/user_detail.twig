@@ -6,7 +6,7 @@
 {% block script %}
   <script type="text/javascript">
     requirejs(
-      ["jquery", "admin/user_tag", "admin/user_menu", "/static/js/super/user_action.js", "comm/jquery.cp_user"],
+      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "/static/js/super/user_action.js", "comm/jquery.cp_user"],
       function ($, user_tag, user_menu, user_action) {
 
         function setManagingCpList(target, type) {
@@ -60,12 +60,14 @@
             history.back();
           });
 
-          $('#js_delete_admin').click(function () {
+          $('#js_delete_admin').click(function (e) {
             if (confirm('삭제하시겠습니까')) {
               user_action.deleteAdmin(function () {
                 history.back();
               });
             }
+
+            e.preventDefault();
           });
         });
 
@@ -185,7 +187,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-md-6">
+    <div class="col-xs-12">
       <button id="js_delete_admin" class="btn btn-default btn-danger pull-right">
         삭제
       </button>
