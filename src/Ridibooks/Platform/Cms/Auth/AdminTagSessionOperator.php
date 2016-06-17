@@ -106,7 +106,7 @@ class AdminTagSessionOperator
 	 */
 	public static function isDevCenter()
 	{
-		return self::hasTagId(AdminTagConstants::PLATFORMTEAM_TAG) || self::hasTagId(AdminTagConstants::DEVCENTER_TAG);
+		return self::hasTagId(AdminTagConstants::PLATFORMTEAM_TAG) || self::hasTagId(AdminTagConstants::VIEWERTEAM_TAG);
 	}
 
 	/**
