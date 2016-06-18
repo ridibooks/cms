@@ -9,12 +9,12 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserMenuDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserTagDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTags;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUser;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTag;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
+use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -27,7 +27,6 @@ use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
  */
 class AdminUserService extends AdminBaseService
 {
-	private $adminUser;
 	private $adminUserTags;
 	private $adminUserTag;
 	private $adminTags;
@@ -38,7 +37,6 @@ class AdminUserService extends AdminBaseService
 
 	public function __construct()
 	{
-		$this->adminUser = new AdminUser();
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminUserTag = new AdminUserTag();
 		$this->adminUserMenus = new AdminUserMenus();
@@ -175,7 +173,8 @@ class AdminUserService extends AdminBaseService
 		if (TbAdminUserModel::getAdminUserIdCount($adminUserDto->id) > 0) { //ID로 카운트 하여 값이 0 이상일 경우
 			throw new MsgException('동일한 ID가 있습니다.');
 		}
-		$this->adminUser->insertAdminUser($adminUserDto);
+
+		AdminUser::create((array)$adminUserDto);
 
 		$this->endTransaction();
 	}
@@ -196,16 +195,19 @@ class AdminUserService extends AdminBaseService
 		$adminUserDto->id = trim($adminUserDto->id);
 		$adminUserDto->last_id = trim($adminUserDto->last_id);
 
+		/** @var AdminUser $admin */
+		$admin = AdminUser::find($adminUserDto->last_id);
+
 		if (strlen($adminUserDto->last_id) && $adminUserDto->id != $adminUserDto->last_id) {
 			$old_id = $adminUserDto->last_id;
 			$new_id = $adminUserDto->id;
 
-			$this->adminUser->updateAdminID($old_id, $new_id);
 			$this->adminUserTags->updateUserOfTags($old_id, $new_id);
 			$this->adminUserMenus->updateUserOfMenus($old_id, $new_id);
 		}
 
-		$this->adminUser->updateAdminUser($adminUserDto);
+		$admin->fill((array)$adminUserDto);
+		$admin->save();
 
 		$this->endTransaction();
 	}
@@ -231,7 +233,7 @@ class AdminUserService extends AdminBaseService
 
 	public function deleteAdmin($adminUserDto)
 	{
-		$this->adminUser->deleteAdmin($adminUserDto->id);
+		AdminUser::destroy($adminUserDto->id);
 	}
 
 	/**어드민 계정에 권한정보를 입력한다.
