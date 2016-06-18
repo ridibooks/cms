@@ -8,7 +8,6 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserMenuDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserTagDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTags;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTag;
@@ -29,7 +28,6 @@ class AdminUserService extends AdminBaseService
 {
 	private $adminUserTags;
 	private $adminUserTag;
-	private $adminTags;
 	private $adminUserMenus;
 	private $adminUserMenu;
 	private $adminMenus;
@@ -41,7 +39,6 @@ class AdminUserService extends AdminBaseService
 		$this->adminUserTag = new AdminUserTag();
 		$this->adminUserMenus = new AdminUserMenus();
 		$this->adminUserMenu = new AdminUserMenu();
-		$this->adminTags = new AdminTags();
 		$this->adminMenus = new AdminMenus();
 		$this->publisherManager = new TbPublisherManager();
 	}

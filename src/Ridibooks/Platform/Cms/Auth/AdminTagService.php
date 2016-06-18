@@ -3,11 +3,9 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTags;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
@@ -15,9 +13,6 @@ use Ridibooks\Platform\Common\ValidationUtils;
 
 class AdminTagService extends AdminBaseService
 {
-
-	private $adminTags;
-	private $adminTag;
 	private $adminUserTags;
 	private $adminTagMenus;
 	private $adminTagMenu;
@@ -25,7 +20,6 @@ class AdminTagService extends AdminBaseService
 
 	public function __construct()
 	{
-		$this->adminTags = new AdminTags();
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminTagMenus = new AdminTagMenus();
 		$this->adminTagMenu = new AdminTagMenu();
@@ -34,7 +28,7 @@ class AdminTagService extends AdminBaseService
 
 	public function getTagList()
 	{
-		return $this->adminTags->getTagList();
+		return AdminTag::all()->toArray();
 	}
 
 	/**태그에 매핑된 메뉴 리스트 가져온다.
@@ -144,11 +138,6 @@ class AdminTagService extends AdminBaseService
 	private function _validateTag($tagArray)
 	{
 		ValidationUtils::checkNullField($tagArray['name'], '태그 이름을 입력하여 주십시오.');
-		$tag_id = $this->adminTags->getTagNameId($tagArray['name']);
-
-		if ($tag_id && $tag_id != $tagArray['id']) { //DB에 태그 이름이 존재하고 그 이름이 자신과 다르다면
-			throw new MsgException("동일한 태그 이름이 있습니다.");
-		}
 	}
 
 	private function _validateTagMenu($tagArray)
