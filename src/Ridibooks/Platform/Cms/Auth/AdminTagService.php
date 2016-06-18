@@ -3,12 +3,13 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
+use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTag;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTags;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
+use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
@@ -24,7 +25,6 @@ class AdminTagService extends AdminBaseService
 
 	public function __construct()
 	{
-		$this->adminTag = new AdminTag();
 		$this->adminTags = new AdminTags();
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminTagMenus = new AdminTagMenus();
@@ -93,12 +93,9 @@ class AdminTagService extends AdminBaseService
 
 	public function insertTag($tagDto)
 	{
-		$this->startTransaction();
-
 		$this->_validateTag((array)$tagDto);
-		$this->adminTag->insertTag($tagDto);
 
-		$this->endTransaction();
+		AdminTag::create((array)$tagDto);
 	}
 
 	public function updateTag($tagDto)
@@ -113,7 +110,11 @@ class AdminTagService extends AdminBaseService
 					throw new MsgException('해당 태그를 사용하고 있는 유저가 있습니다. 사용중인 유저: ' . $user_count);
 				}
 			}
-			$this->adminTag->updateTag($tag);
+
+			/** @var AdminTag $adminTag */
+			$adminTag = AdminTag::find($tag['id']);
+			$adminTag->fill($tag);
+			$adminTag->save();
 		}
 		$this->endTransaction();
 	}
