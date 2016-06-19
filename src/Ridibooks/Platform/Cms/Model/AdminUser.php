@@ -17,4 +17,18 @@ class AdminUser extends Model
 		'is_use',
 		'reg_date',
 	];
+
+	protected $casts = [
+		'id' => 'string'
+	];
+
+	public function tags()
+	{
+		return $this->belongsToMany(
+			'Ridibooks\Platform\Cms\Model\AdminTag',
+			'tb_admin2_user_tag',
+			'user_id',
+			'tag_id'
+		);
+	}
 }

@@ -3,10 +3,11 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenu;
+use Ridibooks\Platform\Cms\Auth\Model\AdminMenu as AdminMenu_;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjax;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
+use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
@@ -24,7 +25,7 @@ class MenuService extends AdminBaseService
 
 	public function __construct()
 	{
-		$this->adminMenu = new AdminMenu();
+		$this->adminMenu = new AdminMenu_();
 		$this->adminMenus = new AdminMenus();
 		$this->adminMenuAjax = new AdminMenuAjax();
 		$this->adminMenuAjaxs = new AdminMenuAjaxs();
@@ -62,7 +63,7 @@ class MenuService extends AdminBaseService
 		if ($this->adminMenus->getMenuOrderCount($menuDto->menu_order) > 0) {
 			$this->adminMenu->updateMenuOrder($menuDto->menu_order);
 		}
-		$this->adminMenu->insertMenu($menuDto);
+		AdminMenu::create((array)$menuDto);
 
 		$this->endTransaction();
 	}

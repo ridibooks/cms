@@ -15,4 +15,14 @@ class AdminTag extends Model
 		'is_use',
 		'reg_date',
 	];
+
+	public function users()
+	{
+		return $this->belongsToMany(
+			'Ridibooks\Platform\Cms\Model\AdminUser',
+			'tb_admin2_user_tag',
+			'tag_id',
+			'user_id'
+		);
+	}
 }

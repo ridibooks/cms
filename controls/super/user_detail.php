@@ -8,12 +8,14 @@ $admin_id = $request->get("id");
 
 // 유저 상세 정보
 $userDetail = $adminUserService->getAdminUser($admin_id);
+if ($userDetail) {
+	// 유저 태그 매핑 정보
+	$tags = $adminUserService->getAdminUserTag($admin_id);
+	$userTag = implode(',', $tags);
 
-// 유저 태그 매핑 정보
-$userTag = $adminUserService->getAdminUserTag($admin_id);
-
-// 유저 메뉴 매핑 정보
-$userMenu = $adminUserService->getAdminUserMenu($admin_id);
+	// 유저 메뉴 매핑 정보
+	$userMenu = $adminUserService->getAdminUserMenu($admin_id);
+}
 
 return compact(
 	"admin_id",

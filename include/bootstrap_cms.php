@@ -27,4 +27,6 @@ $capsule->addConnection([
 	'prefix'    => '',
 ]);
 
+$capsule->setAsGlobal();
+
 $capsule->bootEloquent();

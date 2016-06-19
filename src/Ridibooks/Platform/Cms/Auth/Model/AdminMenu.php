@@ -10,23 +10,6 @@ use Ridibooks\Platform\Common\Base\AdminBaseModel;
  */
 class AdminMenu extends AdminBaseModel
 {
-	/**메뉴 등록한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto $menuDto
-	 */
-	public function insertMenu($menuDto)
-	{
-		$column_array = array();
-		$column_array['menu_title'] = $menuDto->menu_title;
-		$column_array['menu_url'] = $menuDto->menu_url;
-		$column_array['menu_order'] = $menuDto->menu_order;
-		$column_array['menu_deep'] = $menuDto->menu_deep;
-		$column_array['is_newtab'] = $menuDto->is_newtab;
-		$column_array['is_use'] = $menuDto->is_use;
-		$column_array['is_show'] = $menuDto->is_show;
-
-		$this->db->sqlInsert("tb_admin2_menu", $column_array);
-	}
-
 	/**메뉴 수정한다.
 	 * @param array $menuArray
 	 */

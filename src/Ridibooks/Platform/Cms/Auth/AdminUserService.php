@@ -6,11 +6,9 @@ use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserMenuDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserTagDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserTag;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Model\AdminUser;
@@ -27,7 +25,6 @@ use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 class AdminUserService extends AdminBaseService
 {
 	private $adminUserTags;
-	private $adminUserTag;
 	private $adminUserMenus;
 	private $adminUserMenu;
 	private $adminMenus;
@@ -36,7 +33,6 @@ class AdminUserService extends AdminBaseService
 	public function __construct()
 	{
 		$this->adminUserTags = new AdminUserTags();
-		$this->adminUserTag = new AdminUserTag();
 		$this->adminUserMenus = new AdminUserMenus();
 		$this->adminUserMenu = new AdminUserMenu();
 		$this->adminMenus = new AdminMenus();
@@ -89,14 +85,9 @@ class AdminUserService extends AdminBaseService
 		return TbAdminUserModel::getAdminUser($id);
 	}
 
-	/**Admin Tag 정보 가져온다.
-	 * (select2를 위해 implode 처리함)
-	 * @param string $user_id 어드민 유저 ID
-	 * @return string 태그 array를 , 로 묶음
-	 */
 	public function getAdminUserTag($user_id)
 	{
-		return implode(",", $this->adminUserTags->getAdminUserTagList($user_id));
+		return AdminUser::find($user_id)->tags->pluck('id')->all();
 	}
 
 	/**Admin Menu 정보 가져온다.
@@ -255,12 +246,9 @@ class AdminUserService extends AdminBaseService
 		$tagIdArray = explode(",", $adminUserAuthDto->tag_id_array);
 		$tagIdArray = array_filter(array_unique($tagIdArray));
 
-		/**어드민 계정에 매핑된 모든 태그를 지운다.*/
-		$this->adminUserTag->deleteAdminUserTag($adminUserAuthDto->id);
-
-		foreach ($tagIdArray as $tag_id) {
-			$this->adminUserTag->insertAdminUserTag(new AdminUserTagDto($adminUserAuthDto->id, $tag_id));
-		}
+		/** @var AdminUser $user */
+		$user = AdminUser::find($adminUserAuthDto->id);
+		$user->tags()->sync($tagIdArray);
 	}
 
 	/**어드민 계정에 메뉴정보 등록한다.
