@@ -99,7 +99,7 @@ class AdminTagService extends AdminBaseService
 			$this->_validateTag($tag);
 
 			if ($tag['is_use'] != 1) {
-				$user_count = $this->adminUserTags->getAdminUserTaggedCount($tag['id']);
+				$user_count = AdminTag::find($tag['id'])->users()->count();
 				if ($user_count > 0) { //해당 태그와 매핑되어있는 사용자가 있으면 사용중지를 할 수 없다.
 					throw new MsgException('해당 태그를 사용하고 있는 유저가 있습니다. 사용중인 유저: ' . $user_count);
 				}
@@ -155,7 +155,7 @@ class AdminTagService extends AdminBaseService
 			$tag_id = $tag['id'];
 			$returns[] = AdminTagDetailViewDto::importFromDatabaseRow(
 				$tag,
-				$this->adminUserTags->getAdminUserTaggedCount($tag_id),
+				AdminTag::find($tag_id)->users()->count(),
 				$this->adminTagMenus->getAdminMenuTagCountByTagId($tag_id)
 			);
 		}

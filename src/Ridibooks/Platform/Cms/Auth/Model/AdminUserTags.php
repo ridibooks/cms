@@ -5,15 +5,6 @@ use Ridibooks\Platform\Common\Base\AdminBaseModel;
 
 class AdminUserTags extends AdminBaseModel
 {
-	/**해당 태그와 매핑된 어드민 유저의 갯수 가져온다.
-	 * @param int $tag_id
-	 * @return int
-	 */
-	public function getAdminUserTaggedCount($tag_id)
-	{
-		return (int)$this->db->sqlData("SELECT COUNT(user_id) FROM tb_admin2_user_tag WHERE tag_id = ?", $tag_id);
-	}
-
 	/**해당 어드민의 태그 목록 가져온다.
 	 * @param string $user_id
 	 * @return array

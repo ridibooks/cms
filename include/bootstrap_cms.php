@@ -25,6 +25,10 @@ $capsule->addConnection([
 	'charset'   => 'utf8',
 	'collation' => 'utf8_unicode_ci',
 	'prefix'    => '',
+	'options'   => [
+		// mysqlnd 5.0.12-dev - 20150407 에서 PDO->prepare 가 매우 느린 현상
+		PDO::ATTR_EMULATE_PREPARES => true
+	]
 ]);
 
 $capsule->setAsGlobal();
