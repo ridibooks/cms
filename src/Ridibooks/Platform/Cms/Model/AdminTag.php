@@ -19,10 +19,20 @@ class AdminTag extends Model
 	public function users()
 	{
 		return $this->belongsToMany(
-			'Ridibooks\Platform\Cms\Model\AdminUser',
+			AdminUser::class,
 			'tb_admin2_user_tag',
 			'tag_id',
 			'user_id'
+		);
+	}
+
+	public function menus()
+	{
+		return $this->belongsToMany(
+			AdminMenu::class,
+			'tb_admin2_tag_menu',
+			'tag_id',
+			'menu_id'
 		);
 	}
 }

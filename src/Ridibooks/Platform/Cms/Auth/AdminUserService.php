@@ -85,20 +85,22 @@ class AdminUserService extends AdminBaseService
 		return TbAdminUserModel::getAdminUser($id);
 	}
 
-	public function getAdminUserTag($user_id)
+	public static function getAdminUserTag($user_id)
 	{
+		if (empty($user_id)) {
+			return [];
+		}
+
 		return AdminUser::find($user_id)->tags->pluck('id')->all();
 	}
 
-	/**Admin Menu 정보 가져온다.
-	 * (select2를 위해 implode 처리함)
-	 * @param string $user_id 어드민 유저 ID
-	 * @return string 메뉴 array를 , 로 묶음
-	 */
-	public function getAdminUserMenu($user_id)
+	public static function getAdminUserMenu($user_id)
 	{
-		return implode(",", $this->adminUserMenus->getAdminUserMenuList($user_id));
+		if (empty($user_id)) {
+			return [];
+		}
 
+		return AdminUser::find($user_id)->menus->pluck('id')->all();
 	}
 
 	/**해당 메뉴에 대한 권한을 가지고 있는 어드민을 가져온다.

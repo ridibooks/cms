@@ -148,17 +148,17 @@ class AdminTagService extends AdminBaseService
 
 	public function getTagListWithUseCount()
 	{
-		$tags = $this->getTagList();
 		$returns = [];
 
+		$tags = AdminTag::with('users', 'menus')->get();
 		foreach ($tags as $tag) {
-			$tag_id = $tag['id'];
 			$returns[] = AdminTagDetailViewDto::importFromDatabaseRow(
 				$tag,
-				AdminTag::find($tag_id)->users()->count(),
-				$this->adminTagMenus->getAdminMenuTagCountByTagId($tag_id)
+				$tag->users()->count(),
+				$tag->menus()->count()
 			);
 		}
+
 		return $returns;
 	}
 }

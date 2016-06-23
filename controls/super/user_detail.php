@@ -10,11 +10,12 @@ $admin_id = $request->get("id");
 $userDetail = $adminUserService->getAdminUser($admin_id);
 if ($userDetail) {
 	// 유저 태그 매핑 정보
-	$tags = $adminUserService->getAdminUserTag($admin_id);
+	$tags = AdminUserService::getAdminUserTag($admin_id);
 	$userTag = implode(',', $tags);
 
 	// 유저 메뉴 매핑 정보
-	$userMenu = $adminUserService->getAdminUserMenu($admin_id);
+	$menus = AdminUserService::getAdminUserMenu($admin_id);
+	$userMenu = implode(',', $menus);
 }
 
 return compact(

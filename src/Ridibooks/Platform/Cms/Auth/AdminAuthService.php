@@ -9,8 +9,8 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
+use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,10 +38,6 @@ class AdminAuthService extends AdminBaseService
 	 * @var AdminTagMenus
 	 */
 	private $adminTagMenus;
-	/**
-	 * @var AdminUserTags
-	 */
-	private $adminUserTags;
 
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array
@@ -66,7 +62,6 @@ class AdminAuthService extends AdminBaseService
 		$this->adminUserMenus = new AdminUserMenus();
 		$this->adminMenuAjaxs = new AdminMenuAjaxs();
 		$this->adminTagMenus = new AdminTagMenus();
-		$this->adminUserTags = new AdminUserTags();
 	}
 
 	/**해당 유저의 모든 권한을 셋팅한다.*/
@@ -174,7 +169,7 @@ class AdminAuthService extends AdminBaseService
 	 */
 	private function initAdminTag()
 	{
-		$this->adminTag = $this->adminUserTags->getAdminUserTagList(LoginService::GetAdminID());
+		$this->adminTag = AdminUserService::getAdminUserTag(LoginService::GetAdminID());
 	}
 
 	/**로그인한 유저의 모든 메뉴Id를 가져온다.
@@ -182,22 +177,22 @@ class AdminAuthService extends AdminBaseService
 	 */
 	private function getUserAllMenuId()
 	{
-		//해당 유저에 매핑되어 있는 tag_id를 가져온다.
-		$tag_id_array = $this->adminUserTags->getAdminUserTagList(LoginService::GetAdminID());
-		$menu_id_array = [];
-		foreach ($tag_id_array as $tag_id) { //한 사람에게 여러개의 tag가 붙을 수 있기에...
-			//tag_id를 통해서 매핑되어있는 menu_id를 가져온다.
-			$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
-			foreach ($menu_tag_list as $menu_tag) {
-				array_push($menu_id_array, $menu_tag['menu_id']);
+		// 1: user -> tags -> menus
+		$tags = AdminUser::with('tags.menus')->find(LoginService::GetAdminID())->tags;
+		$menu_ids = [];
+		foreach ($tags as $tag) {
+			foreach ($tag->menus as $menu) {
+				array_push($menu_ids, $menu['id']);
 			}
 		}
-		//해당 유저에 매핑되어 있는 menu_id 가져온다.
-		$user_menu_array = $this->adminUserMenus->getAdminUserMenuList(LoginService::GetAdminID());
-		foreach ($user_menu_array as $user_menu) {
-			array_push($menu_id_array, $user_menu);
+
+		// 2: user -> menus
+		$user_menus = AdminUserService::getAdminUserMenu(LoginService::GetAdminID());
+		foreach ($user_menus as $menu_id) {
+			array_push($menu_ids, $menu_id);
 		}
-		return array_unique($menu_id_array);
+
+		return array_unique($menu_ids);
 	}
 
 	/**menu ajax array 만든다.
