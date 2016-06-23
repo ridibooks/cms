@@ -3,7 +3,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenu as AdminMenu_;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjax;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
@@ -19,13 +18,11 @@ use Ridibooks\Platform\Common\ValidationUtils;
 class MenuService extends AdminBaseService
 {
 	private $adminMenus;
-	private $adminMenu;
 	private $adminMenuAjaxs;
 	private $adminMenuAjax;
 
 	public function __construct()
 	{
-		$this->adminMenu = new AdminMenu_();
 		$this->adminMenus = new AdminMenus();
 		$this->adminMenuAjax = new AdminMenuAjax();
 		$this->adminMenuAjaxs = new AdminMenuAjaxs();
@@ -50,19 +47,18 @@ class MenuService extends AdminBaseService
 		$this->startTransaction();
 
 		$this->_validateMenu((array)$menuDto);
-		//메뉴의 최대 순서값 가져온다.
-		$max_order = $this->adminMenus->getMaxMenuOrder();
 
 		if ($menuDto->menu_order == null) { //메뉴 순서값이 없을 경우 메뉴 순서값을 max+1 해준다.
-			$menuDto->menu_order = $max_order + 1;
+			$menuDto->menu_order = AdminMenu::max('menu_order') + 1;
 		}
 
 		ValidationUtils::checkNumberField($menuDto->menu_order, "메뉴 순서는 숫자만 입력 가능합니다.");
 
-		//입력받은 메뉴 순서값이 이미 존재 하고 있을 경우 해당 순서 이하의 모든 메뉴를 한칸씩 내린다.
-		if ($this->adminMenus->getMenuOrderCount($menuDto->menu_order) > 0) {
-			$this->adminMenu->updateMenuOrder($menuDto->menu_order);
-		}
+		// push down every menu below
+		AdminMenu::where('menu_order', '>=', $menuDto->menu_order)
+			->increment('menu_order');
+
+		// then insert
 		AdminMenu::create((array)$menuDto);
 
 		$this->endTransaction();
@@ -75,11 +71,14 @@ class MenuService extends AdminBaseService
 	{
 		$this->startTransaction();
 
-		$max_order = $this->adminMenus->getMaxMenuOrder();
+		$max_order = AdminMenu::max('menu_order');
 
 		foreach ($menuDto->menu_list as $menu) {
 			$this->_validateMenu($menu);
-			$old_menu_order = $this->adminMenus->getAdminMenuOrder($menu['id']);
+
+			/** @var AdminMenu $adminMenu */
+			$adminMenu = AdminMenu::find($menu['id']);
+			$old_menu_order = $adminMenu->menu_order;
 			$new_menu_order = $menu['menu_order'];
 
 			if ($new_menu_order == null) { //입력받은 메뉴 순서값 없을 경우 메뉴 순서값을 max+1 해준다.
@@ -87,16 +86,23 @@ class MenuService extends AdminBaseService
 			} else {
 				ValidationUtils::checkNumberField($new_menu_order, "메뉴 순서는 숫자만 입력 가능합니다.");
 
-				if ($this->adminMenus->getMenuOrderCount($new_menu_order) > 0) { //입력받은 메뉴 순서값이 이미 존재하고 있을 경우 메뉴 순서를 재 정렬할 필요가 있다.
+				if (AdminMenu::where('menu_order', $new_menu_order)->first()) { //입력받은 메뉴 순서값이 이미 존재하고 있을 경우 메뉴 순서를 재 정렬할 필요가 있다.
 					if ($old_menu_order > $new_menu_order) { //밑에 있는 메뉴를 위로 올릴때
-						$this->adminMenu->updateMenuOrderUpper($old_menu_order, $new_menu_order);
+						AdminMenu::where('menu_order', '<', $old_menu_order)
+							->where('menu_order', '>=', $new_menu_order)
+							->increment('menu_order');
 					} elseif ($old_menu_order < $new_menu_order) { //위에 있는 메뉴를 아래로 내릴때
-						$this->adminMenu->updateMenuOrderLower($old_menu_order, $new_menu_order);
+						AdminMenu::where('menu_order', '>', $old_menu_order)
+							->where('menu_order', '<=', $new_menu_order)
+							->increment('menu_order');
 					}
 				}
 			}
-			$this->adminMenu->updateMenu($menu);
+
+			$adminMenu->fill($menu);
+			$adminMenu->save();
 		}
+		
 		$this->endTransaction();
 	}
 

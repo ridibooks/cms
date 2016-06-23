@@ -146,7 +146,7 @@ class AdminTagService extends AdminBaseService
 		ValidationUtils::checkNullField($tagArray['menu_id'], "메뉴 ID가 없습니다.");
 	}
 
-	public function getTagListWithUseCount()
+	public static function getTagListWithUseCount()
 	{
 		$returns = [];
 
