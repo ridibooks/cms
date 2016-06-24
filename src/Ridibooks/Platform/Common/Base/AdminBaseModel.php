@@ -32,6 +32,7 @@ class AdminBaseModel
 
 	/**
 	 * 트랜잭션 시작(모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
+	 * @deprecated use transactional
 	 */
 	public static function startTransaction()
 	{
@@ -41,10 +42,23 @@ class AdminBaseModel
 
 	/**
 	 * 트랜잭션 종료(모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
+	 * @deprecated use transactional
 	 */
 	public static function endTransaction()
 	{
 		$db = self::getDb();
 		return $db->sqlEnd();
+	}
+
+	/**
+	 * 트랜잭셔널 (모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
+	 * @param $func callable
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function transactional($func)
+	{
+		$db = self::getDb();
+		return $db->transactional($func);
 	}
 }
