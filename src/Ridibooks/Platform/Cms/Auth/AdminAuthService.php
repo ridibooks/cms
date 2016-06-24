@@ -5,11 +5,9 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -70,7 +68,7 @@ class AdminAuthService extends AdminBaseService
 		//전체 menu_ajax를 가지고 온다.
 		$menu_ajax_array = $this->adminMenuAjaxs->getAdminMenuAjaxList();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-		$menu_array = $this->menuService->getMenuList();
+		$menu_array = MenuService::getMenuList();
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -435,9 +433,8 @@ class AdminAuthService extends AdminBaseService
 	 */
 	public static function isValidUser()
 	{
-		$adminUserDto = new AdminUserDto(TbAdminUserModel::getAdminUser(LoginService::GetAdminID()));
-
-		return $adminUserDto->is_use ? true : false;
+		$admin = AdminUser::find(LoginService::GetAdminID());
+		return $admin && $admin->is_use;
 	}
 
 	/**

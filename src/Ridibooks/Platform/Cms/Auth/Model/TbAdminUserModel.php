@@ -13,23 +13,6 @@ use Ridibooks\Platform\Common\Base\AdminBaseModel;
 class TbAdminUserModel extends AdminBaseModel
 {
 	/**
-	 * Admin 계정 갯수 가져온다.
-	 * @param $search_text
-	 * @return int
-	 */
-	public static function getAdminUserCount($search_text)
-	{
-		$searchArray[] = sqlOr(
-			['id' => sqlLike($search_text)],
-			['name' => sqlLike($search_text)]
-		);
-		return self::getDb()->sqlData(
-			"SELECT COUNT(*) FROM tb_admin2_user WHERE ?",
-			sqlWhere($searchArray)
-		);
-	}
-
-	/**
 	 * 해당 Id의 Admin 계정정보 갯수 가져온다.
 	 * @param string $id
 	 * @return int id count
@@ -43,26 +26,6 @@ class TbAdminUserModel extends AdminBaseModel
 	}
 
 	/**
-	 * Admin 계정정보 리스트 가져온다.
-	 * @param string $search_text 검색어
-	 * @param int $start
-	 * @param int $limit
-	 * @return array
-	 */
-	public static function getAdminUserList($search_text, $start, $limit)
-	{
-		$searchArray[] = sqlOr(
-			['id' => sqlLike($search_text)],
-			['name' => sqlLike($search_text)]
-		);
-		return self::getDb()->sqlDicts(
-			"SELECT * FROM tb_admin2_user WHERE ? ORDER BY is_use DESC, NAME ?",
-			sqlWhere($searchArray),
-			sqlLimit($start, $limit)
-		);
-	}
-
-	/**
 	 * 사용되고 있는 모든 Admin 계정ID, 이름 가져온다.
 	 * @return array
 	 */
@@ -71,19 +34,6 @@ class TbAdminUserModel extends AdminBaseModel
 		return self::getDb()->sqlObjects(
 			"SELECT id, name FROM tb_admin2_user WHERE ?",
 			sqlWhere(['is_use' => 1])
-		);
-	}
-
-	/**
-	 * 해당 Id의 Admin 계정정보 가져온다.
-	 * @param string $id
-	 * @return array
-	 */
-	public static function getAdminUser($id)
-	{
-		return self::getDb()->sqlDict(
-			"SELECT id, passwd, name, team, is_use, reg_date FROM tb_admin2_user WHERE ?",
-			sqlWhere(['id' => $id])
 		);
 	}
 

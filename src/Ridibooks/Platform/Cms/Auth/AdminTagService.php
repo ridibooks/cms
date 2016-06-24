@@ -3,7 +3,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
@@ -16,14 +15,12 @@ class AdminTagService extends AdminBaseService
 	private $adminUserTags;
 	private $adminTagMenus;
 	private $adminTagMenu;
-	private $adminMenus;
 
 	public function __construct()
 	{
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminTagMenus = new AdminTagMenus();
 		$this->adminTagMenu = new AdminTagMenu();
-		$this->adminMenus = new AdminMenus();
 	}
 
 	public function getTagList()
@@ -39,7 +36,7 @@ class AdminTagService extends AdminBaseService
 	public function getMappedAdminMenuListForSelectBox($tag_id)
 	{
 		//메뉴 리스트
-		$menu_list = $this->adminMenus->getAdminMenuList();
+		$menu_list = MenuService::getMenuList();
 		//태그에 매핑된 메뉴 리스트
 		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
 
@@ -63,7 +60,7 @@ class AdminTagService extends AdminBaseService
 	public function getMappedAdminMenuList($tag_id)
 	{
 		//메뉴 리스트
-		$menu_list = $this->adminMenus->getAdminMenuList();
+		$menu_list = MenuService::getMenuList();
 		//태그에 매핑된 메뉴 리스트
 		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
 

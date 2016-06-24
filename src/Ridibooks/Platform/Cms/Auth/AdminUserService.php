@@ -6,7 +6,6 @@ use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserMenuDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
@@ -27,7 +26,6 @@ class AdminUserService extends AdminBaseService
 	private $adminUserTags;
 	private $adminUserMenus;
 	private $adminUserMenu;
-	private $adminMenus;
 	private $publisherManager;
 
 	public function __construct()
@@ -35,17 +33,15 @@ class AdminUserService extends AdminBaseService
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminUserMenus = new AdminUserMenus();
 		$this->adminUserMenu = new AdminUserMenu();
-		$this->adminMenus = new AdminMenus();
 		$this->publisherManager = new TbPublisherManager();
 	}
 
-	/**Admin 계정정보 리스트 갯수 가져온다.
-	 * @param string $search_text
-	 * @return int
-	 */
-	public function getAdminUserCount($search_text)
+	public static function getAdminUserCount($search_text)
 	{
-		return TbAdminUserModel::getAdminUserCount($search_text);
+		return AdminUser::query()
+			->where('id', 'like', '%' . $search_text . '%')
+			->orWhere('name', 'like', '%' . $search_text . '%')
+			->count();
 	}
 
 	/**Admin 계정정보 리스트 가져온다.
@@ -55,7 +51,12 @@ class AdminUserService extends AdminBaseService
 	 */
 	public function getAdminUserList($search_text, $pagingDto)
 	{
-		return TbAdminUserModel::getAdminUserList($search_text, $pagingDto->start, $pagingDto->limit);
+		return AdminUser::query()
+			->where('id', 'like', '%' . $search_text . '%')
+			->orWhere('name', 'like', '%' . $search_text . '%')
+			->orderBy('is_use', 'desc')
+			->skip($pagingDto->start)->take($pagingDto->limit)
+			->get();
 	}
 
 	/**사용 가능한 모든 Admin 계정정보 가져온다.
@@ -68,7 +69,7 @@ class AdminUserService extends AdminBaseService
 
 	public function getAllAdminUserListByDictionary()
 	{
-		$dict = array();
+		$dict = [];
 		$items = $this->getAllAdminUserArray();
 		foreach ($items as $item) {
 			$dict[$item->id] = $item;
@@ -76,13 +77,9 @@ class AdminUserService extends AdminBaseService
 		return $dict;
 	}
 
-	/**Admin 계정정보 가져온다.
-	 * @param string $id
-	 * @return array
-	 */
 	public function getAdminUser($id)
 	{
-		return TbAdminUserModel::getAdminUser($id);
+		return AdminUser::find($id);
 	}
 
 	public static function getAdminUserTag($user_id)
@@ -120,9 +117,9 @@ class AdminUserService extends AdminBaseService
 	public function getValidAdminIdFromUserTag($tag_id)
 	{
 		$admin_id_rows = $this->adminUserTags->getAdminIdFromUserTag($tag_id);
-		$admin_ids = array();
+		$admin_ids = [];
 		foreach ($admin_id_rows as $admin_id_row) {
-			$adminUserDto = new AdminUserDto(TbAdminUserModel::getAdminUser($admin_id_row));
+			$adminUserDto = new AdminUserDto(self::getAdminUser($admin_id_row));
 			if (!!$adminUserDto->is_use) {
 				$admin_ids[] = $adminUserDto->id;
 			}

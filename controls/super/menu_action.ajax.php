@@ -39,7 +39,7 @@ try {
 			$json_dto->setMsg('성공적으로 삭제하였습니다.');
 			break;
 		case "showMenuArray": //전체 메뉴 목록 가져온다.
-			$json_dto->data = (array)$menu_service->getMenuList(1);
+			$json_dto->data = (array)MenuService::getMenuList(1);
 			break;
 	}
 
