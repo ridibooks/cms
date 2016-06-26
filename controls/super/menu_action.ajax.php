@@ -24,7 +24,7 @@ try {
 			$json_dto->setMsg('성공적으로 수정하였습니다.');
 			break;
 		case 'show_ajax_list': //Ajax 메뉴 리스트
-			$json_dto->data = (array)$menu_service->getMenuAjaxList($menu_ajax_dto->menu_id);
+			$json_dto->data = $menu_service->getMenuAjaxList($menu_ajax_dto->menu_id);
 			break;
 		case 'ajax_insert': //Ajax 메뉴 등록
 			$menu_service->insertMenuAjax($menu_ajax_dto);

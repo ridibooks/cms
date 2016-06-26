@@ -62,11 +62,7 @@ class LoginService extends AdminBaseService
 		//GetAdminID에 사용할 id를미리 set 한다.
 		$_SESSION['session_admin_id'] = $id;
 
-		$authService = new AdminAuthService();
-		$_SESSION['session_user_auth'] = $authService->getAdminAuth();
-		$_SESSION['session_user_menu'] = $authService->getAdminMenu();
-		$_SESSION['session_user_tag'] = $authService->getAdminTag();
-		$_SESSION['session_user_tagid'] = $authService->getAdminTagId();
+		AdminAuthService::initSession();
 	}
 
 	public static function GetAdminID()

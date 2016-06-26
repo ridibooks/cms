@@ -19,4 +19,9 @@ class AdminMenu extends Model
 		'reg_date',
 		'is_newtab'
 	];
+
+	public function ajaxMenus()
+	{
+		return $this->hasMany(AdminMenuAjax::class, 'menu_id');
+	}
 }

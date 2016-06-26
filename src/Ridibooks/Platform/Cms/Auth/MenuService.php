@@ -4,7 +4,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjax;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -16,13 +15,11 @@ use Ridibooks\Platform\Common\ValidationUtils;
  */
 class MenuService extends AdminBaseService
 {
-	private $adminMenuAjaxs;
 	private $adminMenuAjax;
 
 	public function __construct()
 	{
 		$this->adminMenuAjax = new AdminMenuAjax();
-		$this->adminMenuAjaxs = new AdminMenuAjaxs();
 	}
 
 	public static function getMenuList($is_use = null)
@@ -101,13 +98,9 @@ class MenuService extends AdminBaseService
 		$this->endTransaction();
 	}
 
-	/**메뉴 Ajax 리스트 가져온다.
-	 * @param $menu_id
-	 * @return array
-	 */
 	public function getMenuAjaxList($menu_id)
 	{
-		return $this->adminMenuAjaxs->getAdminMenuAjaxList($menu_id);
+		return AdminMenu::find($menu_id)->ajaxMenus->toArray();
 	}
 
 	/**Ajax 메뉴 등록한다.

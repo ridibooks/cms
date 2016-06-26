@@ -5,9 +5,9 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
+use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -28,10 +28,6 @@ class AdminAuthService extends AdminBaseService
 	 * @var AdminUserMenus
 	 */
 	private $adminUserMenus;
-	/**
-	 * @var AdminMenuAjaxs
-	 */
-	private $adminMenuAjaxs;
 	/**
 	 * @var AdminTagMenus
 	 */
@@ -58,7 +54,6 @@ class AdminAuthService extends AdminBaseService
 	{
 		$this->menuService = new MenuService();
 		$this->adminUserMenus = new AdminUserMenus();
-		$this->adminMenuAjaxs = new AdminMenuAjaxs();
 		$this->adminTagMenus = new AdminTagMenus();
 	}
 
@@ -66,7 +61,7 @@ class AdminAuthService extends AdminBaseService
 	private function initAdminAuth()
 	{
 		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = $this->adminMenuAjaxs->getAdminMenuAjaxList();
+		$menu_ajax_array = AdminMenuAjax::all()->toArray();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
 		$menu_array = MenuService::getMenuList();
 
