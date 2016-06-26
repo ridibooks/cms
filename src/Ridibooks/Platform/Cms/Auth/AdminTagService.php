@@ -3,7 +3,7 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenu;
+use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Model\AdminTag;
@@ -14,13 +14,11 @@ class AdminTagService extends AdminBaseService
 {
 	private $adminUserTags;
 	private $adminTagMenus;
-	private $adminTagMenu;
 
 	public function __construct()
 	{
 		$this->adminUserTags = new AdminUserTags();
 		$this->adminTagMenus = new AdminTagMenus();
-		$this->adminTagMenu = new AdminTagMenu();
 	}
 
 	public function getTagList()
@@ -110,26 +108,26 @@ class AdminTagService extends AdminBaseService
 		$this->endTransaction();
 	}
 
+	/**
+	 * @param AdminTagMenuDto $tagMenuDto
+	 */
 	public function insertTagMenu($tagMenuDto)
 	{
-		$this->startTransaction();
 		$this->_validateTagMenu((array)$tagMenuDto);
 
-		if ($this->adminTagMenus->getAdminMenuTagCount(
-				$tagMenuDto->tag_id,
-				$tagMenuDto->menu_id
-			) == 0
-		) { //매핑시키려는 메뉴가 태그에 매핑 되어있지 않은 경우
-			$this->adminTagMenu->insertAdminMenuTag((array)$tagMenuDto);
-		}
-		$this->endTransaction();
+		/** @var AdminTag $tag */
+		$tag = AdminTag::find($tagMenuDto->tag_id);
+		$tag->menus()->attach($tagMenuDto->menu_id);
 	}
 
+	/**
+	 * @param AdminTagMenuDto $tagMenuDto
+	 */
 	public function deleteTagMenu($tagMenuDto)
 	{
-		$this->startTransaction();
-		$this->adminTagMenu->deleteAdminMenuTag((array)$tagMenuDto);
-		$this->endTransaction();
+		/** @var AdminTag $tag */
+		$tag = AdminTag::find($tagMenuDto->tag_id);
+		$tag->menus()->detach($tagMenuDto->menu_id);
 	}
 
 	private function _validateTag($tagArray)

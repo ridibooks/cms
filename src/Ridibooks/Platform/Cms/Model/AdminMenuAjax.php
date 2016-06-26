@@ -7,7 +7,7 @@ class AdminMenuAjax extends Model
 {
 	protected $table = 'tb_admin2_menu_ajax';
 
-	public $timestamp = false;
+	public $timestamps = false;
 
 	protected $fillable = [
 		'menu_id',

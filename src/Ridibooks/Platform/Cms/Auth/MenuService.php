@@ -3,8 +3,8 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjax;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
+use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
@@ -15,13 +15,6 @@ use Ridibooks\Platform\Common\ValidationUtils;
  */
 class MenuService extends AdminBaseService
 {
-	private $adminMenuAjax;
-
-	public function __construct()
-	{
-		$this->adminMenuAjax = new AdminMenuAjax();
-	}
-
 	public static function getMenuList($is_use = null)
 	{
 		$query = AdminMenu::query();
@@ -94,7 +87,7 @@ class MenuService extends AdminBaseService
 			$adminMenu->fill($menu);
 			$adminMenu->save();
 		}
-		
+
 		$this->endTransaction();
 	}
 
@@ -103,23 +96,12 @@ class MenuService extends AdminBaseService
 		return AdminMenu::find($menu_id)->ajaxMenus->toArray();
 	}
 
-	/**Ajax 메뉴 등록한다.
-	 * @param AdminMenuAjaxDto $menuAjaxDto
-	 */
 	public function insertMenuAjax($menuAjaxDto)
 	{
-		$this->startTransaction();
-
 		$this->_validateMenuAjax((array)$menuAjaxDto);
-		$this->adminMenuAjax->insertAdminMenuAjax($menuAjaxDto);
-
-		$this->endTransaction();
+		AdminMenuAjax::create((array)$menuAjaxDto);
 	}
 
-	/**Ajax 메뉴 수정한다.
-	 * @param AdminMenuAjaxDto $menuAjaxDto
-	 * @throws MsgException
-	 */
 	public function updateMenuAjax($menuAjaxDto)
 	{
 		$this->assertAjaxMenuArray($menuAjaxDto);
@@ -128,15 +110,13 @@ class MenuService extends AdminBaseService
 
 		foreach ($menuAjaxDto->menu_ajax_list as $menu_ajax) {
 			$this->_validateMenuAjax($menu_ajax);
-			$this->adminMenuAjax->updateAdminMenuAjax($menu_ajax);
+			AdminMenuAjax::find($menu_ajax['id'])
+				->update(['ajax_url' => $menu_ajax['ajax_url']]);
 		}
 
 		$this->endTransaction();
 	}
 
-	/**Ajax 메뉴 삭제한다.
-	 * @param $menuAjaxDto
-	 */
 	public function deleteMenuAjax($menuAjaxDto)
 	{
 		$this->assertAjaxMenuArray($menuAjaxDto);
@@ -145,7 +125,7 @@ class MenuService extends AdminBaseService
 
 		foreach ($menuAjaxDto->menu_ajax_list as $menu_ajax) {
 			$this->_validateMenuAjax($menu_ajax);
-			$this->adminMenuAjax->deleteAdminMenuAjax($menu_ajax);
+			AdminMenuAjax::destroy($menu_ajax['id']);
 		}
 
 		$this->endTransaction();
