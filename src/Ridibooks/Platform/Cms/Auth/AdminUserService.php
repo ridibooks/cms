@@ -59,22 +59,13 @@ class AdminUserService extends AdminBaseService
 			->get();
 	}
 
-	/**사용 가능한 모든 Admin 계정정보 가져온다.
+	/**
+	 * 사용 가능한 모든 Admin 계정정보 가져온다.
 	 * @return array
 	 */
 	public function getAllAdminUserArray()
 	{
-		return TbAdminUserModel::getAllAdminUserArray();
-	}
-
-	public function getAllAdminUserListByDictionary()
-	{
-		$dict = [];
-		$items = $this->getAllAdminUserArray();
-		foreach ($items as $item) {
-			$dict[$item->id] = $item;
-		}
-		return $dict;
+		return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
 	}
 
 	public function getAdminUser($id)

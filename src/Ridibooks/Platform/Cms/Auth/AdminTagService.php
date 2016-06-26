@@ -4,47 +4,30 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
 use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
 class AdminTagService extends AdminBaseService
 {
-	private $adminTagMenus;
-
-	public function __construct()
-	{
-		$this->adminTagMenus = new AdminTagMenus();
-	}
-
 	public function getTagList()
 	{
 		return AdminTag::all()->toArray();
 	}
 
-	/**태그에 매핑된 메뉴 리스트 가져온다.
-	 * @param $tag_id
-	 * @return array
-	 * @throws
-	 */
 	public function getMappedAdminMenuListForSelectBox($tag_id)
 	{
-		//메뉴 리스트
-		$menu_list = MenuService::getMenuList();
-		//태그에 매핑된 메뉴 리스트
-		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
+		$menus = MenuService::getMenuList();
 
-		$mapped_menu_tag_list = [];
-		foreach ($menu_list as $menu) {
-			foreach ($menu_tag_list as $menu_tag) {
-				if ($menu['id'] == $menu_tag['menu_id']) {
-					$menu['selected'] = 'selected';
-				}
+		//태그에 매핑된 메뉴 리스트
+		$menu_ids = AdminTagService::getAdminTagMenus($tag_id);
+
+		return array_map(function($menu) use ($menu_ids) {
+			if (in_array($menu['id'], $menu_ids)) {
+				$menu['selected'] = 'selected';
 			}
-			array_push($mapped_menu_tag_list, $menu);
-		}
-		return $mapped_menu_tag_list;
+			return $menu;
+		}, $menus);
 	}
 
 	public function getMappedAdmins($tag_id)
@@ -52,29 +35,22 @@ class AdminTagService extends AdminBaseService
 		return AdminTag::find($tag_id)->users->toArray();
 	}
 
-	public function getMappedAdminMenuList($tag_id)
+	public static function getAdminTagMenus($tag_id)
 	{
-		//메뉴 리스트
-		$menu_list = MenuService::getMenuList();
-		//태그에 매핑된 메뉴 리스트
-		$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
-
-		$mapped_menu_tag_list = [];
-		foreach ($menu_list as $menu) {
-			foreach ($menu_tag_list as $menu_tag) {
-				if ($menu['id'] == $menu_tag['menu_id']) {
-					array_push($mapped_menu_tag_list, $menu);
-				}
-			}
+		if (empty($tag_id)) {
+			return [];
 		}
-		return $mapped_menu_tag_list;
+
+		return AdminTag::find($tag_id)->menus->pluck('id')->all();
 	}
 
 	public function getMappedAdminMenuHashes($check_url, $tag_id)
 	{
-		$menus = $this->getMappedAdminMenuList($tag_id);
-		$ret = AdminAuthService::getHashesFromMenus($check_url, $menus);
-		return $ret;
+		$menu_ids = AdminTagService::getAdminTagMenus($tag_id);
+
+		$menus = MenuService::getMenus($menu_ids);
+
+		return AdminAuthService::getHashesFromMenus($check_url, $menus);
 	}
 
 	public function insertTag($tagDto)

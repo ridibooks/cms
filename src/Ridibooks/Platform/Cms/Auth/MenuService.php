@@ -24,6 +24,15 @@ class MenuService extends AdminBaseService
 		return $query->orderBy('menu_order')->get()->toArray();
 	}
 
+	/**
+	 * @param $menu_ids
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public static function getMenus($menu_ids)
+	{
+		return AdminMenu::findMany($menu_ids)->toArray();
+	}
+
 	/**메뉴 등록한다.
 	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto $menuDto
 	 */

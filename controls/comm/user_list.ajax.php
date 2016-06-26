@@ -7,7 +7,7 @@ $adminUserService = new AdminUserService();
 $jsonDto = new JsonDto();
 
 try{
-	$jsonDto->data = (array) $adminUserService->getAllAdminUserArray();
+	$jsonDto->data = $adminUserService->getAllAdminUserArray();
 } catch (Exception $e) {
 	$jsonDto->setException($e);
 }
