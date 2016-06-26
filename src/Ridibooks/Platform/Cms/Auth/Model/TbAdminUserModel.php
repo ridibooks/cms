@@ -13,19 +13,6 @@ use Ridibooks\Platform\Common\Base\AdminBaseModel;
 class TbAdminUserModel extends AdminBaseModel
 {
 	/**
-	 * 해당 Id의 Admin 계정정보 갯수 가져온다.
-	 * @param string $id
-	 * @return int id count
-	 */
-	public static function getAdminUserIdCount($id)
-	{
-		return self::getDb()->sqlData(
-			"SELECT COUNT(*) FROM tb_admin2_user WHERE ?",
-			sqlWhere(['id' => $id])
-		);
-	}
-
-	/**
 	 * 사용되고 있는 모든 Admin 계정ID, 이름 가져온다.
 	 * @return array
 	 */

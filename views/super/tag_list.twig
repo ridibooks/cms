@@ -91,7 +91,7 @@
 
         const admins = returnData.data.admins;
         const admins_html = admins.map(function (admin) {
-          return `<span><a class="label label-default" href="/super/user_detail?id=${admin}" target="_blank">${admin}</a></span>`;
+          return `<span><a class="label label-default" href="/super/user_detail?id=${admin.id}" target="_blank">${admin.name}</a></span>`;
         }).join(' ');
 
         $('#tag_admins').html(admins_html);

@@ -5,19 +5,16 @@ use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
 class AdminTagService extends AdminBaseService
 {
-	private $adminUserTags;
 	private $adminTagMenus;
 
 	public function __construct()
 	{
-		$this->adminUserTags = new AdminUserTags();
 		$this->adminTagMenus = new AdminTagMenus();
 	}
 
@@ -52,7 +49,7 @@ class AdminTagService extends AdminBaseService
 
 	public function getMappedAdmins($tag_id)
 	{
-		return $this->adminUserTags->getAdminIdFromUserTag($tag_id);
+		return AdminTag::find($tag_id)->users->toArray();
 	}
 
 	public function getMappedAdminMenuList($tag_id)

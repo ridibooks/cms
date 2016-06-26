@@ -79,7 +79,12 @@ class AdminUserService extends AdminBaseService
 
 	public function getAdminUser($id)
 	{
-		return AdminUser::find($id)->toArray();
+		/** @var AdminUser $user */
+		$user = AdminUser::find($id);
+		if (!$user) {
+			return null;
+		}
+		return $user->toArray();
 	}
 
 	public static function getAdminUserTag($user_id)
@@ -151,52 +156,30 @@ class AdminUserService extends AdminBaseService
 	 */
 	public function insertAdminUser($adminUserDto)
 	{
-		$this->startTransaction();
-
 		$this->_validateAdminUserInsert($adminUserDto);
+
 		//password encrypt
 		$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
-
-		if (TbAdminUserModel::getAdminUserIdCount($adminUserDto->id) > 0) { //ID로 카운트 하여 값이 0 이상일 경우
-			throw new MsgException('동일한 ID가 있습니다.');
-		}
-
 		AdminUser::create((array)$adminUserDto);
-
-		$this->endTransaction();
 	}
 
-	/**Admin 계정정보 수정한다.
-	 * @param AdminUserDto $adminUserDto
-	 * @throws \Exception
-	 */
 	public function updateAdminUser($adminUserDto)
 	{
-		$this->startTransaction();
-
 		$this->_validateAdminUserUpdate($adminUserDto);
 
+		if ($adminUserDto->id != $adminUserDto->last_id) {
+			throw new MsgException('ID는 변경할 수 없습니다.');
+		}
+
+		$adminUserDto->id = trim($adminUserDto->id);
 		if (isset($adminUserDto->passwd) && trim($adminUserDto->passwd) !== '') {
 			$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
 		}
-		$adminUserDto->id = trim($adminUserDto->id);
-		$adminUserDto->last_id = trim($adminUserDto->last_id);
 
 		/** @var AdminUser $admin */
-		$admin = AdminUser::find($adminUserDto->last_id);
-
-		if (strlen($adminUserDto->last_id) && $adminUserDto->id != $adminUserDto->last_id) {
-			$old_id = $adminUserDto->last_id;
-			$new_id = $adminUserDto->id;
-
-			$this->adminUserTags->updateUserOfTags($old_id, $new_id);
-			$this->adminUserMenus->updateUserOfMenus($old_id, $new_id);
-		}
-
+		$admin = AdminUser::find($adminUserDto->id);
 		$admin->fill((array)$adminUserDto);
 		$admin->save();
-
-		$this->endTransaction();
 	}
 
 	/**자신의 정보를 수정한다.
