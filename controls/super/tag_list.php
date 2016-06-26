@@ -6,6 +6,7 @@ $request = Request::createFromGlobals();
 
 $tag_list = AdminTagService::getTagListWithUseCount();
 
-return compact(
-	'tag_list'
-);
+return [
+	'title' => '태그 관리',
+	'tag_list' => $tag_list
+];

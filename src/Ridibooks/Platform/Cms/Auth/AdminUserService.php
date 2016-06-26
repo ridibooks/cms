@@ -79,7 +79,7 @@ class AdminUserService extends AdminBaseService
 
 	public function getAdminUser($id)
 	{
-		return AdminUser::find($id);
+		return AdminUser::find($id)->toArray();
 	}
 
 	public static function getAdminUserTag($user_id)

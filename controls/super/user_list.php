@@ -14,9 +14,9 @@ $pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $
 $admin_user_list = $adminUserService->getAdminUserList($search_text, $pagingDto);
 $paging = AdminUserService::getPagingTagByPagingDtoNew($pagingDto);
 
-return compact(
-	'admin_user_list',
-	'paging',
-	'page',
-	'search_text'
-);
+return [
+	'admin_user_list' => $admin_user_list,
+	'paging' => $paging,
+	'page' => $page,
+	'search_text' => $search_text
+];

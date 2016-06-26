@@ -31,7 +31,7 @@ class MenuService extends AdminBaseService
 		if (!is_null($is_use)) {
 			$query->where('is_use', $is_use);
 		}
-		return $query->get();
+		return $query->orderBy('menu_order')->get()->toArray();
 	}
 
 	/**메뉴 등록한다.
@@ -89,7 +89,7 @@ class MenuService extends AdminBaseService
 					} elseif ($old_menu_order < $new_menu_order) { //위에 있는 메뉴를 아래로 내릴때
 						AdminMenu::where('menu_order', '>', $old_menu_order)
 							->where('menu_order', '<=', $new_menu_order)
-							->increment('menu_order');
+							->decrement('menu_order');
 					}
 				}
 			}

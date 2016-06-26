@@ -3,20 +3,41 @@
 {% block title %}
   어드민 메뉴 관리
 {% endblock %}
+
 {% block script %}
-  <script type="text/javascript">
-    require(['jquery', "bootstrap"], function ($) {
+  <script>
+    require(['jquery', 'Sortable', 'bootstrap'], function ($, Sortable) {
       $(function () {
+
+        function checkChangedRow($tr) {
+          $tr.find('input[type=checkbox]').attr('checked', 'checked');
+        }
+
+        var el = document.getElementById('js_menu_list');
+        Sortable.create(el, {
+          handle: '.js_sortable_handle',
+          onEnd: function (evt) {
+            if (evt.oldIndex === evt.newIndex) {
+              return;
+            }
+
+            var targetIndex = (evt.newIndex > evt.oldIndex) ? evt.newIndex - 1 : evt.newIndex + 1;
+            var newOrder = $(el).find(`tr:nth-child(${targetIndex + 1}) input[name="menu_order"]`).attr('value');
+
+            var changedRow = $(el).find(`tr:nth-child(${evt.newIndex + 1})`);
+            changedRow.find('input[name="menu_order"]').attr('value', newOrder);
+            checkChangedRow(changedRow);
+          }
+        });
 
         // 컬럼 변동 시 check 
         $('#modifyForm input[type=text], #modifyForm select').change(function () {
-          $(this).parents('tr').find('input[type=checkbox]').attr('checked', 'checked');
+          checkChangedRow($(this).parents('tr'));
         });
 
         // Ajax Menu 컬럼 변동 시 check
         $("#ajaxMenuBody").delegate("input[type=text]", "change", function () {
-          var checkbox = $(this).parents('tr').find('input[type=checkbox]');
-          checkbox.prop('checked', 'checked');
+          checkChangedRow($(this).parents('tr'));
         });
 
         // Ajax Menu Modal init
@@ -288,7 +309,7 @@
       <thead>
       <tr>
         <th></th>
-        <th>ID</th>
+        <th>ID <span class="glyphicon glyphicon-resize-vertical"></span></th>
         <th>메뉴 제목</th>
         <th>메뉴 URL</th>
         <th>메뉴 깊이</th>
@@ -299,14 +320,14 @@
         <th>Ajax 관리</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody id='js_menu_list'>
       {% for menu in menu_list %}
         <tr {% if menu.is_use == 0 %}class="error" {% elseif menu.is_show == 0 %}class="warning"{% endif %}>
           <td>
             <input type="checkbox">
             <input type="hidden" name="id" value="{{ menu.id }}"/>
           </td>
-          <td>{{ menu.id }}</td>
+          <td class="js_sortable_handle">{{ menu.id }}</td>
           <td><input type="text" class="form-control" name="menu_title" value="{{ menu.menu_title }}"/></td>
           <td><input type="text" class="form-control" name="menu_url" value="{{ menu.menu_url }}"/></td>
           <td><input type="text" class="form-control" name="menu_deep" value="{{ menu.menu_deep }}"/></td>
