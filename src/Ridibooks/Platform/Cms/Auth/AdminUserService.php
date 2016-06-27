@@ -1,7 +1,7 @@
 <?php
-
 namespace Ridibooks\Platform\Cms\Auth;
 
+use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
@@ -9,17 +9,12 @@ use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
 use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;
 use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 
-/**Admin 유저 관리 Service
- * Class AdminUserService
- * @package Ridibooks\Platform\Cms\Auth
- */
-class AdminUserService extends AdminBaseService
+class AdminUserService
 {
 	private $adminUserTags;
 	private $publisherManager;
@@ -175,8 +170,6 @@ class AdminUserService extends AdminBaseService
 	 */
 	public function updateUserInfo($adminUserDto)
 	{
-		$this->startTransaction();
-
 		if (StringUtils::isEmpty($adminUserDto->new_passwd) === false) {
 			if ($adminUserDto->new_passwd != $adminUserDto->chk_passwd) {
 				throw new MsgException('변경할 비밀번호가 일치하지 않습니다.');
@@ -184,8 +177,6 @@ class AdminUserService extends AdminBaseService
 			$adminUserDto->passwd = $adminUserDto->new_passwd;
 		}
 		$this->updateAdminUser($adminUserDto);
-
-		$this->endTransaction();
 	}
 
 	public function deleteAdmin($adminUserDto)
@@ -198,13 +189,11 @@ class AdminUserService extends AdminBaseService
 	 */
 	public function insertAdminUserAuth($adminUserAuthDto)
 	{
-		$this->startTransaction();
-
-		$this->_insertAdminUserTag($adminUserAuthDto);
-		$this->_insertAdminUserMenu($adminUserAuthDto);
-		$this->_insertManager($adminUserAuthDto);
-
-		$this->endTransaction();
+		DB::connection()->transaction(function () use ($adminUserAuthDto) {
+			$this->_insertAdminUserTag($adminUserAuthDto);
+			$this->_insertAdminUserMenu($adminUserAuthDto);
+			$this->_insertManager($adminUserAuthDto);
+		});
 	}
 
 	/**어드민 계정에 태그정보 등록한다.

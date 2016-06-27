@@ -3,9 +3,8 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 
-class LoginService extends AdminBaseService
+class LoginService
 {
 	/**
 	 * @var AdminUserService

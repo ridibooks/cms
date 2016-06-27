@@ -5,10 +5,9 @@ use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminTag;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\ValidationUtils;
 
-class AdminTagService extends AdminBaseService
+class AdminTagService
 {
 	public function getTagList()
 	{
@@ -62,7 +61,6 @@ class AdminTagService extends AdminBaseService
 
 	public function updateTag($tagDto)
 	{
-		$this->startTransaction();
 		foreach ($tagDto->tag_list as $tag) {
 			$this->_validateTag($tag);
 
@@ -78,7 +76,6 @@ class AdminTagService extends AdminBaseService
 			$adminTag->fill($tag);
 			$adminTag->save();
 		}
-		$this->endTransaction();
 	}
 
 	/**
