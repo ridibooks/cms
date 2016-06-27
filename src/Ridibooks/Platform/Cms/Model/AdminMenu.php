@@ -20,6 +20,16 @@ class AdminMenu extends Model
 		'is_newtab'
 	];
 
+	public function users()
+	{
+		return $this->belongsToMany(
+			AdminUser::class,
+			'tb_admin2_user_menu',
+			'menu_id',
+			'user_id'
+		);
+	}
+
 	public function ajaxMenus()
 	{
 		return $this->hasMany(AdminMenuAjax::class, 'menu_id');

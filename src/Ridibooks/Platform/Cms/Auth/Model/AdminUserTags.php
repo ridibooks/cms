@@ -30,15 +30,4 @@ class AdminUserTags extends AdminBaseModel
 
 		return $this->db->sqlDatas("SELECT user_id FROM tb_admin2_user_tag ?", sqlWhereWithClause($whereArray));
 	}
-
-	/**태그들의 기존 계정 ID를 새로운 계정 ID로 모두 변경한다.
-	 * @param string $old_id
-	 * @param string $new_id
-	 */
-	public function updateUserOfTags($old_id, $new_id)
-	{
-		$column_array = [];
-		$column_array['user_id'] = $new_id;
-		$this->db->sqlUpdate('tb_admin2_user_tag', $column_array, ['user_id' => $old_id]);
-	}
 }

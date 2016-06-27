@@ -5,8 +5,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
@@ -24,14 +22,6 @@ class AdminAuthService extends AdminBaseService
 	 * @var MenuService
 	 */
 	private $menuService;
-	/**
-	 * @var AdminUserMenus
-	 */
-	private $adminUserMenus;
-	/**
-	 * @var AdminTagMenus
-	 */
-	private $adminTagMenus;
 
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array
@@ -53,8 +43,6 @@ class AdminAuthService extends AdminBaseService
 	private function initService()
 	{
 		$this->menuService = new MenuService();
-		$this->adminUserMenus = new AdminUserMenus();
-		$this->adminTagMenus = new AdminTagMenus();
 	}
 
 	/**해당 유저의 모든 권한을 셋팅한다.*/

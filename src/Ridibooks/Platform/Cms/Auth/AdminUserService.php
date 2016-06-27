@@ -5,11 +5,9 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserMenuDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenu;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
+use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
@@ -24,15 +22,11 @@ use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 class AdminUserService extends AdminBaseService
 {
 	private $adminUserTags;
-	private $adminUserMenus;
-	private $adminUserMenu;
 	private $publisherManager;
 
 	public function __construct()
 	{
 		$this->adminUserTags = new AdminUserTags();
-		$this->adminUserMenus = new AdminUserMenus();
-		$this->adminUserMenu = new AdminUserMenu();
 		$this->publisherManager = new TbPublisherManager();
 	}
 
@@ -96,13 +90,15 @@ class AdminUserService extends AdminBaseService
 		return AdminUser::find($user_id)->menus->pluck('id')->all();
 	}
 
-	/**해당 메뉴에 대한 권한을 가지고 있는 어드민을 가져온다.
+	/**
+	 * 해당 메뉴에 대한 권한을 가지고 있는 어드민을 가져온다.
+	 * @deprecated keep for external use
 	 * @param int $menu_id
 	 * @return array
 	 */
 	public function getAdminIdsByMenuId($menu_id)
 	{
-		return $this->adminUserMenus->getAdminIdsByMenuId($menu_id);
+		return AdminMenu::find($menu_id)->users->pluck('id')->toArray();
 	}
 
 	/**
@@ -231,12 +227,10 @@ class AdminUserService extends AdminBaseService
 	{
 		$menuIdArray = explode(",", $adminUserAuthDto->menu_id_array);
 		$menuIdArray = array_filter(array_unique($menuIdArray));
-		/**어드민 계정에 매핑된 모든 메뉴를 지운다.*/
-		$this->adminUserMenu->deleteAdminUserMenu($adminUserAuthDto->id);
 
-		foreach ($menuIdArray as $menu_id) {
-			$this->adminUserMenu->insertAdminUserMenu(new AdminUserMenuDto($adminUserAuthDto->id, $menu_id));
-		}
+		/** @var AdminUser $user */
+		$user = AdminUser::find($adminUserAuthDto->id);
+		$user->menus()->sync($menuIdArray);
 	}
 
 	/**어드민 계정이 담당하는 CP 정보 등록한다.
