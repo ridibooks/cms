@@ -151,7 +151,7 @@
 
       requirejs(["jquery", "comm/format.util"], function ($, format) {
         // 테이블 내 숫자 관련 cell formatting
-        $(".js-digit-cell").each(function (c, obj) {
+        $(".js_digit_cell").each(function (c, obj) {
           $(obj).css({"text-align": "right"}).text(format.priceFormatting($(obj).text()));
         });
       });
