@@ -144,4 +144,27 @@ class DictsUtils
 
 		return $left_dicts;
 	}
+
+	public static function convertDictsToHtmlTable($dicts)
+	{
+		$th = '';
+		$tr = '';
+		foreach ($dicts as $index => $dict) {
+			$td = '';
+			foreach ($dict as $key => $value) {
+				if($index == 0) {
+					$th = $th . "<th align='left'>" . $key . "</th>\n";
+				}
+				$td = $td . "<td align='left'>" . $value . "</td>\n";
+			}
+			$tr = $tr . "<tr>" . $td . "</tr>\n";
+		}
+
+		$html_table = "
+		<table cellspacing='0' cellpadding='0' style='width: 100%; border-collapse: collapse; color: #333; font-size: 13px; line-height: 1.7em; border-top:1px solid #848484;'>"
+			. "<thead>" . "<tr>" . $th . "</tr>". "</thead>"
+			. "<tbody>" . $tr . "</tbody>" . "</table>";
+
+		return $html_table;
+	}
 }
