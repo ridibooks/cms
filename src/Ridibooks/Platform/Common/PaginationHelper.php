@@ -52,6 +52,7 @@ class PaginationHelper
 			'start_page' => $start_page,
 			'end_page' => $end_page,
 			'link' => $link,
+			'query_string' => $query_string,
 			'show_next_last' => $show_next_last,
 			'next_page' => $next_page,
 			'prev_page' => $prev_page,
