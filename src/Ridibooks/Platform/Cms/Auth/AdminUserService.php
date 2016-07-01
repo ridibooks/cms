@@ -6,7 +6,6 @@ use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
-use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\StringUtils;
@@ -113,23 +112,6 @@ class AdminUserService
 		}
 
 		return $admin_ids;
-	}
-
-	/** 전체 팀 리스트를 가져온다.
-	 * @return array
-	 */
-	public function getWholeTeamList()
-	{
-		return TbAdminUserModel::getTeamList();
-	}
-
-	/** 해당 팀에 속한 멤버의 리스트를 가져온다.
-	 * @param $team
-	 * @return array
-	 */
-	public function getTeamMemberList($team)
-	{
-		return TbAdminUserModel::getTeamMemberList($team);
 	}
 
 	/**Admin 계정정보 등록한다.
