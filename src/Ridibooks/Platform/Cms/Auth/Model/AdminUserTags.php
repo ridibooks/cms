@@ -3,6 +3,9 @@ namespace Ridibooks\Platform\Cms\Auth\Model;
 
 use Ridibooks\Platform\Common\Base\AdminBaseModel;
 
+/**
+ * @deprecated AdminUserService 로 옮길 것
+ */
 class AdminUserTags extends AdminBaseModel
 {
 	/**해당 어드민에 매핑되어있는 태그 유무를 위한 갯수 가져온다.

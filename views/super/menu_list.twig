@@ -322,7 +322,16 @@
       </thead>
       <tbody id='js_menu_list'>
       {% for menu in menu_list %}
-        <tr {% if menu.is_use == 0 %}class="error" {% elseif menu.is_show == 0 %}class="warning"{% endif %}>
+        {% if menu.is_use == 0 %}
+          {% set tr_class = "danger" %}
+        {% elseif menu.is_show == 0 %}
+          {% set tr_class = "warning" %}
+        {% elseif menu.menu_deep == 0 %}
+          {% set tr_class = "success" %}
+        {% else %}
+          {% set tr_class = "" %}
+        {% endif %}
+        <tr class="{{ tr_class }}">
           <td>
             <input type="checkbox">
             <input type="hidden" name="id" value="{{ menu.id }}"/>
