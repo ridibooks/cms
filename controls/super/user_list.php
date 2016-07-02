@@ -4,14 +4,13 @@ use Ridibooks\Platform\Common\PagingUtil;
 use Symfony\Component\HttpFoundation\Request;
 
 $request = Request::createFromGlobals();
-$adminUserService = new AdminUserService();
 
 $page = $request->get('page');
 $search_text = $request->get("search_text");
 
 $pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 20);
 
-$admin_user_list = $adminUserService->getAdminUserList($search_text, $pagingDto);
+$admin_user_list = AdminUserService::getAdminUserList($search_text, $pagingDto->start, $pagingDto->limit);
 $paging = AdminUserService::getPagingTagByPagingDtoNew($pagingDto);
 
 return [

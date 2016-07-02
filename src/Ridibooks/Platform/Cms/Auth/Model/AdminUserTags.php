@@ -9,6 +9,7 @@ use Ridibooks\Platform\Common\Base\AdminBaseModel;
 class AdminUserTags extends AdminBaseModel
 {
 	/**해당 어드민에 매핑되어있는 태그 유무를 위한 갯수 가져온다.
+	 * @deprecated AdminUserService::checkAdminUserHasTag
 	 * @param string $user_id
 	 * @param string $tag_id
 	 * @return int
@@ -23,6 +24,7 @@ class AdminUserTags extends AdminBaseModel
 	}
 
 	/**해당 태그를 가진 유저 id를 가져온다.
+	 * @deprecated AdminTagService::getAdminIdsFromTags
 	 * @param $tag_id
 	 * @return array
 	 */

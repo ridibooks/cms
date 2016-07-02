@@ -34,6 +34,16 @@ class AdminTagService
 		return AdminTag::find($tag_id)->users->toArray();
 	}
 
+	public static function getAdminIdsFromTags($tag_ids)
+	{
+		return AdminTag::with('users')->find($tag_ids)
+			->map(function ($tag) {
+				return $tag->users->pluck('id');
+			})
+			->collapse()
+			->toArray();
+	}
+
 	public static function getAdminTagMenus($tag_id)
 	{
 		if (empty($tag_id)) {
@@ -115,12 +125,12 @@ class AdminTagService
 	{
 		$returns = [];
 
-		$tags = AdminTag::with('users', 'menus')->get();
+		$tags = AdminTag::withCount('users', 'menus')->get();
 		foreach ($tags as $tag) {
 			$returns[] = AdminTagDetailViewDto::importFromDatabaseRow(
 				$tag,
-				$tag->users()->count(),
-				$tag->menus()->count()
+				$tag->users_count,
+				$tag->menus_count
 			);
 		}
 

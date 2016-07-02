@@ -8,12 +8,13 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
+use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
 use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;
 use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 
-class AdminUserService
+class AdminUserService extends AdminBaseService
 {
 	private $adminUserTags;
 	private $publisherManager;
@@ -32,18 +33,13 @@ class AdminUserService
 			->count();
 	}
 
-	/**Admin 계정정보 리스트 가져온다.
-	 * @param string $search_text
-	 * @param \Ridibooks\Platform\Common\PagingUtil $pagingDto
-	 * @return array
-	 */
-	public function getAdminUserList($search_text, $pagingDto)
+	public static function getAdminUserList($search_text, $offset, $limit)
 	{
 		return AdminUser::query()
 			->where('id', 'like', '%' . $search_text . '%')
 			->orWhere('name', 'like', '%' . $search_text . '%')
 			->orderBy('is_use', 'desc')
-			->skip($pagingDto->start)->take($pagingDto->limit)
+			->skip($offset)->take($limit)
 			->get();
 	}
 
@@ -96,13 +92,14 @@ class AdminUserService
 	}
 
 	/**
+	 * @deprecated
 	 * 해당 tag를 가지고 있는 사용중인 어드민 ID를 가져온다.
 	 * @param $tag_id
 	 * @return array
 	 */
 	public function getValidAdminIdFromUserTag($tag_id)
 	{
-		$admin_id_rows = $this->adminUserTags->getAdminIdFromUserTag($tag_id);
+		$admin_id_rows = AdminTagService::getAdminIdsFromTags($tag_id);
 		$admin_ids = [];
 		foreach ($admin_id_rows as $admin_id_row) {
 			$adminUserDto = new AdminUserDto(self::getAdminUser($admin_id_row));
