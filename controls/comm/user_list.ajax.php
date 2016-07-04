@@ -3,11 +3,10 @@
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Common\Base\JsonDto;
 
-$adminUserService = new AdminUserService();
 $jsonDto = new JsonDto();
 
 try{
-	$jsonDto->data = $adminUserService->getAllAdminUserArray();
+	$jsonDto->data = AdminUserService::getAllAdminUserArray();
 } catch (Exception $e) {
 	$jsonDto->setException($e);
 }

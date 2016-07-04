@@ -44,7 +44,7 @@ class AdminUserService extends AdminBaseService
 	 * 사용 가능한 모든 Admin 계정정보 가져온다.
 	 * @return array
 	 */
-	public function getAllAdminUserArray()
+	public static function getAllAdminUserArray()
 	{
 		return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
 	}
