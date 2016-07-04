@@ -34,9 +34,14 @@ class AdminTagService
 		return AdminTag::find($tag_id)->users->toArray();
 	}
 
+	/**
+	 * 해당 tags 를 가지고 있는 사용중인 어드민 ID를 가져온다.
+	 * @param array $tag_ids
+	 * @return array
+	 */
 	public static function getAdminIdsFromTags($tag_ids)
 	{
-		return AdminTag::with('users')->find($tag_ids)->get()
+		return AdminTag::with('users')->find($tag_ids)
 			->map(function ($tag) {
 				return $tag->users->pluck('id');
 			})

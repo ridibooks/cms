@@ -106,26 +106,6 @@ class AdminUserService extends AdminBaseService
 		return ($user && $user->tags_count > 0);
 	}
 
-	/**
-	 * @deprecated
-	 * 해당 tag를 가지고 있는 사용중인 어드민 ID를 가져온다.
-	 * @param $tag_id
-	 * @return array
-	 */
-	public function getValidAdminIdFromUserTag($tag_id)
-	{
-		$admin_id_rows = AdminTagService::getAdminIdsFromTags($tag_id);
-		$admin_ids = [];
-		foreach ($admin_id_rows as $admin_id_row) {
-			$adminUserDto = new AdminUserDto(self::getAdminUser($admin_id_row));
-			if (!!$adminUserDto->is_use) {
-				$admin_ids[] = $adminUserDto->id;
-			}
-		}
-
-		return $admin_ids;
-	}
-
 	/**Admin 계정정보 등록한다.
 	 * @param AdminUserDto $adminUserDto
 	 * @throws
