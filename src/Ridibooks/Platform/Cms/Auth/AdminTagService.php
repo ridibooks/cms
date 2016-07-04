@@ -36,7 +36,7 @@ class AdminTagService
 
 	public static function getAdminIdsFromTags($tag_ids)
 	{
-		return AdminTag::with('users')->find($tag_ids)
+		return AdminTag::with('users')->find($tag_ids)->get()
 			->map(function ($tag) {
 				return $tag->users->pluck('id');
 			})

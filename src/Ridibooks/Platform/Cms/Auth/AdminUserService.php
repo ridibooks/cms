@@ -5,7 +5,6 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
@@ -16,12 +15,10 @@ use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 
 class AdminUserService extends AdminBaseService
 {
-	private $adminUserTags;
 	private $publisherManager;
 
 	public function __construct()
 	{
-		$this->adminUserTags = new AdminUserTags();
 		$this->publisherManager = new TbPublisherManager();
 	}
 
@@ -89,6 +86,24 @@ class AdminUserService extends AdminBaseService
 	public function getAdminIdsByMenuId($menu_id)
 	{
 		return AdminMenu::find($menu_id)->users->pluck('id')->toArray();
+	}
+
+	/**
+	 * 해당 어드민에 매핑되어있는 태그 유무를 위한 갯수 가져온다.
+	 * @param $user_id
+	 * @param string[] $tag_ids
+	 * @return bool
+	 */
+	public static function checkAdminUserHasTag($user_id, $tag_ids)
+	{
+		/** @var AdminUser $user */
+		$user = AdminUser::withCount([
+			'tags' => function ($query) use ($tag_ids) {
+				$query->whereIn('id', $tag_ids);
+			}
+		])->find($user_id);
+
+		return ($user && $user->tags_count > 0);
 	}
 
 	/**
