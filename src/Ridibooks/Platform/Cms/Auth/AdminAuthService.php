@@ -72,7 +72,7 @@ class AdminAuthService extends AdminBaseService
 			$menuids_owned = $menu_id_array;
 		} else {
 			//로그인 한 유저의 메뉴 id array 가져온다.
-			$menuids_owned = $this->getUserAllMenuId();
+			$menuids_owned = $this->getUserAllMenuId(LoginService::GetAdminID());
 		}
 
 		foreach ($menus_by_id as $menu) {
@@ -156,24 +156,28 @@ class AdminAuthService extends AdminBaseService
 	/**로그인한 유저의 모든 메뉴Id를 가져온다.
 	 * @return array menu_id array
 	 */
-	private function getUserAllMenuId()
+	private function getUserAllMenuId($user_id)
 	{
-		// 1: user -> tags -> menus
-		$tags = AdminUser::with('tags.menus')->find(LoginService::GetAdminID())->tags;
-		$menu_ids = [];
-		foreach ($tags as $tag) {
-			foreach ($tag->menus as $menu) {
-				array_push($menu_ids, $menu['id']);
-			}
+		$user = AdminUser::with('tags.menus')->find($user_id);
+		if (!$user) {
+			return [];
 		}
 
-		// 2: user -> menus
+		// 1: user.tags.menus
+		$tags_menus = $user->tags
+			->map(function ($tag) {
+				return $tag->menus->pluck('id');
+			})
+			->collapse()
+			->all();
+
+		// 2: user.menus
 		$user_menus = AdminUserService::getAdminUserMenu(LoginService::GetAdminID());
-		foreach ($user_menus as $menu_id) {
-			array_push($menu_ids, $menu_id);
-		}
 
-		return array_unique($menu_ids);
+		// uniq(1 + 2)
+		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
+
+		return $menu_ids;
 	}
 
 	/**menu ajax array 만든다.

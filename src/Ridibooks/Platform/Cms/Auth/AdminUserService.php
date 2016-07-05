@@ -61,20 +61,24 @@ class AdminUserService extends AdminBaseService
 
 	public static function getAdminUserTag($user_id)
 	{
-		if (empty($user_id)) {
+		/** @var AdminUser $user */
+		$user = AdminUser::find($user_id);
+		if (!$user) {
 			return [];
 		}
 
-		return AdminUser::find($user_id)->tags->pluck('id')->all();
+		return $user->tags->pluck('id')->all();
 	}
 
 	public static function getAdminUserMenu($user_id)
 	{
-		if (empty($user_id)) {
+		/** @var AdminUser $user */
+		$user = AdminUser::find($user_id);
+		if (!$user) {
 			return [];
 		}
 
-		return AdminUser::find($user_id)->menus->pluck('id')->all();
+		return $user->menus->pluck('id')->all();
 	}
 
 	/**
@@ -85,7 +89,13 @@ class AdminUserService extends AdminBaseService
 	 */
 	public function getAdminIdsByMenuId($menu_id)
 	{
-		return AdminMenu::find($menu_id)->users->pluck('id')->toArray();
+		/** @var AdminMenu $menu */
+		$menu = AdminMenu::find($menu_id);
+		if (!$menu) {
+			return [];
+		}
+
+		return $menu->users->pluck('id')->all();
 	}
 
 	/**
