@@ -6,10 +6,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CsvResponse extends Response
 {
-	protected $data;
-	protected $callback;
-	protected $filename;
-
 	/**
 	 * Constructor.
 	 *
@@ -18,46 +14,37 @@ class CsvResponse extends Response
 	 * @param integer $status The response status code
 	 * @param array $headers An array of response headers
 	 */
-	public function __construct($data = null, $filename = null, $status = 200, $headers = array())
+	public function __construct($data = null, $filename = null, $status = 200, $headers = [])
 	{
 		parent::__construct('', $status, $headers);
 
 		if (null === $data) {
 			$data = new \ArrayObject();
 		}
+
 		if (null === $filename) {
-			$this->filename = "data_" . date('Ymd');
-		} else {
-			$this->filename = $filename;
+			$filename = "data_" . date('Ymd');
 		}
 
+		$this->setCSVHeader($filename);
 		$this->setData($data);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public static function create($data = null, $filename = null, $status = 200, $headers = array())
+	public static function create($data = null, $filename = null, $status = 200, $headers = [])
 	{
 		return new static($data, $filename, $status, $headers);
 	}
 
-	/**
-	 * Sets the data to be sent as json.
-	 *
-	 * @param mixed $data
-	 *
-	 * @return CsvResponse
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function setData($data = array())
+	public function setData($data = [])
 	{
 		foreach ($data as $k => $v) {
 			if (is_object($v)) {
 				$v = get_object_vars($v);
 			} elseif (is_scalar($v)) {
-				$v = array($v);
+				$v = [$v];
 			}
 			foreach ($v as $k2 => $v2) {
 				$v[$k2] = iconv('utf-8', 'euc-kr', $v2);
@@ -65,9 +52,7 @@ class CsvResponse extends Response
 			$data[$k] = $v;
 		}
 
-		$this->data = $this->changeQuotesAndNewLineSpliter($data);
-
-		return $this->setCSVHeader();
+		$this->setContent($this->changeQuotesAndNewLineSpliter($data));
 	}
 
 	public function changeQuotesAndNewLineSpliter($input)
@@ -92,11 +77,9 @@ class CsvResponse extends Response
 	 *
 	 * @return CsvResponse
 	 */
-	protected function setCSVHeader()
+	protected function setCSVHeader($filename)
 	{
 		$this->headers->set('Content-Type', 'application/csv; charset=euc-kr');
-		$this->headers->set('Content-Disposition', "attachment; filename=" . $this->filename . ".csv");
-
-		return $this->setContent($this->data);
+		$this->headers->set('Content-Disposition', "attachment; filename=" . $filename . ".csv");
 	}
 }
