@@ -8,6 +8,7 @@ class CsvResponse extends Response
 {
 	protected $data;
 	protected $callback;
+	protected $filename;
 
 	/**
 	 * Constructor.
@@ -59,25 +60,30 @@ class CsvResponse extends Response
 				$v = array($v);
 			}
 			foreach ($v as $k2 => $v2) {
-				$v[$k2] = iconv('utf-8', 'cp949', $v2);
+				$v[$k2] = iconv('utf-8', 'euc-kr', $v2);
 			}
 			$data[$k] = $v;
 		}
 
-		$this->data = $this->encodeCsv($data);
+		$this->data = $this->changeQuotesAndNewLineSpliter($data);
 
-		return $this->update();
+		return $this->setCSVHeader();
 	}
 
-	public function encodeCsv($input)
+	public function changeQuotesAndNewLineSpliter($input)
 	{
 		$ret = '';
 		foreach ($input as $row) {
-			foreach ($row as $dat) {
-				$ret .= '"' . str_replace('"', '""', $dat) . '",';
+			foreach ($row as $cell) {
+				$cell = str_replace('"', '\"', $cell); //to deal with content's double quotes
+				$cell = '"' . $cell . '"'; //boxing contents with double quotes to manage content's comma
+				$cell .= ',';
+				$ret .= $cell;
 			}
-			$ret .= "\n";
+			$ret = rtrim($ret, ',');
+			$ret .= "\r\n";
 		}
+		$ret = rtrim($ret); //remove trail "\r" "\n"
 		return $ret;
 	}
 
@@ -86,21 +92,11 @@ class CsvResponse extends Response
 	 *
 	 * @return CsvResponse
 	 */
-	protected function update()
+	protected function setCSVHeader()
 	{
-		$this->headers->set('Content-Type', 'application/vnd.ms-excel; charset=cp949');
+		$this->headers->set('Content-Type', 'application/csv; charset=euc-kr');
 		$this->headers->set('Content-Disposition', "attachment; filename=" . $this->filename . ".csv");
 
 		return $this->setContent($this->data);
-	}
-
-	/**
-	 * @param $file_name
-	 */
-	public static function setExcelHeader($file_name)
-	{
-		header("Content-Type: application/vnd.ms-excel;charset=utf-8");
-		header("Content-Disposition: attachment; filename=\"$file_name.xls\"");
-		header('Cache-Control: max-age=0');
 	}
 }
