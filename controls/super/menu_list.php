@@ -1,7 +1,7 @@
 <?php
-use Ridibooks\Platform\Cms\Auth\MenuService;
+use Ridibooks\Platform\Cms\Auth\AdminMenuService;
 
 return [
 	'title' => '메뉴 관리',
-	'menu_list' => MenuService::getMenuList()
+	'menu_list' => AdminMenuService::getMenuList()
 ];

@@ -8,7 +8,7 @@ use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\ValidationUtils;
 
-class MenuService
+class AdminMenuService
 {
 	public static function getMenuList($is_use = null)
 	{

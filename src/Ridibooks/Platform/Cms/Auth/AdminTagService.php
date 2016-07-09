@@ -16,7 +16,7 @@ class AdminTagService
 
 	public function getMappedAdminMenuListForSelectBox($tag_id)
 	{
-		$menus = MenuService::getMenuList();
+		$menus = AdminMenuService::getMenuList();
 
 		//태그에 매핑된 메뉴 리스트
 		$menu_ids = AdminTagService::getAdminTagMenus($tag_id);
@@ -62,7 +62,7 @@ class AdminTagService
 	{
 		$menu_ids = AdminTagService::getAdminTagMenus($tag_id);
 
-		$menus = MenuService::getMenus($menu_ids);
+		$menus = AdminMenuService::getMenus($menu_ids);
 
 		return AdminAuthService::getHashesFromMenus($check_url, $menus);
 	}

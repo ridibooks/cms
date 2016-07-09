@@ -1,11 +1,11 @@
 <?php
+use Ridibooks\Platform\Cms\Auth\AdminMenuService;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;
-use Ridibooks\Platform\Cms\Auth\MenuService;
 use Ridibooks\Platform\Common\Base\JsonDto;
 use Symfony\Component\HttpFoundation\Request;
 
-$menu_service = new MenuService();
+$menu_service = new AdminMenuService();
 $request = Request::createFromGlobals();
 $json_dto = new JsonDto();
 
@@ -39,7 +39,7 @@ try {
 			$json_dto->setMsg('성공적으로 삭제하였습니다.');
 			break;
 		case "showMenuArray": //전체 메뉴 목록 가져온다.
-			$json_dto->data = (array)MenuService::getMenuList(1);
+			$json_dto->data = (array)AdminMenuService::getMenuList(1);
 			break;
 	}
 

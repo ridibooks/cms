@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminAuthService extends AdminBaseService
 {
 	/**
-	 * @var MenuService
+	 * @var AdminMenuService
 	 */
 	private $menuService;
 
@@ -42,7 +42,7 @@ class AdminAuthService extends AdminBaseService
 	/**init classes*/
 	private function initService()
 	{
-		$this->menuService = new MenuService();
+		$this->menuService = new AdminMenuService();
 	}
 
 	/**해당 유저의 모든 권한을 셋팅한다.*/
@@ -51,7 +51,7 @@ class AdminAuthService extends AdminBaseService
 		//전체 menu_ajax를 가지고 온다.
 		$menu_ajax_array = AdminMenuAjax::all()->toArray();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-		$menu_array = MenuService::getMenuList();
+		$menu_array = AdminMenuService::getMenuList();
 
 		$auth_list = [];
 		$menus_by_id = [];

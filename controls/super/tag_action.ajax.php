@@ -1,8 +1,8 @@
 <?php
+use Ridibooks\Platform\Cms\Auth\AdminMenuService;
 use Ridibooks\Platform\Cms\Auth\AdminTagService;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
-use Ridibooks\Platform\Cms\Auth\MenuService;
 use Ridibooks\Platform\Common\Base\JsonDto;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -10,7 +10,7 @@ $request = Request::createFromGlobals();
 $jsonDto = new JsonDto();
 
 $tagService = new AdminTagService();
-$menuService = new MenuService();
+$menuService = new AdminMenuService();
 $tagDto = new AdminTagDto($request);
 $tagMenuDto = new AdminTagMenuDto($request);
 
