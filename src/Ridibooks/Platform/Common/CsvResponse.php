@@ -56,20 +56,13 @@ class CsvResponse extends Response
 		return implode("\r\n", $new_data);
 	}
 
-	private function setCSVHeader($filename)
-	{
-		$this->headers->set('Content-Type', 'application/csv; charset=euc-kr');
-		$this->headers->set('Content-Disposition', "attachment; filename=\"$filename.csv\"");
-		$this->headers->set('Cache-Control', 'max-age=0');
-	}
-
 	/**
 	 * @param $file_name
 	 */
 	public static function setExcelHeader($file_name)
 	{
-		header("Content-Type: application/vnd.ms-excel;charset=utf-8");
-		header("Content-Disposition: attachment; filename=\"$file_name.xls\"");
+		header("Content-Type: application/csv; charset=euc-kr");
+		header("Content-Disposition: attachment; filename=\"$file_name.csv\"");
 		header('Cache-Control: max-age=0');
 	}
 }
