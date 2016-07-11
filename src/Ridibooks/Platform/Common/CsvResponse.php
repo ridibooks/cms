@@ -14,7 +14,7 @@ class CsvResponse extends Response
 			$filename = "data_" . date('Ymd');
 		}
 
-		$this->setCSVHeader($filename);
+		self::setExcelHeader($filename);
 		$this->setData($data);
 	}
 
@@ -56,15 +56,7 @@ class CsvResponse extends Response
 		return implode("\r\n", $new_data);
 	}
 
-	private function setCSVHeader($filename)
-	{
-		$this->headers->set('Content-Type', 'application/csv; charset=euc-kr');
-		$this->headers->set('Content-Disposition', "attachment; filename=\"$filename.csv\"");
-		$this->headers->set('Cache-Control: max-age=0');
-	}
-
 	/**
-	 * @deprecated
 	 * @param $file_name
 	 */
 	public static function setExcelHeader($file_name)
