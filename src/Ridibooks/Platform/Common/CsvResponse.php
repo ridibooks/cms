@@ -46,7 +46,7 @@ class CsvResponse extends Response
 		foreach ($data as $row) {
 			$new_row = [];
 			foreach ($row as $cell) {
-				$cell = str_replace('"', '\"', $cell); //to deal with content's double quotes
+				$cell = str_replace('"', '""', $cell); //to deal with content's double quotes
 				$cell = '"' . $cell . '"'; //boxing contents with double quotes to manage content's comma
 				$new_row[] = $cell;
 			}
@@ -54,6 +54,13 @@ class CsvResponse extends Response
 		}
 
 		return implode("\r\n", $new_data);
+	}
+
+	private function setCSVHeader($filename)
+	{
+		$this->headers->set('Content-Type', 'application/csv; charset=euc-kr');
+		$this->headers->set('Content-Disposition', "attachment; filename=\"$filename.csv\"");
+		$this->headers->set('Cache-Control', 'max-age=0');
 	}
 
 	/**
