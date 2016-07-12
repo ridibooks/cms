@@ -346,6 +346,7 @@ class AdminAuthService extends AdminBaseService
 
 		$allowed_urls = [
 			'/admin/welcome',	// deprecated
+			'/comm/user_info',//본인 비밀번호 변경 가능
 			'/welcome',
 			'/logout',
 			'/'
