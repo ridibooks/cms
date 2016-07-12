@@ -3,6 +3,7 @@ use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\AdminTagSessionOperator;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Cms\CmsApplication;
+use Ridibooks\Platform\Cms\Controller\SuperControllerProvider;
 use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,7 @@ $router = new MiniRouter(__DIR__ . '/controls', __DIR__ . '/views');
 $response = $router->route(Request::createFromGlobals());
 if (!$response->isNotFound()) {
 	$response->send();
+	exit;
 }
 
 
@@ -73,5 +75,7 @@ $app->get('/logout', function () {
 	LoginService::resetSession();
 	return RedirectResponse::create('/');
 });
+
+$app->mount('/super', new SuperControllerProvider());
 
 $app->run();
