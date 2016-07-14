@@ -1,4 +1,6 @@
 <?php
+use Ridibooks\Library\DB\ConnectionProvider;
+
 require_once __DIR__ . '/../../../include/config.php';
 
 // PSR-4 autoload
@@ -6,12 +8,13 @@ $autoloader = require __DIR__ . "/../vendor/autoload.php";
 
 $capsule = new Illuminate\Database\Capsule\Manager();
 
+$params = \Config::getConnectionParams(ConnectionProvider::CONNECTION_GROUP_PLATFORM_WRITE);
 $capsule->addConnection([
 	'driver'    => 'mysql',
-	'host'      => \Config::$DB_HOST,
+	'host'      => $params['host'],
 	'database'  => 'bom',
-	'username'  => \Config::$DB_USER,
-	'password'  => \Config::$DB_PASSWD,
+	'username'  => $params['user'],
+	'password'  => $params['password'],
 	'charset'   => 'utf8',
 	'collation' => 'utf8_unicode_ci',
 	'prefix'    => '',

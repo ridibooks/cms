@@ -133,10 +133,6 @@ class AdminUserService extends AdminBaseService
 	{
 		$this->_validateAdminUserUpdate($adminUserDto);
 
-		if ($adminUserDto->id != $adminUserDto->last_id) {
-			throw new MsgException('ID는 변경할 수 없습니다.');
-		}
-
 		$adminUserDto->id = trim($adminUserDto->id);
 		if (isset($adminUserDto->passwd) && trim($adminUserDto->passwd) !== '') {
 			$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
