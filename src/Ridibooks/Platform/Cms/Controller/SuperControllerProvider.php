@@ -27,13 +27,13 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		$controllers->get('user_list', [$this, 'users']);
 		$controllers->get('user_detail', [$this, 'user']);
-		$controllers->post('user_action.ajax', [$this, 'userAction']);
+		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
 		$controllers->get('tag_list', [$this, 'tags']);
-		$controllers->post('tag_action.ajax', [$this, 'tagAction']);
+		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menu_list', [$this, 'menus']);
-		$controllers->post('menu_action.ajax', [$this, 'menuAction']);
+		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
 		return $controllers;
 	}

@@ -133,14 +133,19 @@ class AdminUserService extends AdminBaseService
 	{
 		$this->_validateAdminUserUpdate($adminUserDto);
 
-		$adminUserDto->id = trim($adminUserDto->id);
+		$filler = [
+			'name' => $adminUserDto->name,
+			'team' => $adminUserDto->team,
+			'is_use' => $adminUserDto->is_use
+		];
+
 		if (isset($adminUserDto->passwd) && trim($adminUserDto->passwd) !== '') {
-			$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
+			$filler['passwd'] = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
 		}
 
 		/** @var AdminUser $admin */
-		$admin = AdminUser::find($adminUserDto->id);
-		$admin->fill((array)$adminUserDto);
+		$admin = AdminUser::find(trim($adminUserDto->id));
+		$admin->fill($filler);
 		$admin->save();
 	}
 
