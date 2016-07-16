@@ -33,7 +33,7 @@ class CmsApplication extends Application
 		);
 
 		// see http://silex.sensiolabs.org/doc/providers/twig.html#customization
-		$this['twig'] = $this->share(
+		$this['twig'] = self::share(
 			$this->extend(
 				'twig',
 				function (\Twig_Environment $twig) {
@@ -51,7 +51,7 @@ class CmsApplication extends Application
 			)
 		);
 
-		$this['twig.loader.filesystem'] = $this->share(
+		$this['twig.loader.filesystem'] = self::share(
 			$this->extend(
 				'twig.loader.filesystem',
 				function (\Twig_Loader_Filesystem $loader) {
