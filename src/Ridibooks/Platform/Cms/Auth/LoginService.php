@@ -3,9 +3,8 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 
-class LoginService extends AdminBaseService
+class LoginService
 {
 	/**
 	 * @var AdminUserService
@@ -58,15 +57,21 @@ class LoginService extends AdminBaseService
 	 */
 	private function setSessions($id)
 	{
-		session_start();
 		//GetAdminID에 사용할 id를미리 set 한다.
 		$_SESSION['session_admin_id'] = $id;
 
-		$authService = new AdminAuthService();
-		$_SESSION['session_user_auth'] = $authService->getAdminAuth();
-		$_SESSION['session_user_menu'] = $authService->getAdminMenu();
-		$_SESSION['session_user_tag'] = $authService->getAdminTag();
-		$_SESSION['session_user_tagid'] = $authService->getAdminTagId();
+		AdminAuthService::initSession();
+	}
+
+	public static function resetSession()
+	{
+		$_SESSION['session_admin_id'] = null;
+		$_SESSION['session_user_auth'] = null;
+		$_SESSION['session_user_menu'] = null;
+		$_SESSION['session_user_tag'] = null;
+		$_SESSION['session_user_tagid'] = null;
+
+		@session_destroy();
 	}
 
 	public static function GetAdminID()

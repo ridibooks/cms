@@ -5,12 +5,8 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Cms\Auth\Model\AdminMenuAjaxs;
-use Ridibooks\Platform\Cms\Auth\Model\AdminTagMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserMenus;
-use Ridibooks\Platform\Cms\Auth\Model\AdminUserTags;
-use Ridibooks\Platform\Cms\Auth\Model\TbAdminUserModel;
+use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
+use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,25 +19,9 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminAuthService extends AdminBaseService
 {
 	/**
-	 * @var MenuService
+	 * @var AdminMenuService
 	 */
 	private $menuService;
-	/**
-	 * @var AdminUserMenus
-	 */
-	private $adminUserMenus;
-	/**
-	 * @var AdminMenuAjaxs
-	 */
-	private $adminMenuAjaxs;
-	/**
-	 * @var AdminTagMenus
-	 */
-	private $adminTagMenus;
-	/**
-	 * @var AdminUserTags
-	 */
-	private $adminUserTags;
 
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array
@@ -62,20 +42,16 @@ class AdminAuthService extends AdminBaseService
 	/**init classes*/
 	private function initService()
 	{
-		$this->menuService = new MenuService();
-		$this->adminUserMenus = new AdminUserMenus();
-		$this->adminMenuAjaxs = new AdminMenuAjaxs();
-		$this->adminTagMenus = new AdminTagMenus();
-		$this->adminUserTags = new AdminUserTags();
+		$this->menuService = new AdminMenuService();
 	}
 
 	/**해당 유저의 모든 권한을 셋팅한다.*/
 	private function initAdminAuth()
 	{
 		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = $this->adminMenuAjaxs->getAdminMenuAjaxList();
+		$menu_ajax_array = AdminMenuAjax::all()->toArray();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-		$menu_array = $this->menuService->getMenuList();
+		$menu_array = AdminMenuService::getMenuList();
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -96,7 +72,7 @@ class AdminAuthService extends AdminBaseService
 			$menuids_owned = $menu_id_array;
 		} else {
 			//로그인 한 유저의 메뉴 id array 가져온다.
-			$menuids_owned = $this->getUserAllMenuId();
+			$menuids_owned = $this->getUserAllMenuId(LoginService::GetAdminID());
 		}
 
 		foreach ($menus_by_id as $menu) {
@@ -174,30 +150,34 @@ class AdminAuthService extends AdminBaseService
 	 */
 	private function initAdminTag()
 	{
-		$this->adminTag = $this->adminUserTags->getAdminUserTagList(LoginService::GetAdminID());
+		$this->adminTag = AdminUserService::getAdminUserTag(LoginService::GetAdminID());
 	}
 
 	/**로그인한 유저의 모든 메뉴Id를 가져온다.
 	 * @return array menu_id array
 	 */
-	private function getUserAllMenuId()
+	private function getUserAllMenuId($user_id)
 	{
-		//해당 유저에 매핑되어 있는 tag_id를 가져온다.
-		$tag_id_array = $this->adminUserTags->getAdminUserTagList(LoginService::GetAdminID());
-		$menu_id_array = [];
-		foreach ($tag_id_array as $tag_id) { //한 사람에게 여러개의 tag가 붙을 수 있기에...
-			//tag_id를 통해서 매핑되어있는 menu_id를 가져온다.
-			$menu_tag_list = $this->adminTagMenus->getAdminMenuTagList($tag_id);
-			foreach ($menu_tag_list as $menu_tag) {
-				array_push($menu_id_array, $menu_tag['menu_id']);
-			}
+		$user = AdminUser::with('tags.menus')->find($user_id);
+		if (!$user) {
+			return [];
 		}
-		//해당 유저에 매핑되어 있는 menu_id 가져온다.
-		$user_menu_array = $this->adminUserMenus->getAdminUserMenuList(LoginService::GetAdminID());
-		foreach ($user_menu_array as $user_menu) {
-			array_push($menu_id_array, $user_menu);
-		}
-		return array_unique($menu_id_array);
+
+		// 1: user.tags.menus
+		$tags_menus = $user->tags
+			->map(function ($tag) {
+				return $tag->menus->pluck('id');
+			})
+			->collapse()
+			->all();
+
+		// 2: user.menus
+		$user_menus = AdminUserService::getAdminUserMenu(LoginService::GetAdminID());
+
+		// uniq(1 + 2)
+		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
+
+		return $menu_ids;
 	}
 
 	/**menu ajax array 만든다.
@@ -366,6 +346,8 @@ class AdminAuthService extends AdminBaseService
 
 		$allowed_urls = [
 			'/admin/welcome',	// deprecated
+			'/comm/user_info',// 본인 비밀번호 변경 가능
+			'/comm/user_info_action.ajax',// 본인 비밀번호 변경 가능 #2
 			'/welcome',
 			'/logout',
 			'/'
@@ -440,9 +422,8 @@ class AdminAuthService extends AdminBaseService
 	 */
 	public static function isValidUser()
 	{
-		$adminUserDto = new AdminUserDto(TbAdminUserModel::getAdminUser(LoginService::GetAdminID()));
-
-		return $adminUserDto->is_use ? true : false;
+		$admin = AdminUser::find(LoginService::GetAdminID());
+		return $admin && $admin->is_use;
 	}
 
 	/**

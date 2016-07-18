@@ -109,15 +109,6 @@ class AdminTagSessionOperator
 		return self::hasTagId(AdminTagConstants::PLATFORMTEAM_TAG) || self::hasTagId(AdminTagConstants::VIEWERTEAM_TAG);
 	}
 
-	/**
-	 * 로그인 한 유저가 서점 운영 팀인지 확인한다.
-	 * @return bool
-	 */
-	public static function isStoreOperationTeam()
-	{
-		return self::hasTagId(ProductAuthTag::STORE_FANTASY) || self::hasTagId(ProductAuthTag::STORE_ROMANCE);
-	}
-
 	/**입력 받은 TagId 있는지 확인한다.
 	 * @param mixed $tag_id
 	 * @return bool

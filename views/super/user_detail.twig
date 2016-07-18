@@ -89,7 +89,7 @@
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">ID</label>
             <div class="col-xs-10">
-              <input type="text" id="js_user_id" class="form-control" value="{{ userDetail.id }}"/>
+              <input type="text" id="js_user_id" class="form-control" value="{{ userDetail.id }}" {{ userDetail.id ? "disabled" }}/>
             </div>
           </div>
 
