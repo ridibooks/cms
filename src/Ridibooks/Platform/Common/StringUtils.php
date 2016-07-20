@@ -67,6 +67,7 @@ class StringUtils
 		} else {
 			$replace = [StringUtils::UNICODE_ZERO_WIDTH_SPACE, StringUtils::UNICODE_NON_BREAKING_SPACE];
 		}
+		$str = \Normalizer::normalize($str);
 		$str = str_replace($replace, ' ', $str);
 
 		return $str;
