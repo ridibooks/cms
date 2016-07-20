@@ -54,7 +54,15 @@ class StringUtils
 		return substr($jumin, 0, 6) . "-" . substr($jumin, 6, 1) . "******";
 	}
 
-	public static function normalizeSpace($str, $is_single_line = false)
+	public static function normalizeString($str, $is_single_line = false)
+	{
+		$str = self::normalizeSpace($str, $is_single_line);
+		$str = \Normalizer::normalize($str);
+
+		return $str;
+	}
+
+	private static function normalizeSpace($str, $is_single_line = false)
 	{
 		if ($is_single_line) {
 			$replace = [
@@ -67,7 +75,6 @@ class StringUtils
 		} else {
 			$replace = [StringUtils::UNICODE_ZERO_WIDTH_SPACE, StringUtils::UNICODE_NON_BREAKING_SPACE];
 		}
-		$str = \Normalizer::normalize($str);
 		$str = str_replace($replace, ' ', $str);
 
 		return $str;
