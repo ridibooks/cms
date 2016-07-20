@@ -57,7 +57,11 @@ class StringUtils
 	public static function normalizeString($str, $is_single_line = false)
 	{
 		$str = self::normalizeSpace($str, $is_single_line);
-		$str = \Normalizer::normalize($str);
+		/*
+		 * 유니코드 NFD -> NFD변환을 해준다.
+		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
+		 */
+		$str = iconv('UTF-8-MAC', 'UTF-8', $str);
 
 		return $str;
 	}
