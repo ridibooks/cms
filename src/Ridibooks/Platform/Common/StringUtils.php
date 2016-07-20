@@ -61,7 +61,10 @@ class StringUtils
 		 * 유니코드 NFD -> NFD변환을 해준다.
 		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
 		 */
-		$str = iconv('UTF-8-MAC', 'UTF-8', $str);
+		$is_utf_mac = iconv('UTF-8-MAC', 'UTF', $str);
+		if ($is_utf_mac) {
+			$str = iconv('UTF-8-MAC', 'UTF', $str);
+		}
 
 		return $str;
 	}
