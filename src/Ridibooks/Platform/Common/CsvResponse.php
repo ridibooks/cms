@@ -47,7 +47,7 @@ class CsvResponse extends Response
 			$new_row = [];
 			foreach ($row as $cell) {
 				$formatted_cell = '"' . str_replace('"', '""', $cell) . '"';
-				if (ctype_digit($cell) && intval($cell) > 10**8) {
+				if (ctype_digit($cell) && intval($cell) > pow(10, 8)) {
 					// 1E+xx 형태로 표시되는 문제를 해결하기 위해 아주 큰 숫자는 string으로 취급
 					$formatted_cell = '=' . $formatted_cell;
 				}
