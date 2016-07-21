@@ -58,10 +58,16 @@ class StringUtils
 	{
 		$str = self::normalizeSpace($str, $is_single_line);
 		/*
-		 * 유니코드 NFD -> NFD변환을 해준다.
+		 * Unicode의 형식을 NFC로 맞춘다.
+		 * iconv -l을 사용해보았을때 MAC에서만 UTF-8-MAC을 지원하기 때문에 iconv를 사용하지 않는다.
 		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
 		 */
-		$str = iconv('UTF-8-MAC', 'UTF-8', $str);
+		if (!\Normalizer::isNormalized($str)) {
+			$normalized_string = \Normalizer::normalize($str);
+			if ($normalized_string !== false) {
+				$str = $normalized_string;
+			}
+		}
 
 		return $str;
 	}
