@@ -7,44 +7,45 @@
     <base href="//{{ BASE_HREF }}"/>
   {% endif %}
 
+  <style>
+    .DEV_environment_ribbon, .STAGING_environment_ribbon {
+      position: fixed;
+      left: -30px;
+      top: 10px;
+      z-index: 99999;
+      width: 100px;
+      height: 24px;
+      margin: 0;
+      padding: 0;
+      line-height: 25px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0;
+
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+
+      box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+      -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+      -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+    }
+
+    .DEV_environment_ribbon {
+      background: #5fce0c;
+    }
+
+    .STAGING_environment_ribbon {
+      background: #e74c3c;
+      font-size: 11px;
+    }
+  </style>
+
   {% block style %}
-    <style>
-      .DEV_environment_ribbon, .STAGING_environment_ribbon {
-        position: fixed;
-        left: -30px;
-        top: 10px;
-        z-index: 99999;
-        width: 100px;
-        height: 24px;
-        margin: 0;
-        padding: 0;
-        line-height: 25px;
-        text-align: center;
-        font-size: 14px;
-        font-weight: 700;
-        color: white;
-        letter-spacing: 0;
-
-        -webkit-transform: rotate(-45deg);
-        -moz-transform: rotate(-45deg);
-        -ms-transform: rotate(-45deg);
-        -o-transform: rotate(-45deg);
-        transform: rotate(-45deg);
-
-        box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
-        -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
-        -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
-      }
-
-      .DEV_environment_ribbon {
-        background: #5fce0c;
-      }
-
-      .STAGING_environment_ribbon {
-        background: #e74c3c;
-        font-size: 11px;
-      }
-    </style>
   {% endblock %}
 
   {% block head %}

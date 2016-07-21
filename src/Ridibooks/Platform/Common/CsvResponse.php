@@ -46,9 +46,12 @@ class CsvResponse extends Response
 		foreach ($data as $row) {
 			$new_row = [];
 			foreach ($row as $cell) {
-				$cell = str_replace('"', '""', $cell); //to deal with content's double quotes
-				$cell = '"' . $cell . '"'; //boxing contents with double quotes to manage content's comma
-				$new_row[] = $cell;
+				$formatted_cell = '"' . str_replace('"', '""', $cell) . '"';
+				if (ctype_digit($cell) && intval($cell) > 10**8) {
+					// 1E+xx 형태로 표시되는 문제를 해결하기 위해 아주 큰 숫자는 string으로 취급
+					$formatted_cell = '=' . $formatted_cell;
+				}
+				$new_row[] = $formatted_cell;
 			}
 			$new_data[] = implode(",", $new_row);
 		}

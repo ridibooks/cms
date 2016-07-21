@@ -31,8 +31,7 @@ class MiniRouter
 	 */
 	public function route(Request $request)
 	{
-		$request_uri = $request->getRequestUri();
-		$request_uri_wo_qs = self::getNormalizedUri($request_uri);
+		$request_uri_wo_qs = self::getNormalizedUri($request->getRequestUri());
 
 		// 기존 Router에서는 PHP_SELF와 Query String제외된 REQUEST_URI가 서로 같았으나
 		// Routing 방식이 변경되면서 PHP_SELF는 이제 mini_router.php가 들어감
@@ -54,6 +53,35 @@ class MiniRouter
 
 			$controller_path = substr($request_uri_wo_qs, strlen($this->prefix_uri));
 		}
+
+		$response = self::shouldRedirectForLogin($request);
+		if ($response) {
+			return $response;
+		}
+
+		$return_value = $this->callController($controller_path);
+
+		if (is_array($return_value)) {
+			return $this->callView($request, $controller_path, $return_value);
+		} elseif (is_string($return_value)) {
+			return Response::create($return_value);
+		} elseif ($return_value instanceof Response) {
+			return $return_value;
+		} elseif ($return_value === false) {
+			return self::notFound();
+		} else {
+			// 리턴값이 아예 없는 페이지도 있어서 호환성 유지 위해
+			return Response::create('', http_response_code());
+		}
+	}
+
+	/**
+	 * @param Request $request
+	 * @return null|Response
+	 */
+	public static function shouldRedirectForLogin(Request $request)
+	{
+		$request_uri = $request->getRequestUri();
 
 		$login_url = '/login';
 		$on_login_page = (strncmp($request_uri, $login_url, strlen($login_url)) === 0);
@@ -84,20 +112,7 @@ class MiniRouter
 			}
 		}
 
-		$return_value = $this->callController($controller_path);
-
-		if (is_array($return_value)) {
-			return $this->callView($request, $controller_path, $return_value);
-		} elseif (is_string($return_value)) {
-			return Response::create($return_value);
-		} elseif ($return_value instanceof Response) {
-			return $return_value;
-		} elseif ($return_value === false) {
-			return self::notFound();
-		} else {
-			// 리턴값이 아예 없는 페이지도 있어서 호환성 유지 위해
-			return Response::create('', http_response_code());
-		}
+		return null;
 	}
 
 	/**

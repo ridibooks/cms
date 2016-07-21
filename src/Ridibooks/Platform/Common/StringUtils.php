@@ -54,7 +54,19 @@ class StringUtils
 		return substr($jumin, 0, 6) . "-" . substr($jumin, 6, 1) . "******";
 	}
 
-	public static function normalizeSpace($str, $is_single_line = false)
+	public static function normalizeString($str, $is_single_line = false)
+	{
+		$str = self::normalizeSpace($str, $is_single_line);
+		/*
+		 * 유니코드 NFD -> NFD변환을 해준다.
+		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
+		 */
+		$str = iconv('UTF-8-MAC', 'UTF-8', $str);
+
+		return $str;
+	}
+
+	private static function normalizeSpace($str, $is_single_line = false)
 	{
 		if ($is_single_line) {
 			$replace = [
