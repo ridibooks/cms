@@ -7,13 +7,11 @@ class AdminTag extends Model
 {
 	protected $table = 'tb_admin2_tag';
 
-	public $timestamps = false;
-
 	protected $fillable = [
 		'id',
 		'name',
 		'is_use',
-		'reg_date',
+		'creator'
 	];
 
 	public function users()

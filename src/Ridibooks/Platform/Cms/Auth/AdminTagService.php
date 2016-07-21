@@ -2,7 +2,6 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminTagDetailViewDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -67,17 +66,20 @@ class AdminTagService
 		return AdminAuthService::getHashesFromMenus($check_url, $menus);
 	}
 
-	public function insertTag($tagDto)
+	public static function insertTag($tagDto)
 	{
-		$this->_validateTag((array)$tagDto);
+		self::_validateTag((array)$tagDto);
 
-		AdminTag::create((array)$tagDto);
+		$tag = new AdminTag();
+		$tag->fill((array)$tagDto);
+		$tag->creator = LoginService::GetAdminID();
+		$tag->save();
 	}
 
-	public function updateTag($tagDto)
+	public static function updateTag($tagDto)
 	{
 		foreach ($tagDto->tag_list as $tag) {
-			$this->_validateTag($tag);
+			self::_validateTag($tag);
 
 			if ($tag['is_use'] != 1) {
 				$user_count = AdminTag::find($tag['id'])->users()->count();
@@ -91,6 +93,11 @@ class AdminTagService
 			$adminTag->fill($tag);
 			$adminTag->save();
 		}
+	}
+
+	public static function deleteTag($id)
+	{
+		AdminTag::destroy($id);
 	}
 
 	/**
@@ -115,7 +122,7 @@ class AdminTagService
 		$tag->menus()->detach($tagMenuDto->menu_id);
 	}
 
-	private function _validateTag($tagArray)
+	private static function _validateTag($tagArray)
 	{
 		ValidationUtils::checkNullField($tagArray['name'], '태그 이름을 입력하여 주십시오.');
 	}
@@ -128,17 +135,6 @@ class AdminTagService
 
 	public static function getTagListWithUseCount()
 	{
-		$returns = [];
-
-		$tags = AdminTag::withCount('users', 'menus')->get();
-		foreach ($tags as $tag) {
-			$returns[] = AdminTagDetailViewDto::importFromDatabaseRow(
-				$tag,
-				$tag->users_count,
-				$tag->menus_count
-			);
-		}
-
-		return $returns;
+		return AdminTag::withCount('users', 'menus')->get()->toArray();
 	}
 }

@@ -29,7 +29,9 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->get('user_detail', [$this, 'user']);
 		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
-		$controllers->get('tag_list', [$this, 'tags']);
+		$controllers->get('tags', [$this, 'tags']);
+		$controllers->post('tags', [$this, 'createTag']);
+		$controllers->delete('tags/{tag_id}', [$this, 'deleteTag']);
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menu_list', [$this, 'menus']);
@@ -127,12 +129,40 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 	public function tags(CmsApplication $app)
 	{
-		return $app->render('super/tag_list.twig',
+		return $app->render('super/tags.twig',
 			[
 				'title' => '태그 관리',
-				'tag_list' => AdminTagService::getTagListWithUseCount()
+				'tags' => AdminTagService::getTagListWithUseCount()
 			]
 		);
+	}
+
+	public function createTag(CmsApplication $app, Request $request)
+	{
+		$tagDto = new AdminTagDto($request);
+
+		try {
+			AdminTagService::insertTag($tagDto);
+			$app->addFlashInfo('성공적으로 등록하였습니다.');
+		} catch (\Exception $e) {
+			$app->addFlashError($e->getMessage());
+		}
+
+		return $app->redirect('/super/tags');
+	}
+
+	public function deleteTag($tag_id, CmsApplication $app)
+	{
+		$jsonDto = new JsonDto();
+
+		try {
+			AdminTagService::deleteTag($tag_id);
+			$jsonDto->setMsg('성공적으로 삭제되었습니다.');
+		} catch (\Exception $e) {
+			$jsonDto->setException($e);
+		}
+
+		return $app->json((array)$jsonDto);
 	}
 
 	public function tagAction(Application $app, Request $request)
@@ -143,15 +173,14 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$tagDto = new AdminTagDto($request);
 		$tagMenuDto = new AdminTagMenuDto($request);
 
-
 		try {
 			switch ($tagDto->command) {
-				case 'insert': //Tag 등록
-					$tagService->insertTag($tagDto);
+				case 'insert':
+					AdminTagService::insertTag($tagDto);
 					$jsonDto->setMsg("성공적으로 등록하였습니다.");
 					break;
-				case 'update': //Tag 수정
-					$tagService->updateTag($tagDto);
+				case 'update':
+					AdminTagService::updateTag($tagDto);
 					$jsonDto->setMsg("성공적으로 수정하였습니다.");
 					break;
 				case 'show_mapping': //Tag에 매핑된 메뉴 리스트
@@ -194,7 +223,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		$menu_dto = new AdminMenuDto($request);
 		$menu_ajax_dto = new AdminMenuAjaxDto($request);
-
 
 		try {
 			switch ($menu_dto->command) {

@@ -3,7 +3,10 @@ namespace Ridibooks\Platform\Cms;
 
 use Silex\Application;
 use Silex\Application\TwigTrait;
+use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class CmsApplication extends Application
 {
@@ -14,6 +17,7 @@ class CmsApplication extends Application
 		parent::__construct($values);
 
 		$this->registerTwigServiceProvider();
+		$this->registerSessionServiceProvider();
 	}
 
 	private function registerTwigServiceProvider()
@@ -65,7 +69,7 @@ class CmsApplication extends Application
 
 	private function getTwigGlobalVariables()
 	{
-		return [
+		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
 			'MISC_URL' => \Config::$MISC_URL,
@@ -79,9 +83,14 @@ class CmsApplication extends Application
 			"HTTP_HOST_LINK" => \Config::$HTTP_HOST_LINK,
 			"SSL_HOST_LINK" => \Config::$SSL_HOST_LINK,
 
-			'base_url' => \Config::$DOMAIN,
-			'session_user_menu' => $_SESSION['session_user_menu']
+			'base_url' => \Config::$DOMAIN
 		];
+
+		if (isset($_SESSION['session_user_menu'])) {
+			$globals['session_user_menu'] = $_SESSION['session_user_menu'];
+		}
+
+		return $globals;
 	}
 
 	private function getTwigGlobalFilters()
@@ -89,5 +98,44 @@ class CmsApplication extends Application
 		return [
 			new \Twig_SimpleFilter('strtotime', 'strtotime')
 		];
+	}
+
+	private function registerSessionServiceProvider()
+	{
+		$this->register(
+			new SessionServiceProvider(),
+			[
+				'session.storage.handler' => null
+			]
+		);
+
+		$this['flashes'] = self::share(function () {
+			return $this->getFlashBag()->all();
+		});
+	}
+
+	public function addFlashInfo($message)
+	{
+		$this->getFlashBag()->add('info', $message);
+	}
+
+	public function addFlashSuccess($message)
+	{
+		$this->getFlashBag()->add('success', $message);
+	}
+
+	public function addFlashWarning($message)
+	{
+		$this->getFlashBag()->add('warning', $message);
+	}
+
+	public function addFlashError($message)
+	{
+		$this->getFlashBag()->add('danger', $message);
+	}
+
+	public function getFlashBag() : FlashBag
+	{
+		return $this['session']->getFlashBag();
 	}
 }
