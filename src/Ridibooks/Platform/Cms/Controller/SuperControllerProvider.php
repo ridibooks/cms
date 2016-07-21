@@ -34,7 +34,8 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->delete('tags/{tag_id}', [$this, 'deleteTag']);
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
-		$controllers->get('menu_list', [$this, 'menus']);
+		$controllers->get('menus', [$this, 'menus']);
+		$controllers->post('menus', [$this, 'createMenu']);
 		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
 		return $controllers;
@@ -175,10 +176,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		try {
 			switch ($tagDto->command) {
-				case 'insert':
-					AdminTagService::insertTag($tagDto);
-					$jsonDto->setMsg("성공적으로 등록하였습니다.");
-					break;
 				case 'update':
 					AdminTagService::updateTag($tagDto);
 					$jsonDto->setMsg("성공적으로 수정하였습니다.");
@@ -208,12 +205,26 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 	public function menus(CmsApplication $app)
 	{
-		return $app->render('super/menu_list.twig',
+		return $app->render('super/menus.twig',
 			[
 				'title' => '메뉴 관리',
 				'menu_list' => AdminMenuService::getMenuList()
 			]
 		);
+	}
+
+	public function createMenu(CmsApplication $app, Request $request)
+	{
+		$menu_dto = new AdminMenuDto($request);
+
+		try {
+			AdminMenuService::insertMenu($menu_dto);
+			$app->addFlashInfo('성공적으로 등록하였습니다.');
+		} catch (\Exception $e) {
+			$app->addFlashError($e->getMessage());
+		}
+
+		return $app->redirect('/super/menus');
 	}
 
 	public function menuAction(Application $app, Request $request)
