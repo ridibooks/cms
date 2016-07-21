@@ -58,14 +58,14 @@ class StringUtils
 	{
 		$str = self::normalizeSpace($str, $is_single_line);
 		/*
-		 * 모든 인코딩을 UTF-8 인코딩으로 변환해준다.
+		 * Unicode의 형식을 NFC로 맞춘다.
+		 * iconv -l을 사용해보았을때 MAC에서만 UTF-8-MAC을 지원하기 때문에 iconv를 사용하지 않는다.
 		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
 		 */
-		$current_encoding = mb_detect_encoding($str, mb_detect_order(), true);
-		if ($current_encoding !== 'UTF-8' && $current_encoding !== false) {
-			$iconv_result = iconv($current_encoding, 'UTF-8', $str);
-			if ($iconv_result !== false) {
-				$str = $iconv_result;
+		if (!\Normalizer::isNormalized($str)) {
+			$normalized_string = \Normalizer::normalize($str);
+			if ($normalized_string !== false) {
+				$str = $normalized_string;
 			}
 		}
 
