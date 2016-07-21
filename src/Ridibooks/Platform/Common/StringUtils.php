@@ -58,12 +58,15 @@ class StringUtils
 	{
 		$str = self::normalizeSpace($str, $is_single_line);
 		/*
-		 * 유니코드 NFD -> NFD변환을 해준다.
+		 * 모든 인코딩을 UTF-8 인코딩으로 변환해준다.
 		 * 이슈: https://app.asana.com/0/9476649488676/157381871168492
 		 */
-		$is_utf_mac = iconv('UTF-8-MAC', 'UTF', $str);
-		if ($is_utf_mac) {
-			$str = iconv('UTF-8-MAC', 'UTF', $str);
+		$current_encoding = mb_detect_encoding($str, mb_detect_order(), true);
+		if ($current_encoding !== 'UTF-8' && $current_encoding !== false) {
+			$iconv_result = iconv($current_encoding, 'UTF-8', $str);
+			if ($iconv_result !== false) {
+				$str = $iconv_result;
+			}
 		}
 
 		return $str;
