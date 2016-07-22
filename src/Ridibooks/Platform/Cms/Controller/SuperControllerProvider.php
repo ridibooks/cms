@@ -32,6 +32,7 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->get('tags', [$this, 'tags']);
 		$controllers->post('tags', [$this, 'createTag']);
 		$controllers->delete('tags/{tag_id}', [$this, 'deleteTag']);
+		$controllers->get('tags/{tag_id}/users', [$this, 'tagUsers']);
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menus', [$this, 'menus']);
@@ -166,6 +167,14 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->json((array)$jsonDto);
 	}
 
+	public function tagUsers($tag_id, Application $app)
+	{
+		$json = new JsonDto();
+		$json->data = AdminTagService::getMappedAdmins($tag_id);
+
+		return $app->json((array)$json);
+	}
+
 	public function tagAction(Application $app, Request $request)
 	{
 		$jsonDto = new JsonDto();
@@ -183,7 +192,7 @@ class SuperControllerProvider implements ControllerProviderInterface
 				case 'show_mapping': //Tag에 매핑된 메뉴 리스트
 					$jsonDto->data = [
 						'menus' => $tagService->getMappedAdminMenuListForSelectBox($tagDto->id),
-						'admins' => $tagService->getMappedAdmins($tagDto->id)
+						'admins' => AdminTagService::getMappedAdmins($tagDto->id)
 					];
 					break;
 				case 'mapping_tag_menu': //메뉴를 Tag에 매핑시킨다.
@@ -237,10 +246,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		try {
 			switch ($menu_dto->command) {
-				case 'insert': //메뉴 등록
-					$menu_service->insertMenu($menu_dto);
-					$json_dto->setMsg('성공적으로 등록하였습니다.');
-					break;
 				case 'update': //메뉴 수정
 					$menu_service->updateMenu($menu_dto);
 					$json_dto->setMsg('성공적으로 수정하였습니다.');

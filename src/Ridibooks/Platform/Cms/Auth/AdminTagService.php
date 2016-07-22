@@ -28,7 +28,7 @@ class AdminTagService
 		}, $menus);
 	}
 
-	public function getMappedAdmins($tag_id)
+	public static function getMappedAdmins($tag_id)
 	{
 		return AdminTag::find($tag_id)->users->toArray();
 	}
