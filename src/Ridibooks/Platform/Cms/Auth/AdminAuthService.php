@@ -486,16 +486,4 @@ class AdminAuthService extends AdminBaseService
 
 		return null;
 	}
-
-	public static function isSecureOnlyUri($request_uri)
-	{
-		$secure_prefix = ['/stat/', '/bi/', '/store-operation/', '/cs/', '/comm/user_info'];
-		foreach ($secure_prefix as $prefix) {
-			if (strncmp($request_uri, $prefix, strlen($prefix)) === 0) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 }

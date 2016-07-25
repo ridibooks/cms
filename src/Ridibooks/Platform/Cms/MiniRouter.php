@@ -103,11 +103,9 @@ class MiniRouter
 				return $login_required_response;
 			}
 
-			$should_https = \Config::$ENABLE_SSL && AdminAuthService::isSecureOnlyUri($request_uri);
-
-			if (!self::onHttps($request) && $should_https) {
+			if (\Config::$ENABLE_SSL && !self::onHttps($request)) {
 				return RedirectResponse::create('https://' . $request->getHttpHost() . $request_uri);
-			} elseif (self::onHttps($request) && !$should_https) {
+			} elseif (!\Config::$ENABLE_SSL && self::onHttps($request)) {
 				return RedirectResponse::create('http://' . $request->getHttpHost() . $request_uri);
 			}
 		}
