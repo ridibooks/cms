@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "ace-builds": "~1.1.9",
-    "jquery.attrajax": "https://github.com/genesos/AttrAjax.git",
+    "jquery.attrajax": "~0.1",
     "bootstrap": "~3.3.4",
     "bootstrap-datepicker": "~1.3.0",
     "bootstrap-fileinput": "~4.1.7",
