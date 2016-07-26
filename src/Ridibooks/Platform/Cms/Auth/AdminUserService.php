@@ -49,7 +49,7 @@ class AdminUserService extends AdminBaseService
 		return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
 	}
 
-	public static function getUser($id) : array
+	public static function getUser($id)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($id);
