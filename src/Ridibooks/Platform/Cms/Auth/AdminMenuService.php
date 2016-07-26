@@ -158,4 +158,15 @@ class AdminMenuService
 		);
 		ValidationUtils::checkNullField($menuAjaxArray['ajax_url'], '메뉴 Ajax URL을 입력하여 주십시오.');
 	}
+
+	public static function getAdminIdsByMenuId($menu_id)
+	{
+		/** @var AdminMenu $menu */
+		$menu = AdminMenu::find($menu_id);
+		if (!$menu) {
+			return [];
+		}
+
+		return $menu->users->pluck('id')->all();
+	}
 }
