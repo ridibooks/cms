@@ -19,6 +19,11 @@ class AdminMenuService
 		return $query->orderBy('menu_order')->get()->toArray();
 	}
 
+	public static function getAllMenuAjax()
+	{
+		return AdminMenuAjax::all()->toArray();
+	}
+
 	/**
 	 * @param $menu_ids
 	 * @return \Illuminate\Database\Eloquent\Collection

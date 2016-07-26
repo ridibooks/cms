@@ -5,15 +5,13 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**권한 설정 Service
- * Class AdminAuthService
- * @package Ridibooks\Platform\Cms\Auth
+ * @deprecated
  */
 class AdminAuthService extends AdminBaseService
 {
@@ -35,10 +33,10 @@ class AdminAuthService extends AdminBaseService
 	/**해당 유저의 모든 권한을 셋팅한다.*/
 	private function initAdminAuth()
 	{
-		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = AdminMenuAjax::all()->toArray();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
 		$menu_array = AdminMenuService::getMenuList();
+		//전체 menu_ajax를 가지고 온다.
+		$menu_ajax_array = AdminMenuService::getAllMenuAjax();
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -52,7 +50,6 @@ class AdminAuthService extends AdminBaseService
 			$menuids_by_url[$url][] = $menuid;
 			$menu_id_array[] = $menuid;
 		}
-
 
 		if (\Config::$UNDER_DEV) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
@@ -383,7 +380,7 @@ class AdminAuthService extends AdminBaseService
 	public static function isValidUser()
 	{
 		$admin = AdminUserService::getUser(LoginService::GetAdminID());
-		return $admin && $admin->is_use;
+		return $admin && $admin['is_use'];
 	}
 
 	/**
