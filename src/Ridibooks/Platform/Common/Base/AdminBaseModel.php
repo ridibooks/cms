@@ -30,6 +30,11 @@ class AdminBaseModel
 		return GnfConnectionProvider::getConnection(ConnectionProvider::CONNECTION_GROUP_PLATFORM_READ);
 	}
 
+	protected static function getCpReadDb()
+	{
+		return GnfConnectionProvider::getConnection(ConnectionProvider::CONNECTION_GROUP_CP_STATISTICS_READ);
+	}
+
 	/**
 	 * 트랜잭션 시작(모델이 아닌 서비스에서 명시적인 트랜잭션이 필요할 경우 사용)
 	 * @deprecated use transactional
