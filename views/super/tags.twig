@@ -76,8 +76,7 @@
       });
     });
 
-    function showTagUsers(tagId)
-    {
+    function showTagUsers(tagId) {
       $('#js_users_dialog').modal();
 
       // clear
@@ -93,7 +92,7 @@
           return (`
             <li>
               <h4>
-                <a class="label label-default" href="/super/user_detail?id=${admin.id}" target="_blank">${admin.name}</a>
+                <a class="label label-default" href="/super/users/${admin.id}" target="_blank">${admin.name}</a>
               </h4>
             </li>`
           );

@@ -5,24 +5,19 @@
 {% endblock %}
 {% block script %}
   <script>
-    requirejs(["jquery"], function($){
+    requirejs(["jquery"], function ($) {
       $(function () {
         {# 검색결과 clean #}
-        $("#cleanBtn").on("click", function() {
+        $("#cleanBtn").on("click", function () {
           $('#search_text').val('');
           $('#pageNaviForm').submit();
         });
-
-        {#등록#}
-        $("#registBtn").on("click", function(){
-          window.location.href = "/super/user_detail";
-        })
       });
     });
 
     {# 페이징 #}
     function fn_search(page) {
-      requirejs(["jquery"], function($) {
+      requirejs(["jquery"], function ($) {
         $('#page').val(page);
         $('#pageNaviForm').submit();
       });
@@ -37,12 +32,12 @@
   <div class="form-group form-group-sm">
     <div class="input-group input-group-sm">
       <input class="form-control" id="search_text" name="search_text" type="text" placeholder="ID / 이름" value="{{ search_text }}">
-        <span class="input-group-btn">
+      <span class="input-group-btn">
           <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
         </span>
     </div>
     <button class="btn btn-primary input-sm" type="button" id="cleanBtn"><i class="glyphicon glyphicon-repeat"></i> Clean</button>
-    <button class="btn btn-primary input-sm" type="button" id="registBtn"><i class="glyphicon glyphicon-save"></i> 등록</button>
+    <a href="/super/users/new" class="btn btn-primary input-sm" type="button" id="registBtn"><i class="glyphicon glyphicon-save"></i> 등록</a>
   </div>
   </form>{#pageNaviForm form#}
   </div>{#col-xs-12#}
@@ -71,7 +66,7 @@
     {% for admin_user in admin_user_list %}
       <tr {% if admin_user.is_use == 0 %}class="danger"{% endif %}>
         <td>{{ admin_user.id }}</td>
-        <td><a href="/super/user_detail?id={{ admin_user.id }}">{{ admin_user.name }}</a></td>
+        <td><a href="/super/users/{{ admin_user.id }}">{{ admin_user.name }}</a></td>
         <td>{{ admin_user.team }}</td>
         <td>{{ admin_user.is_use == 1? 'Y' : 'N' }}</td>
       </tr>

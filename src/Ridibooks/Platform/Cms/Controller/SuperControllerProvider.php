@@ -25,8 +25,10 @@ class SuperControllerProvider implements ControllerProviderInterface
 		/** @var ControllerCollection $controllers */
 		$controllers = $app['controllers_factory'];
 
+		$controllers->get('users', [$this, 'users']);
 		$controllers->get('user_list', [$this, 'users']);
-		$controllers->get('user_detail', [$this, 'user']);
+		$controllers->get('users/{user_id}', [$this, 'user']);
+		$controllers->get('user_detail', [$this, 'userDetail']);
 		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
 		$controllers->get('tags', [$this, 'tags']);
@@ -36,6 +38,7 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menus', [$this, 'menus']);
+		$controllers->get('menu_list', [$this, 'menus']);
 		$controllers->post('menus', [$this, 'createMenu']);
 		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
@@ -47,12 +50,12 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$page = $request->get('page');
 		$search_text = $request->get("search_text");
 
-		$pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 20);
+		$pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 50);
 
 		$admin_user_list = AdminUserService::getAdminUserList($search_text, $pagingDto->start, $pagingDto->limit);
 		$paging = AdminUserService::getPagingTagByPagingDtoNew($pagingDto);
 
-		return $app->render('super/user_list.twig',
+		return $app->render('super/users.twig',
 			[
 				'admin_user_list' => $admin_user_list,
 				'paging' => $paging,
@@ -62,27 +65,35 @@ class SuperControllerProvider implements ControllerProviderInterface
 		);
 	}
 
-	public function user(CmsApplication $app, Request $request)
+	public function userDetail(CmsApplication $app, Request $request)
 	{
-		$adminUserService = new AdminUserService();
-		$admin_id = $request->get("id");
+		$admin_id = $request->get('id');
 
-		$userDetail = $adminUserService->getAdminUser($admin_id);
+		return $this->user($app, $admin_id);
+	}
+
+	public function user(CmsApplication $app, $user_id)
+	{
+		if ($user_id === 'new') {
+			$user_id = '';
+		}
+
+		$userDetail = AdminUserService::getUser($user_id);
 		$userTag = [];
 		$userMenu = [];
 		if ($userDetail) {
 			// 유저 태그 매핑 정보
-			$tags = AdminUserService::getAdminUserTag($admin_id);
+			$tags = AdminUserService::getAdminUserTag($user_id);
 			$userTag = implode(',', $tags);
 
 			// 유저 메뉴 매핑 정보
-			$menus = AdminUserService::getAdminUserMenu($admin_id);
+			$menus = AdminUserService::getAdminUserMenu($user_id);
 			$userMenu = implode(',', $menus);
 		}
 
-		return $app->render('super/user_detail.twig',
+		return $app->render('super/user_edit.twig',
 			[
-				'admin_id' => $admin_id,
+				'admin_id' => $user_id,
 				'userDetail' => $userDetail,
 				'userTag' => $userTag,
 				'userMenu' => $userMenu,
