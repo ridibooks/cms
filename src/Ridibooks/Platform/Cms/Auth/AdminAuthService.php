@@ -5,24 +5,16 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
-use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**권한 설정 Service
- * Class AdminAuthService
- * @package Ridibooks\Platform\Cms\Auth
+ * @deprecated
  */
 class AdminAuthService extends AdminBaseService
 {
-	/**
-	 * @var AdminMenuService
-	 */
-	private $menuService;
-
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array
 	private $adminTag; //로그인 한 유저의 Tag Array
@@ -32,26 +24,19 @@ class AdminAuthService extends AdminBaseService
 	{
 		if (!$this->isCache || !isset($_SESSION['session_user_auth']) || count($_SESSION['session_user_auth']) == 0) {
 			// session_user_auth가 session에 없을 경우에만 query
-			$this->initService();
 			$this->initAdminAuth();
 			$this->initAdminMenu();
 			$this->initAdminTag();
 		}
 	}
 
-	/**init classes*/
-	private function initService()
-	{
-		$this->menuService = new AdminMenuService();
-	}
-
 	/**해당 유저의 모든 권한을 셋팅한다.*/
 	private function initAdminAuth()
 	{
-		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = AdminMenuAjax::all()->toArray();
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
 		$menu_array = AdminMenuService::getMenuList();
+		//전체 menu_ajax를 가지고 온다.
+		$menu_ajax_array = AdminMenuService::getAllMenuAjax();
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -66,13 +51,12 @@ class AdminAuthService extends AdminBaseService
 			$menu_id_array[] = $menuid;
 		}
 
-
 		if (\Config::$UNDER_DEV) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
 			$menuids_owned = $menu_id_array;
 		} else {
 			//로그인 한 유저의 메뉴 id array 가져온다.
-			$menuids_owned = $this->getUserAllMenuId(LoginService::GetAdminID());
+			$menuids_owned = AdminUserService::getAllMenuIds(LoginService::GetAdminID());
 		}
 
 		foreach ($menus_by_id as $menu) {
@@ -151,33 +135,6 @@ class AdminAuthService extends AdminBaseService
 	private function initAdminTag()
 	{
 		$this->adminTag = AdminUserService::getAdminUserTag(LoginService::GetAdminID());
-	}
-
-	/**로그인한 유저의 모든 메뉴Id를 가져온다.
-	 * @return array menu_id array
-	 */
-	private function getUserAllMenuId($user_id)
-	{
-		$user = AdminUser::with('tags.menus')->find($user_id);
-		if (!$user) {
-			return [];
-		}
-
-		// 1: user.tags.menus
-		$tags_menus = $user->tags
-			->map(function ($tag) {
-				return $tag->menus->pluck('id');
-			})
-			->collapse()
-			->all();
-
-		// 2: user.menus
-		$user_menus = AdminUserService::getAdminUserMenu(LoginService::GetAdminID());
-
-		// uniq(1 + 2)
-		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
-
-		return $menu_ids;
 	}
 
 	/**menu ajax array 만든다.
@@ -422,8 +379,8 @@ class AdminAuthService extends AdminBaseService
 	 */
 	public static function isValidUser()
 	{
-		$admin = AdminUser::find(LoginService::GetAdminID());
-		return $admin && $admin->is_use;
+		$admin = AdminUserService::getUser(LoginService::GetAdminID());
+		return $admin && $admin['is_use'];
 	}
 
 	/**
@@ -485,17 +442,5 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		return null;
-	}
-
-	public static function isSecureOnlyUri($request_uri)
-	{
-		$secure_prefix = ['/stat/', '/bi/', '/store-operation/', '/cs/', '/comm/user_info'];
-		foreach ($secure_prefix as $prefix) {
-			if (strncmp($request_uri, $prefix, strlen($prefix)) === 0) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

@@ -21,6 +21,11 @@ class AdminMenuService
 		return $query->orderBy('menu_order')->get()->toArray();
 	}
 
+	public static function getAllMenuAjax()
+	{
+		return AdminMenuAjax::all()->toArray();
+	}
+
 	public static function getMenus(array $menu_ids) : Collection
 	{
 		return AdminMenu::findMany($menu_ids)->toArray();
@@ -139,5 +144,16 @@ class AdminMenuService
 			'잘못된 메뉴 ID 입니다.' . ' / ' . $menuAjaxArray['menu_id']
 		);
 		ValidationUtils::checkNullField($menuAjaxArray['ajax_url'], '메뉴 Ajax URL을 입력하여 주십시오.');
+	}
+
+	public static function getAdminIdsByMenuId($menu_id)
+	{
+		/** @var AdminMenu $menu */
+		$menu = AdminMenu::find($menu_id);
+		if (!$menu) {
+			return [];
+		}
+
+		return $menu->users->pluck('id')->all();
 	}
 }

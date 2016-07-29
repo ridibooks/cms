@@ -49,7 +49,7 @@ class AdminUserService extends AdminBaseService
 		return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
 	}
 
-	public function getAdminUser($id)
+	public static function getUser($id)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($id);
@@ -57,6 +57,12 @@ class AdminUserService extends AdminBaseService
 			return null;
 		}
 		return $user->toArray();
+	}
+
+	/** @deprecated */
+	public function getAdminUser($id)
+	{
+		return self::getUser($id);
 	}
 
 	public static function getAdminUserTag($user_id)
@@ -96,6 +102,30 @@ class AdminUserService extends AdminBaseService
 		}
 
 		return $menu->users->pluck('id')->all();
+	}
+
+	public static function getAllMenuIds($user_id)
+	{
+		$user = AdminUser::with('tags.menus')->find($user_id);
+		if (!$user) {
+			return [];
+		}
+
+		// 1: user.tags.menus
+		$tags_menus = $user->tags
+			->map(function ($tag) {
+				return $tag->menus->pluck('id');
+			})
+			->collapse()
+			->all();
+
+		// 2: user.menus
+		$user_menus = self::getAdminUserMenu($user_id);
+
+		// uniq(1 + 2)
+		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
+
+		return $menu_ids;
 	}
 
 	/**
