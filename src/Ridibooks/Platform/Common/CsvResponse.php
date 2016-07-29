@@ -6,7 +6,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CsvResponse extends Response
 {
-	public function __construct($data = [], $filename = null, $status = 200, $headers = [])
+	private $format_large_number_as_string;
+
+	public function __construct($data = [], $filename = null, $format_large_number_as_string = false, $status = 200, $headers = [])
 	{
 		parent::__construct('', $status, $headers);
 
@@ -14,13 +16,14 @@ class CsvResponse extends Response
 			$filename = "data_" . date('Ymd');
 		}
 
+		$this->format_large_number_as_string = $format_large_number_as_string;
 		self::setExcelHeader($filename);
 		$this->setData($data);
 	}
 
-	public static function create($data = [], $filename = null, $status = 200, $headers = [])
+	public static function create($data = [], $filename = null, $format_large_number_as_string = false, $status = 200, $headers = [])
 	{
-		return new static($data, $filename, $status, $headers);
+		return new static($data, $filename, $format_large_number_as_string, $status, $headers);
 	}
 
 	private function setData($data)
@@ -47,7 +50,7 @@ class CsvResponse extends Response
 			$new_row = [];
 			foreach ($row as $cell) {
 				$formatted_cell = '"' . str_replace('"', '""', $cell) . '"';
-				if (ctype_digit($cell) && intval($cell) > pow(10, 8)) {
+				if ($this->format_large_number_as_string && ctype_digit($cell) && intval($cell) > pow(10, 8)) {
 					// 1E+xx 형태로 표시되는 문제를 해결하기 위해 아주 큰 숫자는 string으로 취급
 					$formatted_cell = '=' . $formatted_cell;
 				}
