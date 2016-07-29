@@ -7,8 +7,6 @@ class AdminMenu extends Model
 {
 	protected $table = 'tb_admin2_menu';
 
-	public $timestamps = false;
-
 	protected $fillable = [
 		'menu_title',
 		'menu_url',

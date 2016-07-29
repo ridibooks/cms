@@ -25,16 +25,21 @@ class SuperControllerProvider implements ControllerProviderInterface
 		/** @var ControllerCollection $controllers */
 		$controllers = $app['controllers_factory'];
 
+		$controllers->get('users', [$this, 'users']);
 		$controllers->get('user_list', [$this, 'users']);
-		$controllers->get('user_detail', [$this, 'user']);
+		$controllers->get('users/{user_id}', [$this, 'user']);
+		$controllers->get('user_detail', [$this, 'userDetail']);
 		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
 		$controllers->get('tags', [$this, 'tags']);
 		$controllers->post('tags', [$this, 'createTag']);
 		$controllers->delete('tags/{tag_id}', [$this, 'deleteTag']);
+		$controllers->get('tags/{tag_id}/users', [$this, 'tagUsers']);
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
+		$controllers->get('menus', [$this, 'menus']);
 		$controllers->get('menu_list', [$this, 'menus']);
+		$controllers->post('menus', [$this, 'createMenu']);
 		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
 		return $controllers;
@@ -45,12 +50,12 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$page = $request->get('page');
 		$search_text = $request->get("search_text");
 
-		$pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 20);
+		$pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 50);
 
 		$admin_user_list = AdminUserService::getAdminUserList($search_text, $pagingDto->start, $pagingDto->limit);
 		$paging = AdminUserService::getPagingTagByPagingDtoNew($pagingDto);
 
-		return $app->render('super/user_list.twig',
+		return $app->render('super/users.twig',
 			[
 				'admin_user_list' => $admin_user_list,
 				'paging' => $paging,
@@ -60,27 +65,35 @@ class SuperControllerProvider implements ControllerProviderInterface
 		);
 	}
 
-	public function user(CmsApplication $app, Request $request)
+	public function userDetail(CmsApplication $app, Request $request)
 	{
-		$adminUserService = new AdminUserService();
-		$admin_id = $request->get("id");
+		$admin_id = $request->get('id');
 
-		$userDetail = $adminUserService->getAdminUser($admin_id);
+		return $this->user($app, $admin_id);
+	}
+
+	public function user(CmsApplication $app, $user_id)
+	{
+		if ($user_id === 'new') {
+			$user_id = '';
+		}
+
+		$userDetail = AdminUserService::getUser($user_id);
 		$userTag = [];
 		$userMenu = [];
 		if ($userDetail) {
 			// 유저 태그 매핑 정보
-			$tags = AdminUserService::getAdminUserTag($admin_id);
+			$tags = AdminUserService::getAdminUserTag($user_id);
 			$userTag = implode(',', $tags);
 
 			// 유저 메뉴 매핑 정보
-			$menus = AdminUserService::getAdminUserMenu($admin_id);
+			$menus = AdminUserService::getAdminUserMenu($user_id);
 			$userMenu = implode(',', $menus);
 		}
 
-		return $app->render('super/user_detail.twig',
+		return $app->render('super/user_edit.twig',
 			[
-				'admin_id' => $admin_id,
+				'admin_id' => $user_id,
 				'userDetail' => $userDetail,
 				'userTag' => $userTag,
 				'userMenu' => $userMenu,
@@ -165,6 +178,14 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->json((array)$jsonDto);
 	}
 
+	public function tagUsers($tag_id, Application $app)
+	{
+		$json = new JsonDto();
+		$json->data = AdminTagService::getMappedAdmins($tag_id);
+
+		return $app->json((array)$json);
+	}
+
 	public function tagAction(Application $app, Request $request)
 	{
 		$jsonDto = new JsonDto();
@@ -175,10 +196,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		try {
 			switch ($tagDto->command) {
-				case 'insert':
-					AdminTagService::insertTag($tagDto);
-					$jsonDto->setMsg("성공적으로 등록하였습니다.");
-					break;
 				case 'update':
 					AdminTagService::updateTag($tagDto);
 					$jsonDto->setMsg("성공적으로 수정하였습니다.");
@@ -186,7 +203,7 @@ class SuperControllerProvider implements ControllerProviderInterface
 				case 'show_mapping': //Tag에 매핑된 메뉴 리스트
 					$jsonDto->data = [
 						'menus' => $tagService->getMappedAdminMenuListForSelectBox($tagDto->id),
-						'admins' => $tagService->getMappedAdmins($tagDto->id)
+						'admins' => AdminTagService::getMappedAdmins($tagDto->id)
 					];
 					break;
 				case 'mapping_tag_menu': //메뉴를 Tag에 매핑시킨다.
@@ -208,12 +225,26 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 	public function menus(CmsApplication $app)
 	{
-		return $app->render('super/menu_list.twig',
+		return $app->render('super/menus.twig',
 			[
 				'title' => '메뉴 관리',
 				'menu_list' => AdminMenuService::getMenuList()
 			]
 		);
+	}
+
+	public function createMenu(CmsApplication $app, Request $request)
+	{
+		$menu_dto = new AdminMenuDto($request);
+
+		try {
+			AdminMenuService::insertMenu($menu_dto);
+			$app->addFlashInfo('성공적으로 등록하였습니다.');
+		} catch (\Exception $e) {
+			$app->addFlashError($e->getMessage());
+		}
+
+		return $app->redirect('/super/menus');
 	}
 
 	public function menuAction(Application $app, Request $request)
@@ -226,10 +257,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		try {
 			switch ($menu_dto->command) {
-				case 'insert': //메뉴 등록
-					$menu_service->insertMenu($menu_dto);
-					$json_dto->setMsg('성공적으로 등록하였습니다.');
-					break;
 				case 'update': //메뉴 수정
 					$menu_service->updateMenu($menu_dto);
 					$json_dto->setMsg('성공적으로 수정하였습니다.');

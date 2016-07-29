@@ -2,8 +2,10 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Database\Eloquent\Collection;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
+use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -24,22 +26,15 @@ class AdminMenuService
 		return AdminMenuAjax::all()->toArray();
 	}
 
-	/**
-	 * @param $menu_ids
-	 * @return \Illuminate\Database\Eloquent\Collection
-	 */
-	public static function getMenus($menu_ids)
+	public static function getMenus(array $menu_ids) : Collection
 	{
 		return AdminMenu::findMany($menu_ids)->toArray();
 	}
 
-	/**메뉴 등록한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto $menuDto
-	 */
-	public function insertMenu($menuDto)
+	public static function insertMenu(AdminMenuDto $menuDto)
 	{
 		DB::connection()->transaction(function () use ($menuDto) {
-			$this->_validateMenu((array)$menuDto);
+			self::_validateMenu((array)$menuDto);
 
 			if ($menuDto->menu_order == null) { //메뉴 순서값이 없을 경우 메뉴 순서값을 max+1 해준다.
 				$menuDto->menu_order = AdminMenu::max('menu_order') + 1;
@@ -56,16 +51,13 @@ class AdminMenuService
 		});
 	}
 
-	/**메뉴 수정한다.
-	 * @param \Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto $menuDto
-	 */
-	public function updateMenu($menuDto)
+	public function updateMenu(AdminMenuDto $menuDto)
 	{
 		DB::connection()->transaction(function () use ($menuDto) {
 			$max_order = AdminMenu::max('menu_order');
 
 			foreach ($menuDto->menu_list as $menu) {
-				$this->_validateMenu($menu);
+				self::_validateMenu($menu);
 
 				/** @var AdminMenu $adminMenu */
 				$adminMenu = AdminMenu::find($menu['id']);
@@ -101,13 +93,13 @@ class AdminMenuService
 		return AdminMenu::find($menu_id)->ajaxMenus->toArray();
 	}
 
-	public function insertMenuAjax($menuAjaxDto)
+	public function insertMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
 	{
 		$this->_validateMenuAjax((array)$menuAjaxDto);
 		AdminMenuAjax::create((array)$menuAjaxDto);
 	}
 
-	public function updateMenuAjax($menuAjaxDto)
+	public function updateMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
 	{
 		$this->assertAjaxMenuArray($menuAjaxDto);
 
@@ -119,7 +111,7 @@ class AdminMenuService
 		});
 	}
 
-	public function deleteMenuAjax($menuAjaxDto)
+	public function deleteMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
 	{
 		$this->assertAjaxMenuArray($menuAjaxDto);
 
@@ -131,31 +123,21 @@ class AdminMenuService
 		});
 	}
 
-	/**
-	 * @param AdminMenuAjaxDto $menu_ajax_dto
-	 * @throws MsgException
-	 */
-	private function assertAjaxMenuArray($menu_ajax_dto)
+	private function assertAjaxMenuArray(AdminMenuAjaxDto $menu_ajax_dto)
 	{
 		if (count($menu_ajax_dto->menu_ajax_list) === 0) {
 			throw new MsgException('수정할 Ajax 메뉴 URL이 없습니다.');
 		}
 	}
 
-	/**메뉴 입력값 검사
-	 * @param array $menuArray
-	 */
-	private function _validateMenu($menuArray)
+	private static function _validateMenu(array $menuArray)
 	{
 		ValidationUtils::checkNullField($menuArray['menu_title'], '메뉴 제목을 입력하여 주십시오.');
 		ValidationUtils::checkNullField($menuArray['menu_url'], '메뉴 URL을 입력하여 주십시오.');
 		ValidationUtils::checkNumberField($menuArray['menu_deep'], '메뉴 깊이는 숫자만 입력 가능합니다.');
 	}
 
-	/**메뉴 Ajax 입력값 검사
-	 * @param array $menuAjaxArray
-	 */
-	private function _validateMenuAjax($menuAjaxArray)
+	private function _validateMenuAjax(array $menuAjaxArray)
 	{
 		ValidationUtils::checkNullField(
 			$menuAjaxArray['menu_id'],

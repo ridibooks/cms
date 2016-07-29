@@ -76,7 +76,34 @@
       });
     });
 
-    function fn_showMapping(tag_id) {
+    function showTagUsers(tagId) {
+      $('#js_users_dialog').modal();
+
+      // clear
+      $('#tag_admins').html('불러오는 중입니다...');
+
+      $.get('/super/tags/' + tagId + '/users', function (result) {
+        if (!result.success) {
+          return;
+        }
+
+        const admins = result.data;
+        const admins_html = admins.map(function (admin) {
+          return (`
+            <li>
+              <h4>
+                <a class="label label-default" href="/super/users/${admin.id}" target="_blank">${admin.name}</a>
+              </h4>
+            </li>`
+          );
+        }).join(' ');
+
+        $('#tag_admins').html(admins_html);
+      });
+      return false;
+    }
+
+    function showTagMenus(tag_id) {
       $.post('/super/tag_action.ajax', { 'id': tag_id, 'command': 'show_mapping' }, function (returnData) {
         if (!returnData.success) {
           alert(returnData.msg);
@@ -88,14 +115,6 @@
         $("#updateForm tr").attr("class", "");
         $("#tag_tr_" + tag_id).attr("class", "info");
         $("#tag_menu_div").modal();
-
-
-        const admins = returnData.data.admins;
-        const admins_html = admins.map(function (admin) {
-          return `<span><a class="label label-default" href="/super/user_detail?id=${admin.id}" target="_blank">${admin.name}</a></span>`;
-        }).join(' ');
-
-        $('#tag_admins').html(admins_html);
 
         const menus = returnData.data.menus;
         const menus_html = menus.map(function (menu) {
@@ -117,6 +136,8 @@
         tag_menu_select.select2();
 
       }, 'json');
+
+      return false;
     }
 
     // Tag에 Menu 등록 / 삭제 한다.
@@ -162,7 +183,7 @@
       </tbody>
     </table>
     <div class="pull-right">
-      <button type="submit" class="btn btn-primary"><i class="icon-file"></i> 저장</button>
+      <button type="submit" class="btn btn-primary">저장</button>
     </div>
   </form>
 
@@ -173,7 +194,6 @@
         <col width="20"/>
         <col width="20"/>
         <col width=""/>
-        <col width="80"/>
         <col width="80"/>
         <col width="80"/>
         <col width="80"/>
@@ -192,7 +212,6 @@
         <th>최근 수정일</th>
         <th>포함된 메뉴</th>
         <th>사용 유저 수</th>
-        <th></th>
       </tr>
       </thead>
       <tbody>
@@ -213,11 +232,8 @@
           </td>
           <td>{{ tag.created_at }}</td>
           <td>{{ tag.updated_at }}</td>
-          <td>{{ tag.menus_count }}</td>
-          <td>{{ tag.users_count }}</td>
-          <td>
-            <button type="button" class="btn btn-default btn-sm" onclick="fn_showMapping('{{ tag.id }}')"><i class="icon-forward"></i> 보기</button>
-          </td>
+          <td><a href='#' onclick="showTagMenus({{ tag.id }})">{{ tag.menus_count }}</a></td>
+          <td><a href='#' onclick="showTagUsers({{ tag.id }})">{{ tag.users_count }}</a></td>
         </tr>
       {% endfor %}
       </tbody>
@@ -230,15 +246,26 @@
     </div>
   </form>
 
+  <div id="js_users_dialog" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">태그 사용자 관리</h4>
+        </div>
+        <div class="modal-body">
+          <ul id="tag_admins"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="tag_menu_div" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">태그 관리</h4>
+          <h4 class="modal-title">태그 메뉴 관리</h4>
         </div>
         <div class="modal-body">
-          <ul id="tag_admins"></ul>
-          <hr>
           <select id="tag_menu_select" class="input-block-level" multiple data-placeholder="권한 추가하기"></select>
         </div>
       </div>

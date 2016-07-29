@@ -52,22 +52,7 @@
           }
         });
 
-        // 등록 
-        $('#insertBtn').click(function () {
-          if (fn_validate()) {
-            $("#command").val("insert");
-            $.post('/super/menu_action.ajax', $("#insertForm").serialize(), function (returnData) {
-              if (returnData.success) {
-                alert(returnData.msg);
-                window.location.reload();
-              } else {
-                alert(returnData.msg);
-              }
-            }, 'json');
-          }
-        });
-
-        // 수정 
+        // 수정
         $('#updateBtn').click(function () {
 
           var container = '';
@@ -139,22 +124,6 @@
         $("#deleteAjaxUrlBtn").click(function () {
           fn_executeAjaxMenus('ajax_delete');
         });
-        function fn_validate() {
-          var $insertForm = $("#insertForm");
-          var input_menu_title = $insertForm.find("input[name=menu_title]");
-          if (input_menu_title.val() == '') {
-            alert('메뉴 이름을 입력하여 주십시오.');
-            input_menu_title.focus();
-            return false;
-          }
-          var input_menu_url = $insertForm.find("input[name=menu_url]");
-          if (input_menu_url.val() == '') {
-            alert('메뉴 URL을 입력하여 주십시오.');
-            input_menu_url.focus();
-            return false;
-          }
-          return true;
-        }
 
         function fn_validateAjax() {
           var input_ajax_url = $("#ajaxMenuInsertForm").find("input[name=ajax_url]");
@@ -229,7 +198,7 @@
 
 {% block body %}
   <h4>메뉴 등록</h4>
-  <form id="insertForm" name="insertForm" class="form-group">
+  <form class="form-group" method="POST">
     <input type="hidden" id="command" name="command"/>
     <table class="table table-bordered table-condensed">
       <colgroup>
@@ -280,7 +249,7 @@
       </tbody>
     </table>
     <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default" id="insertBtn">저장</button>
+      <button type="submit" class="btn btn-default">저장</button>
     </div>
   </form>
 
