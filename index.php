@@ -54,13 +54,13 @@ $app->post('/login', function (Request $req) {
 		$login_service->doLoginAction($id, $passwd);
 
 		if (AdminTagSessionOperator::isPart1stCheck()) {
-			$return_url = '/admin/book/productList?type=1stCompleted';
+			$return_url = '/admin/book2/productList?type=1stCompleted';
 		} elseif (AdminTagSessionOperator::isPart2ndCheck()) {
-			$return_url = '/admin/book/productList?type=2ndCompleted';
+			$return_url = '/admin/book2/productList?type=2ndCompleted';
 		} elseif (AdminTagSessionOperator::isPartMake()) {
-			$return_url = '/admin/book/productList?type=scheduled';
+			$return_url = '/admin/book2/productList?type=scheduled';
 		} elseif (AdminTagSessionOperator::isPartRegister()) {
-			$return_url = '/admin/book/productList?type=received';
+			$return_url = '/admin/book2/productList?type=received';
 		} elseif (AdminTagSessionOperator::isPartPrincipal()) {
 			$return_url = '/admin/book/withholdList?type=withhold';
 		}
