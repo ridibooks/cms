@@ -26,7 +26,7 @@ class AdminMenuService
 		return AdminMenuAjax::all()->toArray();
 	}
 
-	public static function getMenus(array $menu_ids) : Collection
+	public static function getMenus(array $menu_ids) : array
 	{
 		return AdminMenu::findMany($menu_ids)->toArray();
 	}
