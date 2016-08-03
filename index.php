@@ -9,7 +9,7 @@ use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-require_once __DIR__ . '/include/bootstrap_cms.php';
+require_once __DIR__ . '/bootstrap_cms.php';
 
 // Try MiniRouter first
 $response = MiniRouter::shouldRedirectForLogin(Request::createFromGlobals());

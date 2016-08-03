@@ -182,7 +182,7 @@ if (strlen(Config::$SESSION_USE_MEMCACHE)) {
 }
 
 
-$autoloader = require_once __DIR__ . "/../vendor/autoload.php";
-$autoloader->add('Ridibooks', __DIR__ . '/../../../admin/src');
+$autoloader = require_once __DIR__ . "/../../vendor/autoload.php";
 $autoloader->add('Ridibooks', __DIR__ . '/../../admin/src');
-$autoloader->add('Ridibooks', __DIR__ . '/../src');
+$autoloader->add('Ridibooks', __DIR__ . '/../admin/src');
+$autoloader->add('Ridibooks', __DIR__ . '/src');
