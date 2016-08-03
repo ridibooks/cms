@@ -8,8 +8,13 @@ class CsvResponse extends Response
 {
 	private $format_large_number_as_string;
 
-	public function __construct($data = [], $filename = null, $format_large_number_as_string = false, $status = 200, $headers = [])
-	{
+	public function __construct(
+		$data = [],
+		$filename = null,
+		$format_large_number_as_string = false,
+		$status = 200,
+		$headers = []
+	) {
 		parent::__construct('', $status, $headers);
 
 		if (null === $filename) {
@@ -21,8 +26,13 @@ class CsvResponse extends Response
 		$this->setData($data);
 	}
 
-	public static function create($data = [], $filename = null, $format_large_number_as_string = false, $status = 200, $headers = [])
-	{
+	public static function create(
+		$data = [],
+		$filename = null,
+		$format_large_number_as_string = false,
+		$status = 200,
+		$headers = []
+	) {
 		return new static($data, $filename, $format_large_number_as_string, $status, $headers);
 	}
 
@@ -35,7 +45,10 @@ class CsvResponse extends Response
 				$v = [$v];
 			}
 			foreach ($v as $k2 => $v2) {
-				$v[$k2] = iconv('utf-8', 'euc-kr', $v2);
+				// euc-kr 로 표현안되는 글자가 있음 ('꾿'바이 이상)
+				// cp949 가 포함 범위가 더 넓음
+				// http://charset.uic.jp/compare/euc-kr/ks_c_5601-1987/bold/
+				$v[$k2] = iconv('utf-8', 'cp949', $v2);
 			}
 			$data[$k] = $v;
 		}
