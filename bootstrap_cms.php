@@ -1,7 +1,7 @@
 <?php
 use Ridibooks\Library\DB\ConnectionProvider;
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../../include/config.php';
 
 // PSR-4 autoload
 $autoloader = require __DIR__ . "/vendor/autoload.php";
