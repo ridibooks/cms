@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CsvResponse extends Response
 {
+	const UTF8_BOM = "\xEF\xBB\xBF";
 	private $format_large_number_as_string;
 
 	public function __construct(
@@ -45,15 +46,12 @@ class CsvResponse extends Response
 				$v = [$v];
 			}
 			foreach ($v as $k2 => $v2) {
-				// euc-kr 로 표현안되는 글자가 있음 ('꾿'바이 이상)
-				// cp949 가 포함 범위가 더 넓음
-				// http://charset.uic.jp/compare/euc-kr/ks_c_5601-1987/bold/
-				$v[$k2] = iconv('utf-8', 'cp949', $v2);
+				$v[$k2] = $v2;
 			}
 			$data[$k] = $v;
 		}
 
-		$this->setContent($this->escapeQuotesAddNewLine($data));
+		$this->setContent(self::UTF8_BOM . $this->escapeQuotesAddNewLine($data));
 	}
 
 	private function escapeQuotesAddNewLine($data)
@@ -78,9 +76,9 @@ class CsvResponse extends Response
 	/**
 	 * @param $file_name
 	 */
-	public static function setExcelHeader($file_name)
+	private static function setExcelHeader($file_name)
 	{
-		header("Content-Type: application/csv; charset=euc-kr");
+		header("Content-Type: application/csv; charset=utf-8");
 		header("Content-Disposition: attachment; filename=\"$file_name.csv\"");
 		header('Cache-Control: max-age=0');
 	}
