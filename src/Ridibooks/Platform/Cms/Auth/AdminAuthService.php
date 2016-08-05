@@ -216,7 +216,7 @@ class AdminAuthService extends AdminBaseService
 		$hash_array = [];
 		foreach ($auths as $auth) {
 			if (self::isAuthUrl($check_url, $auth['menu_url'])) {
-				if ($auth['auth']) {
+				if (is_array($auth['auth'])) {
 					$hash_array = array_merge($hash_array, $auth['auth']);
 				} else {
 					$hash_array[] = self::makeMenuAuth($auth['menu_url']);
@@ -225,10 +225,10 @@ class AdminAuthService extends AdminBaseService
 
 			if (isset($auth['ajax_array'])) { //해당 session_user_auth row에 ajax_array가 있는지 확인
 				foreach ($auth['ajax_array'] as $ajax) { // ajax_array 내의 key(ajax_url, ajax_auth)
-					if (self::isAuthUrl($check_url, $auth['menu_url'])) {
+					if (self::isAuthUrl($check_url, $auth['menu_url']) && is_array($auth['auth'])) {
 						$hash_array = array_merge($hash_array, $auth['auth']);
 					}
-					if (self::isAuthUrl($check_url, $ajax['ajax_url'])) {
+					if (self::isAuthUrl($check_url, $ajax['ajax_url']) && is_array($auth['ajax_auth'])) {
 						$hash_array = array_merge($hash_array, $ajax['ajax_auth']);
 					}
 				}
@@ -302,7 +302,7 @@ class AdminAuthService extends AdminBaseService
 		}
 
 		$allowed_urls = [
-			'/admin/welcome',	// deprecated
+			'/admin/welcome',    // deprecated
 			'/comm/user_info',// 본인 비밀번호 변경 가능
 			'/comm/user_info_action.ajax',// 본인 비밀번호 변경 가능 #2
 			'/welcome',
@@ -371,7 +371,7 @@ class AdminAuthService extends AdminBaseService
 	public static function isValidLogin()
 	{
 		return LoginService::GetAdminID()
-			&& isset($_SESSION['session_user_auth']) && isset($_SESSION['session_user_menu']);
+		&& isset($_SESSION['session_user_auth']) && isset($_SESSION['session_user_menu']);
 	}
 
 	/**적합한 유저인지 검사한다.
