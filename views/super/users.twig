@@ -75,6 +75,7 @@
   </table>
 
   <nav class="text-center">
-    {{ paging|raw }}
+    {% import 'macros/paging.macro.twig' as paging_macro %}
+    {{ paging_macro.render_paging_new(paging) }}
   </nav>
 {% endblock %}

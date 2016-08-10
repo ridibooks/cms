@@ -35,6 +35,7 @@ class AdminUserService
 			->where('id', 'like', '%' . $search_text . '%')
 			->orWhere('name', 'like', '%' . $search_text . '%')
 			->orderBy('is_use', 'desc')
+			->orderBy('id')
 			->skip($offset)->take($limit)
 			->get();
 	}

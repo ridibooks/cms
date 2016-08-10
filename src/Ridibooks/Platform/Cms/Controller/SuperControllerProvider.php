@@ -12,6 +12,7 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\CmsApplication;
 use Ridibooks\Platform\Common\Base\JsonDto;
+use Ridibooks\Platform\Common\PaginationHelper;
 use Ridibooks\Platform\Common\PagingUtil;
 use Silex\Application;
 use Silex\ControllerCollection;
@@ -53,7 +54,7 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$pagingDto = new PagingUtil(AdminUserService::getAdminUserCount($search_text), $page, null, 50);
 
 		$admin_user_list = AdminUserService::getAdminUserList($search_text, $pagingDto->start, $pagingDto->limit);
-		$paging = AdminUserService::getPagingTagByPagingDtoNew($pagingDto);
+		$paging = PaginationHelper::getArgs($request, $pagingDto->total, $pagingDto->cpage, $pagingDto->line_per_page);
 
 		return $app->render('super/users.twig',
 			[

@@ -29,7 +29,7 @@ class PaginationHelper
 		$end_page = $end_page > $total_page ? $total_page : $end_page;
 
 		$link = parse_url($request->server->get('REQUEST_URI'), PHP_URL_PATH);
-		$query_string = UrlHelper::buildQuery($request->query->all(), ['page' => null]);
+		$query_string = UrlHelper::buildQuery(array_filter($request->query->all()), ['page' => null]);
 		if (empty($query_string)) {
 			$link .= '?';
 		} else {
