@@ -5,7 +5,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**권한 설정 Service
  * @deprecated
  */
-class AdminAuthService extends AdminBaseService
+class AdminAuthService
 {
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array

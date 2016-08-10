@@ -2,7 +2,6 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Illuminate\Database\Capsule\Manager as DB;
-use Illuminate\Database\Eloquent\Collection;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;

@@ -7,13 +7,12 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
-use Ridibooks\Platform\Common\Base\AdminBaseService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
 use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;
 use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 
-class AdminUserService extends AdminBaseService
+class AdminUserService
 {
 	private $publisherManager;
 

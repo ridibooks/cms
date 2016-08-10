@@ -6,7 +6,6 @@ use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class CmsApplication extends Application
 {
