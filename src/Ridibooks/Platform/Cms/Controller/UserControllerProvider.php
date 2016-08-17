@@ -41,7 +41,7 @@ class UserControllerProvider implements ControllerProviderInterface
 	{
 		$jsonDto = new JsonDto();
 
-		try{
+		try {
 			$jsonDto->data = AdminUserService::getAllAdminUserArray();
 		} catch (\Exception $e) {
 			$jsonDto->setException($e);
@@ -54,10 +54,9 @@ class UserControllerProvider implements ControllerProviderInterface
 	{
 		$adminUserDto = new AdminUserDto($request);
 		$jsonDto = new JsonDto();
-		$adminUserService = new AdminUserService();
 
-		try{
-			$adminUserService->updateUserInfo($adminUserDto);
+		try {
+			AdminUserService::updateUserInfo($adminUserDto);
 			$jsonDto->setMsg('성공적으로 수정하였습니다.');
 		} catch (\Exception $e) {
 			$jsonDto->setException($e);

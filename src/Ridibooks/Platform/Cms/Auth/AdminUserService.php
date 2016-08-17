@@ -146,22 +146,25 @@ class AdminUserService
 		return ($user && $user->tags_count > 0);
 	}
 
-	/**Admin 계정정보 등록한다.
-	 * @param AdminUserDto $adminUserDto
-	 * @throws
-	 */
-	public function insertAdminUser($adminUserDto)
+	public static function insertAdminUser($adminUserDto)
 	{
-		$this->_validateAdminUserInsert($adminUserDto);
+		self::_validateAdminUserInsert($adminUserDto);
 
-		//password encrypt
+		// password encrypt
 		$adminUserDto->passwd = PasswordService::getPasswordAsHashed($adminUserDto->passwd);
 		AdminUser::create((array)$adminUserDto);
 	}
 
-	public function updateAdminUser($adminUserDto)
+	public static function updateUserInfo(AdminUserDto $adminUserDto)
 	{
-		$this->_validateAdminUserUpdate($adminUserDto);
+		if (StringUtils::isEmpty($adminUserDto->new_passwd) === false) {
+			if ($adminUserDto->new_passwd != $adminUserDto->chk_passwd) {
+				throw new MsgException('변경할 비밀번호가 일치하지 않습니다.');
+			}
+			$adminUserDto->passwd = $adminUserDto->new_passwd;
+		}
+
+		self::_validateAdminUserUpdate($adminUserDto);
 
 		$filler = [
 			'name' => $adminUserDto->name,
@@ -177,21 +180,6 @@ class AdminUserService
 		$admin = AdminUser::find(trim($adminUserDto->id));
 		$admin->fill($filler);
 		$admin->save();
-	}
-
-	/**자신의 정보를 수정한다.
-	 * @param AdminUserDto $adminUserDto
-	 * @throws
-	 */
-	public function updateUserInfo($adminUserDto)
-	{
-		if (StringUtils::isEmpty($adminUserDto->new_passwd) === false) {
-			if ($adminUserDto->new_passwd != $adminUserDto->chk_passwd) {
-				throw new MsgException('변경할 비밀번호가 일치하지 않습니다.');
-			}
-			$adminUserDto->passwd = $adminUserDto->new_passwd;
-		}
-		$this->updateAdminUser($adminUserDto);
 	}
 
 	public function deleteAdmin($adminUserDto)
@@ -284,17 +272,17 @@ class AdminUserService
 	/**Admin 계정 insert validator
 	 * @param AdminUserDto $adminUserDto
 	 */
-	private function _validateAdminUserInsert($adminUserDto)
+	private static function _validateAdminUserInsert($adminUserDto)
 	{
 		ValidationUtils::checkNullField($adminUserDto->id, '계정 ID를 입력하여 주십시오.');
 		ValidationUtils::checkNullField($adminUserDto->passwd, '계정 비밀번호를 입력하여 주십시오.');
-		$this->_validateAdminUserUpdate($adminUserDto);
+		self::_validateAdminUserUpdate($adminUserDto);
 	}
 
 	/**Admin 계정 update validator
 	 * @param AdminUserDto $adminUserDto
 	 */
-	private function _validateAdminUserUpdate($adminUserDto)
+	private static function _validateAdminUserUpdate($adminUserDto)
 	{
 		ValidationUtils::checkNullField($adminUserDto->id, '계정ID를 입력하여 주십시오.');
 		ValidationUtils::checkNullField($adminUserDto->name, '이름을 입력하여 주십시오.');

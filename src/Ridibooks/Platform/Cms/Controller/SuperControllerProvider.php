@@ -18,6 +18,7 @@ use Silex\Application;
 use Silex\ControllerCollection;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class SuperControllerProvider implements ControllerProviderInterface
 {
@@ -29,7 +30,8 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->get('users', [$this, 'users']);
 		$controllers->get('user_list', [$this, 'users']);
 		$controllers->get('users/{user_id}', [$this, 'user']);
-		$controllers->get('user_detail', [$this, 'userDetail']);
+		$controllers->put('users/{user_id}', [$this, 'createUser']);
+		$controllers->post('users/{user_id}', [$this, 'updateUser']);
 		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
 		$controllers->get('tags', [$this, 'tags']);
@@ -101,6 +103,44 @@ class SuperControllerProvider implements ControllerProviderInterface
 		);
 	}
 
+	public function createUser(CmsApplication $app, Request $request, $user_id)
+	{
+		try {
+			$adminUserDto = new AdminUserDto($request);
+			$adminUserDto->id = $user_id;
+			AdminUserService::insertAdminUser($adminUserDto);
+		} catch (\Exception $e) {
+			$app->addFlashError($e->getMessage());
+		}
+
+		$subRequest = Request::create('/super/users/' . $user_id);
+		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	public function updateUser(CmsApplication $app, Request $request, $user_id)
+	{
+		if ($request->get('update') !== 'true') {
+			return $this->createUser($app, $request, $user_id);
+		}
+
+		$user = AdminUserService::getUser($user_id);
+		if (!$user) {
+			return $app->abort(500);
+		}
+
+		try {
+			$adminUserDto = new AdminUserDto($request);
+			$adminUserDto->id = $user_id;
+			AdminUserService::updateUserInfo($adminUserDto);
+			$app->addFlashInfo('성공적으로 수정하였습니다.');
+		} catch (\Exception $e) {
+			$app->addFlashError($e->getMessage());
+		}
+
+		$subRequest = Request::create('/super/users/' . $user_id);
+		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+	}
+
 	public function userAction(Application $app, Request $request)
 	{
 		$jsonDto = new JsonDto();
@@ -111,16 +151,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 
 		try {
 			switch ($adminUserDto->command) {
-				case "insertUserInfo": //유저 정보 등록한다.
-					$adminUserService->insertAdminUser($adminUserDto);
-					$jsonDto->setMsg("성공적으로 등록하였습니다.");
-					break;
-
-				case "updateUserInfo": //유저 정보 수정한다.
-					$adminUserService->updateAdminUser($adminUserDto);
-					$jsonDto->setMsg("성공적으로 수정하였습니다.");
-					break;
-
 				case "insertUserAuth": //유저 권한 정보 등록한다.
 					$adminUserService->insertAdminUserAuth($adminUserAuthDto);
 					$jsonDto->setMsg("성공적으로 등록하였습니다.");

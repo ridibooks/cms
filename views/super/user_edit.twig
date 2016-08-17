@@ -5,9 +5,65 @@
 
 {% block script %}
   <script type="text/javascript">
+    /**
+     * 유저 권한 관리 Dto function
+     * @constructor
+     */
+    function UserAuthDto() {
+      this.id = $("#js_user_id"); //id
+      this.tag_id_array = $("#js_tag_id_array"); //유저 태그
+      this.menu_id_array = $("#js_menu_id_array"); //유저 메뉴
+      this.partner_cp_id_array = $("#js_partner_cp_id_array"); //제휴 CP ID
+      this.operator_cp_id_array = $("#js_operator_cp_id_array"); //제휴 CP ID
+      this.production_cp_id_array = $("#js_production_cp_id_array"); //제작 CP ID
+      this.command = null; //command
+    }
+
     requirejs(
-      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "/static/js/super/user_action.js", "comm/jquery.cp_user"],
-      function ($, user_tag, user_menu, user_action) {
+      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/common", "comm/validate", "comm/jquery.cp_user"],
+      function ($, user_tag, user_menu, common, validate) {
+
+        class UserAction
+        {
+          /**
+           * 유저 권한 정보 등록/수정 한다.
+           */
+          static insertUserAuth() {
+            var userAuthDto = new UserAuthDto();
+            userAuthDto.command = "insertUserAuth";
+
+            this._doAction(userAuthDto);
+          }
+
+          static deleteAdmin(onSuccess) {
+            var userDto = new AdminUserDto();
+            userDto.command = "delete";
+
+            this._doAction(userDto, onSuccess);
+          }
+
+          static _doAction(dto, onSuccess) {
+            $.ajax({
+              url: "/super/user_action.ajax",
+              type: 'post',
+              data: common.toJson(dto),
+              dataType: 'json',
+              error: function (xhr) {
+                console.log(xhr.responseText);
+              },
+              success: function (returnData) {
+                alert(returnData.msg);
+                if (onSuccess) {
+                  onSuccess(returnData.msg);
+                }
+              },
+              failed: function (xhr) {
+                alert(xhr.responseText);
+              }
+            });
+          }
+        }
+
 
         function setManagingCpList(target, type) {
           const data = {
@@ -31,28 +87,22 @@
         }
 
         $(function () {
-          // 태그 관리
-          user_tag.setSelect2($("#js_tag_id_array"));
-          // 메뉴 관리
-          user_menu.setSelect2($("#js_menu_id_array"));
-
-          // 제휴CP 관리
-          setManagingCpList($("#js_partner_cp_id_array"), 2);
-
-          // 운영CP 관리
-          setManagingCpList($("#js_operator_cp_id_array"), 3);
-
-          // 제작CP 관리
-          setManagingCpList($("#js_production_cp_id_array"), 1);
 
           // 유저 정보 저장
-          $("#btn_info_save").on("click", function () {
-            user_action.insertUserInfo();
+          $("#btn_info_save").click(function () {
+            const form = $('form');
+            const id = form.find('[name=id]').val();
+
+            form.attr('action', "/super/users/" + id);
+
+            if (form[0].checkValidity()) {
+              form.submit();
+            }
           });
 
           // 권한 관리 저장
           $("#btn_auth_save").on("click", function () {
-            user_action.insertUserAuth();
+            UserAction.insertUserAuth();
           });
 
           // 유저 정보, 권한 관리 취소
@@ -62,7 +112,7 @@
 
           $('#js_delete_admin').click(function (e) {
             if (confirm('삭제하시겠습니까')) {
-              user_action.deleteAdmin(function () {
+              UserAction.deleteAdmin(function () {
                 history.back();
               });
             }
@@ -76,10 +126,8 @@
   </script>
 {% endblock %}
 {% block body %}
-  <form class="form-horizontal">
-
-    <input type="hidden" id="last_user_id" value="{{ userDetail.id }}">
-
+  <form class="form-horizontal" method="POST">
+    <input type="hidden" name="update" value="{{ userDetail.id ? "true" }}"/>
     <div class="col-xs-12 col-md-6">
       <div class="panel panel-primary">
         <div class="panel-heading">
@@ -89,35 +137,35 @@
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">ID</label>
             <div class="col-xs-10">
-              <input type="text" id="js_user_id" class="form-control" value="{{ userDetail.id }}" {{ userDetail.id ? "disabled" }}/>
+              <input type="text" name="id" class="form-control" value="{{ userDetail.id }}" {{ userDetail.id ? "disabled" }} required/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">비밀번호</label>
             <div class="col-xs-10">
-              <input type="password" id="passwd" class="form-control"/>
+              <input type="password" name="passwd" class="form-control"/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">이름</label>
             <div class="col-xs-10">
-              <input type="text" id="name" class="form-control" value="{{ userDetail.name }}"/>
+              <input type="text" name="name" class="form-control" value="{{ userDetail.name }}" required/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">팀</label>
             <div class="col-xs-10">
-              <input type="text" id="team" class="form-control" value="{{ userDetail.team }}"/>
+              <input type="text" name="team" class="form-control" value="{{ userDetail.team }}" required>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">사용여부</label>
             <div class="col-xs-10">
-              <select id="is_use" class="form-control">
+              <select name="is_use" class="form-control">
                 <option value='1' {% if userDetail.is_use == 1 %}selected="selected"{% endif %}>Y</option>
                 <option value='0' {% if userDetail.is_use == 0 %}selected="selected"{% endif %}>N</option>
               </select>
@@ -125,11 +173,8 @@
           </div>
 
           <div class="btn-group btn-group-sm pull-right">
-            <button type="button" class="btn btn-default" id="btn_info_save"><i class="glyphicon glyphicon-file"></i> 저장
-            </button>
-            <button type="button" class="btn btn-default" id="btn_info_cancel"><i
-                class="glyphicon glyphicon-repeat"></i> 취소
-            </button>
+            <button type="submit" class="btn btn-default" id="btn_info_save"><i class="glyphicon glyphicon-file"></i> 저장</button>
+            <button type="reset" class="btn btn-default"><i class="glyphicon glyphicon-repeat"></i> 취소</button>
           </div>
         </div>
       </div>
