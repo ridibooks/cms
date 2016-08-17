@@ -80,24 +80,22 @@ class SuperControllerProvider implements ControllerProviderInterface
 		}
 
 		$userDetail = AdminUserService::getUser($user_id);
-		$userTag = [];
-		$userMenu = [];
+		$tags = [];
+		$menus = [];
 		if ($userDetail) {
 			// 유저 태그 매핑 정보
 			$tags = AdminUserService::getAdminUserTag($user_id);
-			$userTag = implode(',', $tags);
 
 			// 유저 메뉴 매핑 정보
 			$menus = AdminUserService::getAdminUserMenu($user_id);
-			$userMenu = implode(',', $menus);
 		}
 
 		return $app->render('super/user_edit.twig',
 			[
 				'admin_id' => $user_id,
 				'userDetail' => $userDetail,
-				'userTag' => $userTag,
-				'userMenu' => $userMenu,
+				'userTag' => implode(',', $tags),
+				'userMenu' => implode(',', $menus),
 				'page'
 			]
 		);
