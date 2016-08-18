@@ -1,5 +1,6 @@
 {
     "require": {
+        "gnf/gnfcache": "^0.1.0",
         "illuminate/database": "^5.2"
     }
 }
