@@ -1,5 +1,5 @@
 <?php
-namespace Ridibooks\Platform\Common;
+namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Library\UrlHelper;
 use Symfony\Component\HttpFoundation\Request;
