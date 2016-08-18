@@ -4,66 +4,23 @@
 {% endblock %}
 
 {% block script %}
-  <script type="text/javascript">
-    /**
-     * 유저 권한 관리 Dto function
-     * @constructor
-     */
-    function UserAuthDto() {
-      this.id = $("#js_user_id"); //id
-      this.tag_id_array = $("#js_tag_id_array"); //유저 태그
-      this.menu_id_array = $("#js_menu_id_array"); //유저 메뉴
-      this.partner_cp_id_array = $("#js_partner_cp_id_array"); //제휴 CP ID
-      this.operator_cp_id_array = $("#js_operator_cp_id_array"); //제휴 CP ID
-      this.production_cp_id_array = $("#js_production_cp_id_array"); //제작 CP ID
-      this.command = null; //command
-    }
-
+  <script>
     requirejs(
-      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/common", "comm/validate", "comm/jquery.cp_user"],
-      function ($, user_tag, user_menu, common, validate) {
-
-        class UserAction
-        {
-          /**
-           * 유저 권한 정보 등록/수정 한다.
-           */
-          static insertUserAuth() {
-            var userAuthDto = new UserAuthDto();
-            userAuthDto.command = "insertUserAuth";
-
-            this._doAction(userAuthDto);
-          }
-
-          static deleteAdmin(onSuccess) {
-            var userDto = new AdminUserDto();
-            userDto.command = "delete";
-
-            this._doAction(userDto, onSuccess);
-          }
-
-          static _doAction(dto, onSuccess) {
-            $.ajax({
-              url: "/super/user_action.ajax",
-              type: 'post',
-              data: common.toJson(dto),
-              dataType: 'json',
-              error: function (xhr) {
-                console.log(xhr.responseText);
-              },
-              success: function (returnData) {
-                alert(returnData.msg);
-                if (onSuccess) {
-                  onSuccess(returnData.msg);
-                }
-              },
-              failed: function (xhr) {
-                alert(xhr.responseText);
-              }
-            });
-          }
+      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/common", "comm/jquery.cp_user"],
+      function ($, user_tag, user_menu, common) {
+        /**
+         * 유저 권한 관리 Dto function
+         * @constructor
+         */
+        function UserAuthDto() {
+          this.id = $("#js_user_id"); //id
+          this.tag_id_array = $("#js_tag_id_array"); //유저 태그
+          this.menu_id_array = $("#js_menu_id_array"); //유저 메뉴
+          this.partner_cp_id_array = $("#js_partner_cp_id_array"); //제휴 CP ID
+          this.operator_cp_id_array = $("#js_operator_cp_id_array"); //제휴 CP ID
+          this.production_cp_id_array = $("#js_production_cp_id_array"); //제작 CP ID
+          this.command = null; //command
         }
-
 
         function setManagingCpList(target, type) {
           const data = {
@@ -87,13 +44,24 @@
         }
 
         $(function () {
+          // 태그 관리
+          user_tag.setSelect2($("#js_tag_id_array"));
+          // 메뉴 관리
+          user_menu.setSelect2($("#js_menu_id_array"));
+
+          // 제휴CP 관리
+          setManagingCpList($("#js_partner_cp_id_array"), 2);
+
+          // 운영CP 관리
+          setManagingCpList($("#js_operator_cp_id_array"), 3);
+
+          // 제작CP 관리
+          setManagingCpList($("#js_production_cp_id_array"), 1);
 
           // 유저 정보 저장
           $("#btn_info_save").click(function () {
             const form = $('form');
             const id = form.find('[name=id]').val();
-
-            form.attr('action', "/super/users/" + id);
 
             if (form[0].checkValidity()) {
               form.submit();
@@ -101,23 +69,50 @@
           });
 
           // 권한 관리 저장
-          $("#btn_auth_save").on("click", function () {
-            UserAction.insertUserAuth();
+          $("#btn_auth_save").click(function () {
+
+            var userAuthDto = new UserAuthDto();
+            userAuthDto.command = "insertUserAuth";
+
+            $.ajax({
+              url: "/super/user_action.ajax?id={{ userDetail.id }}",
+              type: 'post',
+              data: common.toJson(userAuthDto),
+              dataType: 'json',
+              error: function (xhr) {
+                console.log(xhr.responseText);
+              },
+              success: function (returnData) {
+                alert(returnData.msg);
+              },
+              failed: function (xhr) {
+                alert(xhr.responseText);
+              }
+            });
           });
 
           // 유저 정보, 권한 관리 취소
-          $("#btn_info_cancel, #btn_auth_cancel").on("click", function () {
+          $("#btn_info_cancel, #btn_auth_cancel").click(function () {
             history.back();
           });
 
           $('#js_delete_admin').click(function (e) {
-            if (confirm('삭제하시겠습니까')) {
-              UserAction.deleteAdmin(function () {
-                history.back();
-              });
+            if (!confirm('삭제하시겠습니까?')) {
+              return;
             }
 
-            e.preventDefault();
+            $.ajax('/super/users/{{ userDetail.id }}',
+              {
+                type: 'delete',
+                success: function () {
+                  alert('성공적으로 삭제되었습니다.');
+                  history.back();
+                },
+                error: function (xhr, status, e) {
+                  alert(e);
+                }
+              }
+            );
           });
         });
 
@@ -233,9 +228,7 @@
     </div>
 
     <div class="col-xs-12">
-      <button id="js_delete_admin" class="btn btn-default btn-danger pull-right">
-        삭제
-      </button>
+      <a id="js_delete_admin" class="btn btn-default btn-danger pull-right">삭제</a>
     </div>
   </form>
 

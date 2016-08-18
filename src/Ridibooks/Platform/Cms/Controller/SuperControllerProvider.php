@@ -18,6 +18,7 @@ use Silex\Application;
 use Silex\ControllerCollection;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class SuperControllerProvider implements ControllerProviderInterface
@@ -30,8 +31,9 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->get('users', [$this, 'users']);
 		$controllers->get('user_list', [$this, 'users']);
 		$controllers->get('users/{user_id}', [$this, 'user']);
-		$controllers->put('users/{user_id}', [$this, 'createUser']);
+		$controllers->post('users/new', [$this, 'createUser']);
 		$controllers->post('users/{user_id}', [$this, 'updateUser']);
+		$controllers->delete('users/{user_id}', [$this, 'deleteUser']);
 		$controllers->match('user_action.ajax', [$this, 'userAction']);
 
 		$controllers->get('tags', [$this, 'tags']);
@@ -68,43 +70,36 @@ class SuperControllerProvider implements ControllerProviderInterface
 		);
 	}
 
-	public function userDetail(CmsApplication $app, Request $request)
-	{
-		$admin_id = $request->get('id');
-
-		return $this->user($app, $admin_id);
-	}
-
 	public function user(CmsApplication $app, $user_id)
 	{
 		if ($user_id === 'new') {
 			$user_id = '';
-		}
-
-		$userDetail = AdminUserService::getUser($user_id);
-		$tags = [];
-		$menus = [];
-		if ($userDetail) {
-			// 유저 태그 매핑 정보
+			$user = null;
+			$tags = [];
+			$menus = [];
+		} else {
+			$user = AdminUserService::getUser($user_id);
+			if (!$user) {
+				return $app->abort(Response::HTTP_NOT_FOUND);
+			}
 			$tags = AdminUserService::getAdminUserTag($user_id);
-
-			// 유저 메뉴 매핑 정보
 			$menus = AdminUserService::getAdminUserMenu($user_id);
 		}
 
 		return $app->render('super/user_edit.twig',
 			[
 				'admin_id' => $user_id,
-				'userDetail' => $userDetail,
+				'userDetail' => $user,
 				'userTag' => implode(',', $tags),
 				'userMenu' => implode(',', $menus),
-				'page'
 			]
 		);
 	}
 
-	public function createUser(CmsApplication $app, Request $request, $user_id)
+	public function createUser(CmsApplication $app, Request $request)
 	{
+		$user_id = $request->get('id');
+
 		try {
 			$adminUserDto = new AdminUserDto($request);
 			$adminUserDto->id = $user_id;
@@ -113,19 +108,14 @@ class SuperControllerProvider implements ControllerProviderInterface
 			$app->addFlashError($e->getMessage());
 		}
 
-		$subRequest = Request::create('/super/users/' . $user_id);
-		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+		return $app->redirect('/super/users/' . $user_id);
 	}
 
 	public function updateUser(CmsApplication $app, Request $request, $user_id)
 	{
-		if ($request->get('update') !== 'true') {
-			return $this->createUser($app, $request, $user_id);
-		}
-
 		$user = AdminUserService::getUser($user_id);
 		if (!$user) {
-			return $app->abort(500);
+			return $app->abort(Response::HTTP_NOT_FOUND);
 		}
 
 		try {
@@ -141,27 +131,37 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
 	}
 
+	public function deleteUser(CmsApplication $app, $user_id)
+	{
+		$user = AdminUserService::getUser($user_id);
+		if (!$user) {
+			return $app->abort(Response::HTTP_NOT_FOUND);
+		}
+
+		try {
+			AdminUserService::deleteUser($user_id);
+		} catch (\Exception $e) {
+			return $app->abort(Response::HTTP_INTERNAL_SERVER_ERROR);
+		}
+
+		return Response::create(Response::HTTP_NO_CONTENT);
+	}
+
+	/**
+	 * @deprecated
+	 * @param Application $app
+	 * @param Request $request
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
 	public function userAction(Application $app, Request $request)
 	{
 		$jsonDto = new JsonDto();
 
-		$adminUserService = new AdminUserService();
-		$adminUserDto = new AdminUserDto($request);
-		$adminUserAuthDto = new AdminUserAuthDto($request);
-
 		try {
-			switch ($adminUserDto->command) {
-				case "insertUserAuth": //유저 권한 정보 등록한다.
-					$adminUserService->insertAdminUserAuth($adminUserAuthDto);
-					$jsonDto->setMsg("성공적으로 등록하였습니다.");
-					break;
-
-				case "delete":
-					$adminUserService->deleteAdmin($adminUserDto);
-					$jsonDto->setMsg("삭제되었습니다.");
-					break;
-			}
-
+			$adminUserAuthDto = new AdminUserAuthDto($request);
+			$adminUserAuthDto->id = $request->get('id');
+			AdminUserService::insertAdminUserAuth($adminUserAuthDto);
+			$jsonDto->setMsg("성공적으로 등록하였습니다.");
 		} catch (\Exception $e) {
 			$jsonDto->setException($e);
 		}

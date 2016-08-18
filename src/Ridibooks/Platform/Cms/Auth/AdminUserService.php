@@ -14,13 +14,6 @@ use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 
 class AdminUserService
 {
-	private $publisherManager;
-
-	public function __construct()
-	{
-		$this->publisherManager = new TbPublisherManager();
-	}
-
 	public static function getAdminUserCount($search_text)
 	{
 		return AdminUser::query()
@@ -182,27 +175,27 @@ class AdminUserService
 		$admin->save();
 	}
 
-	public function deleteAdmin($adminUserDto)
+	public static function deleteUser($user_id)
 	{
-		AdminUser::destroy($adminUserDto->id);
+		AdminUser::destroy($user_id);
 	}
 
 	/**어드민 계정에 권한정보를 입력한다.
 	 * @param AdminUserAuthDto $adminUserAuthDto
 	 */
-	public function insertAdminUserAuth($adminUserAuthDto)
+	public static function insertAdminUserAuth($adminUserAuthDto)
 	{
 		DB::connection()->transaction(function () use ($adminUserAuthDto) {
-			$this->_insertAdminUserTag($adminUserAuthDto);
-			$this->_insertAdminUserMenu($adminUserAuthDto);
-			$this->_insertManager($adminUserAuthDto);
+			self::_insertAdminUserTag($adminUserAuthDto);
+			self::_insertAdminUserMenu($adminUserAuthDto);
+			self::_insertManager($adminUserAuthDto);
 		});
 	}
 
 	/**어드민 계정에 태그정보 등록한다.
 	 * @param AdminUserAuthDto $adminUserAuthDto
 	 */
-	private function _insertAdminUserTag($adminUserAuthDto)
+	private static function _insertAdminUserTag($adminUserAuthDto)
 	{
 		$tagIdArray = explode(",", $adminUserAuthDto->tag_id_array);
 		$tagIdArray = array_filter(array_unique($tagIdArray));
@@ -215,7 +208,7 @@ class AdminUserService
 	/**어드민 계정에 메뉴정보 등록한다.
 	 * @param AdminUserAuthDto $adminUserAuthDto
 	 */
-	private function _insertAdminUserMenu($adminUserAuthDto)
+	private static function _insertAdminUserMenu($adminUserAuthDto)
 	{
 		$menuIdArray = explode(",", $adminUserAuthDto->menu_id_array);
 		$menuIdArray = array_filter(array_unique($menuIdArray));
@@ -228,14 +221,16 @@ class AdminUserService
 	/**어드민 계정이 담당하는 CP 정보 등록한다.
 	 * @param AdminUserAuthDto $adminUserAuthDto
 	 */
-	private function _insertManager($adminUserAuthDto)
+	private static function _insertManager($adminUserAuthDto)
 	{
+		$publisherManager = new TbPublisherManager();
+
 		$cp_ids = explode(",", $adminUserAuthDto->partner_cp_id_array);
 		$cp_ids = array_filter(array_unique($cp_ids));
-		$this->publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PARTNERSHIP_MANAGER);
+		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PARTNERSHIP_MANAGER);
 
 		foreach ($cp_ids as $cp_id) {
-			$this->publisherManager->insertManager(
+			$publisherManager->insertManager(
 				$cp_id,
 				PublisherManagerTypes::PARTNERSHIP_MANAGER,
 				$adminUserAuthDto->id
@@ -244,10 +239,10 @@ class AdminUserService
 
 		$cp_ids = explode(",", $adminUserAuthDto->operator_cp_id_array);
 		$cp_ids = array_filter(array_unique($cp_ids));
-		$this->publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::OPERATOR_MANAGER);
+		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::OPERATOR_MANAGER);
 
 		foreach ($cp_ids as $cp_id) {
-			$this->publisherManager->insertManager(
+			$publisherManager->insertManager(
 				$cp_id,
 				PublisherManagerTypes::OPERATOR_MANAGER,
 				$adminUserAuthDto->id
@@ -258,10 +253,10 @@ class AdminUserService
 		$cp_ids = explode(",", $adminUserAuthDto->production_cp_id_array);
 		$cp_ids = array_filter(array_unique($cp_ids));
 		/**어드민 계정에 매핑된 모든 제작 CP 정보 삭제한다.*/
-		$this->publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PRODUCTION_MANAGER);
+		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PRODUCTION_MANAGER);
 
 		foreach ($cp_ids as $cp_id) {
-			$this->publisherManager->insertManager(
+			$publisherManager->insertManager(
 				$cp_id,
 				PublisherManagerTypes::PRODUCTION_MANAGER,
 				$adminUserAuthDto->id

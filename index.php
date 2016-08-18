@@ -26,11 +26,7 @@ $app['twig.path'] = [
 	__DIR__ . '/views'
 ];
 
-$app->error(function (\Exception $e, $code) use ($app) {
-	if ($code == 404) {
-		return new RedirectResponse('/welcome');
-	}
-
+$app->error(function (\Exception $e) use ($app) {
 	if ($app['debug']) {
 		return null;
 	}
