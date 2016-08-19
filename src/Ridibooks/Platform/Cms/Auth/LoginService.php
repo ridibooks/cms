@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
+use Ridibooks\Library\SentryHelper;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Common\PasswordService;
 
@@ -75,8 +76,20 @@ class LoginService
 		@session_destroy();
 	}
 
+	/**
+	 * Cron에서 사용이 예상되면 isSessionableEnviroment() 호출하여 체크 후, 다른 이름을 사용해야한다.
+	 * @return null
+	 */
 	public static function GetAdminID()
 	{
+		if (!self::isSessionableEnviroment()) {
+			SentryHelper::triggerSentryMessage('LoginService::GetAdminID() called in not sessionable enviroment, please fix it');
+		}
 		return isset($_SESSION['session_admin_id']) ? $_SESSION['session_admin_id'] : null;
+	}
+
+	public static function isSessionableEnviroment()
+	{
+		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler']);
 	}
 }
