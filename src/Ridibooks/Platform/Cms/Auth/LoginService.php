@@ -83,7 +83,7 @@ class LoginService
 	public static function GetAdminID()
 	{
 		if (!self::isSessionableEnviroment()) {
-			SentryHelper::triggerSentryMessage('LoginService::GetAdminID() called in not sessionable enviroment, please fix it');
+			trigger_error('LoginService::GetAdminID() called in not sessionable enviroment, please fix it');
 		}
 		return isset($_SESSION['session_admin_id']) ? $_SESSION['session_admin_id'] : null;
 	}
