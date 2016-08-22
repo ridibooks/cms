@@ -65,6 +65,9 @@
     <script>
       requirejs.config({
         waitSeconds: 14,
+        {% if JS_LAST_MODIFIED_TIMESTAMP %}
+          urlArgs: 't={{ JS_LAST_MODIFIED_TIMESTAMP }}',
+        {% endif %}
         paths: {
           'jquery': '/static/bower_components/jquery/dist/jquery.min',
           // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
