@@ -7,7 +7,6 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
-use Ridibooks\Platform\Common\PasswordService;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
 use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;

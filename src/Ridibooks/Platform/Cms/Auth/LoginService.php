@@ -2,9 +2,7 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Library\SentryHelper;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
-use Ridibooks\Platform\Common\PasswordService;
 
 class LoginService
 {
