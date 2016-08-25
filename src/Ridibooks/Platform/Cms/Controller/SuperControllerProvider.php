@@ -29,12 +29,11 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers = $app['controllers_factory'];
 
 		$controllers->get('users', [$this, 'users']);
-		$controllers->get('user_list', [$this, 'users']);
 		$controllers->get('users/{user_id}', [$this, 'user']);
 		$controllers->post('users/new', [$this, 'createUser']);
 		$controllers->post('users/{user_id}', [$this, 'updateUser']);
 		$controllers->delete('users/{user_id}', [$this, 'deleteUser']);
-		$controllers->match('user_action.ajax', [$this, 'userAction']);
+		$controllers->post('users/{user_id}/permissions', [$this, 'updateUserPermissions']);
 
 		$controllers->get('tags', [$this, 'tags']);
 		$controllers->post('tags', [$this, 'createTag']);
@@ -147,26 +146,17 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return Response::create(Response::HTTP_NO_CONTENT);
 	}
 
-	/**
-	 * @deprecated
-	 * @param Application $app
-	 * @param Request $request
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
-	 */
-	public function userAction(Application $app, Request $request)
+	public function updateUserPermissions(CmsApplication $app, Request $request, $user_id)
 	{
-		$jsonDto = new JsonDto();
-
 		try {
 			$adminUserAuthDto = new AdminUserAuthDto($request);
-			$adminUserAuthDto->id = $request->get('id');
-			AdminUserService::insertAdminUserAuth($adminUserAuthDto);
-			$jsonDto->setMsg("성공적으로 등록하였습니다.");
+			AdminUserService::updateUserPermissions($user_id, $adminUserAuthDto);
+			$app->addFlashInfo('성공적으로 수정하였습니다.');
 		} catch (\Exception $e) {
-			$jsonDto->setException($e);
+			$app->addFlashError($e->getMessage());
 		}
 
-		return $app->json((array)$jsonDto);
+		return $app->redirect('/super/users/' . $user_id);
 	}
 
 	public function tags(CmsApplication $app)

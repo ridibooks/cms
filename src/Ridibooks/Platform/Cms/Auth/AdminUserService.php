@@ -11,6 +11,7 @@ use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
 use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;
 use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class AdminUserService
 {
@@ -180,86 +181,34 @@ class AdminUserService
 		AdminUser::destroy($user_id);
 	}
 
-	/**어드민 계정에 권한정보를 입력한다.
-	 * @param AdminUserAuthDto $adminUserAuthDto
-	 */
-	public static function insertAdminUserAuth($adminUserAuthDto)
+	public static function updateUserPermissions($user_id, AdminUserAuthDto $adminUserAuthDto)
 	{
-		DB::connection()->transaction(function () use ($adminUserAuthDto) {
-			self::_insertAdminUserTag($adminUserAuthDto);
-			self::_insertAdminUserMenu($adminUserAuthDto);
-			self::_insertManager($adminUserAuthDto);
+		/** @var AdminUser $user */
+		$user = AdminUser::find($user_id);
+		if (!$user) {
+			throw new ResourceNotFoundException();
+		}
+
+		DB::connection()->transaction(function () use ($user, $adminUserAuthDto) {
+			$user->tags()->sync($adminUserAuthDto->tag_ids);
+			$user->menus()->sync($adminUserAuthDto->menu_ids);
+			self::_updateManagingCps($user, PublisherManagerTypes::PARTNERSHIP_MANAGER, $adminUserAuthDto->partner_cp_ids);
+			self::_updateManagingCps($user, PublisherManagerTypes::OPERATOR_MANAGER, $adminUserAuthDto->operator_cp_ids);
+			self::_updateManagingCps($user, PublisherManagerTypes::PRODUCTION_MANAGER, $adminUserAuthDto->production_cp_ids);
 		});
 	}
 
-	/**어드민 계정에 태그정보 등록한다.
-	 * @param AdminUserAuthDto $adminUserAuthDto
-	 */
-	private static function _insertAdminUserTag($adminUserAuthDto)
-	{
-		$tagIdArray = explode(",", $adminUserAuthDto->tag_id_array);
-		$tagIdArray = array_filter(array_unique($tagIdArray));
-
-		/** @var AdminUser $user */
-		$user = AdminUser::find($adminUserAuthDto->id);
-		$user->tags()->sync($tagIdArray);
-	}
-
-	/**어드민 계정에 메뉴정보 등록한다.
-	 * @param AdminUserAuthDto $adminUserAuthDto
-	 */
-	private static function _insertAdminUserMenu($adminUserAuthDto)
-	{
-		$menuIdArray = explode(",", $adminUserAuthDto->menu_id_array);
-		$menuIdArray = array_filter(array_unique($menuIdArray));
-
-		/** @var AdminUser $user */
-		$user = AdminUser::find($adminUserAuthDto->id);
-		$user->menus()->sync($menuIdArray);
-	}
-
-	/**어드민 계정이 담당하는 CP 정보 등록한다.
-	 * @param AdminUserAuthDto $adminUserAuthDto
-	 */
-	private static function _insertManager($adminUserAuthDto)
+	private static function _updateManagingCps(AdminUser $user, $manager_type, array $cp_ids)
 	{
 		$publisherManager = new TbPublisherManager();
 
-		$cp_ids = explode(",", $adminUserAuthDto->partner_cp_id_array);
-		$cp_ids = array_filter(array_unique($cp_ids));
-		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PARTNERSHIP_MANAGER);
+		$publisherManager->deleteAllManager($user->id, $manager_type);
 
 		foreach ($cp_ids as $cp_id) {
 			$publisherManager->insertManager(
 				$cp_id,
-				PublisherManagerTypes::PARTNERSHIP_MANAGER,
-				$adminUserAuthDto->id
-			);
-		}
-
-		$cp_ids = explode(",", $adminUserAuthDto->operator_cp_id_array);
-		$cp_ids = array_filter(array_unique($cp_ids));
-		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::OPERATOR_MANAGER);
-
-		foreach ($cp_ids as $cp_id) {
-			$publisherManager->insertManager(
-				$cp_id,
-				PublisherManagerTypes::OPERATOR_MANAGER,
-				$adminUserAuthDto->id
-			);
-		}
-
-		/**제작 CP 등록*/
-		$cp_ids = explode(",", $adminUserAuthDto->production_cp_id_array);
-		$cp_ids = array_filter(array_unique($cp_ids));
-		/**어드민 계정에 매핑된 모든 제작 CP 정보 삭제한다.*/
-		$publisherManager->deleteAllManager($adminUserAuthDto->id, PublisherManagerTypes::PRODUCTION_MANAGER);
-
-		foreach ($cp_ids as $cp_id) {
-			$publisherManager->insertManager(
-				$cp_id,
-				PublisherManagerTypes::PRODUCTION_MANAGER,
-				$adminUserAuthDto->id
+				$manager_type,
+				$user->id
 			);
 		}
 	}

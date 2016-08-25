@@ -6,89 +6,19 @@
 {% block script %}
   <script>
     requirejs(
-      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/common", "comm/jquery.cp_user"],
-      function ($, user_tag, user_menu, common) {
-        /**
-         * 유저 권한 관리 Dto function
-         * @constructor
-         */
-        function UserAuthDto() {
-          this.id = $("#js_user_id"); //id
-          this.tag_id_array = $("#js_tag_id_array"); //유저 태그
-          this.menu_id_array = $("#js_menu_id_array"); //유저 메뉴
-          this.partner_cp_id_array = $("#js_partner_cp_id_array"); //제휴 CP ID
-          this.operator_cp_id_array = $("#js_operator_cp_id_array"); //제휴 CP ID
-          this.production_cp_id_array = $("#js_production_cp_id_array"); //제작 CP ID
-          this.command = null; //command
-        }
-
-        function setManagingCpList(target, type) {
-          const data = {
-            id: '{{ admin_id }}',
-            type: type
-          };
-
-          $.ajax({
-            url: '/admin/publisher/managers.ajax',
-            data: data,
-            dataType: 'json',
-            cache: false,
-            success: function (res) {
-              target.attr('value', res);
-              target.setCpUserMultipleSelect2();
-            },
-            error: function (xhr) {
-              alert(xhr.responseText);
-            }
-          });
-        }
-
+      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/jquery.cp_user"],
+      function ($, user_tag, user_menu) {
         $(function () {
-          // 태그 관리
-          user_tag.setSelect2($("#js_tag_id_array"));
-          // 메뉴 관리
-          user_menu.setSelect2($("#js_menu_id_array"));
-
-          // 제휴CP 관리
-          setManagingCpList($("#js_partner_cp_id_array"), 2);
-
-          // 운영CP 관리
-          setManagingCpList($("#js_operator_cp_id_array"), 3);
-
-          // 제작CP 관리
-          setManagingCpList($("#js_production_cp_id_array"), 1);
+          loadPermissions();
 
           // 유저 정보 저장
           $("#btn_info_save").click(function () {
-            const form = $('form');
-            const id = form.find('[name=id]').val();
+            const $form = $('form');
+            const id = $form.find('[name=id]').val();
 
-            if (form[0].checkValidity()) {
-              form.submit();
+            if ($form[0].checkValidity()) {
+              $form.submit();
             }
-          });
-
-          // 권한 관리 저장
-          $("#btn_auth_save").click(function () {
-
-            var userAuthDto = new UserAuthDto();
-            userAuthDto.command = "insertUserAuth";
-
-            $.ajax({
-              url: "/super/user_action.ajax?id={{ userDetail.id }}",
-              type: 'post',
-              data: common.toJson(userAuthDto),
-              dataType: 'json',
-              error: function (xhr) {
-                console.log(xhr.responseText);
-              },
-              success: function (returnData) {
-                alert(returnData.msg);
-              },
-              failed: function (xhr) {
-                alert(xhr.responseText);
-              }
-            });
           });
 
           // 유저 정보, 권한 관리 취소
@@ -116,6 +46,44 @@
           });
         });
 
+        function loadPermissions() {
+          const $form = $('form[id=permissions]');
+
+          // 태그 관리
+          user_tag.setSelect2($form.find('[name=tag_ids]'));
+          // 메뉴 관리
+          user_menu.setSelect2($form.find('[name=menu_ids]'));
+
+          // 제휴CP 관리
+          setManagingCpList($form.find('[name=partner_cp_ids]'), 2);
+
+          // 운영CP 관리
+          setManagingCpList($form.find("[name=operator_cp_ids]"), 3);
+
+          // 제작CP 관리
+          setManagingCpList($form.find("[name=production_cp_ids]"), 1);
+        }
+
+        function setManagingCpList(target, type) {
+          const data = {
+            id: '{{ admin_id }}',
+            type: type
+          };
+
+          $.ajax({
+            url: '/admin/publisher/managers.ajax',
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (res) {
+              target.attr('value', res);
+              target.setCpUserMultipleSelect2();
+            },
+            error: function (xhr) {
+              alert(xhr.responseText);
+            }
+          });
+        }
       }
     );
   </script>
@@ -174,7 +142,9 @@
         </div>
       </div>
     </div>
+  </form>
 
+  <form class="form-horizontal" id="permissions" action="/super/users/{{ userDetail.id }}/permissions" method="POST">
     <div class="col-xs-12 col-md-6">
       <div class="panel panel-primary">
         <div class="panel-heading">
@@ -184,52 +154,48 @@
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">태그</label>
             <div class="col-xs-10">
-              <input type="hidden" id="js_tag_id_array" class="form-control select2-offscreen" value="{{ userTag }}"/>
+              <input type="hidden" name="tag_ids" class="form-control select2-offscreen" value="{{ userTag }}"/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">메뉴</label>
             <div class="col-xs-10">
-              <input type="hidden" id="js_menu_id_array" class="form-control select2-offscreen" value="{{ userMenu }}"/>
+              <input type="hidden" name="menu_ids" class="form-control select2-offscreen" value="{{ userMenu }}"/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">제휴담당 CP</label>
             <div class="col-xs-10">
-              <input type="hidden" id="js_partner_cp_id_array" class="form-control select2-offscreen"/>
+              <input type="hidden" name="partner_cp_ids" class="form-control select2-offscreen"/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">운영담당 CP</label>
             <div class="col-xs-10">
-              <input type="hidden" id="js_operator_cp_id_array" class="form-control select2-offscreen"/>
+              <input type="hidden" name="operator_cp_ids" class="form-control select2-offscreen"/>
             </div>
           </div>
 
           <div class="form-group form-group-sm">
             <label class="col-xs-2 control-label">제작 CP</label>
             <div class="col-xs-10">
-              <input type="hidden" id="js_production_cp_id_array" class="form-control select2-offscreen"/>
+              <input type="hidden" name="production_cp_ids" class="form-control select2-offscreen"/>
             </div>
           </div>
 
           <div class="btn-group btn-group-sm pull-right">
-            <button type="button" class="btn btn-default" id="btn_auth_save"><i class="glyphicon glyphicon-file"></i> 저장
-            </button>
-            <button type="button" class="btn btn-default" id="btn_auth_cancel"><i
-                class="glyphicon glyphicon-repeat"></i> 취소
-            </button>
+            <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-file"></i> 저장</button>
+            <button type="button" class="btn btn-default" id="btn_auth_cancel"><i class="glyphicon glyphicon-repeat"></i> 취소</button>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="col-xs-12">
-      <a id="js_delete_admin" class="btn btn-default btn-danger pull-right">삭제</a>
-    </div>
   </form>
 
+  <div class="col-xs-12">
+    <a id="js_delete_admin" class="btn btn-default btn-danger pull-right">삭제</a>
+  </div>
 {% endblock %}
