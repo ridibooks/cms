@@ -1,46 +1,23 @@
-{% extends 'index_new.twig' %}
+{% extends 'index_newer.twig' %}
 
 {% block title %}
   어드민 유저 관리
 {% endblock %}
-{% block script %}
-  <script>
-    requirejs(["jquery"], function ($) {
-      $(function () {
-        {# 검색결과 clean #}
-        $("#cleanBtn").on("click", function () {
-          $('#search_text').val('');
-          $('#pageNaviForm').submit();
-        });
-      });
-    });
 
-    {# 페이징 #}
-    function fn_search(page) {
-      requirejs(["jquery"], function ($) {
-        $('#page').val(page);
-        $('#pageNaviForm').submit();
-      });
-    }
-  </script>
-{% endblock %}
 {% block body %}
   <div class="col-xs-12 marginBottom10">
-  <form class="form-inline text-right" id="pageNaviForm" method="get">
-  <input type="hidden" name="page" id="page" value="{{ page }}"/>
-
-  <div class="form-group form-group-sm">
-    <div class="input-group input-group-sm">
-      <input class="form-control" id="search_text" name="search_text" type="text" placeholder="ID / 이름" value="{{ search_text }}">
-      <span class="input-group-btn">
+    <form class="form-inline text-right">
+      <div class="form-group form-group-sm">
+        <div class="input-group input-group-sm">
+          <input class="form-control" id="search_text" name="search_text" type="text" placeholder="ID / 이름" value="{{ search_text }}">
+          <span class="input-group-btn">
           <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
         </span>
-    </div>
-    <button class="btn btn-primary input-sm" type="button" id="cleanBtn"><i class="glyphicon glyphicon-repeat"></i> Clean</button>
-    <a href="/super/users/new" class="btn btn-primary input-sm" type="button" id="registBtn"><i class="glyphicon glyphicon-save"></i> 등록</a>
+        </div>
+        <a href="/super/users/new" class="btn btn-primary input-sm"><i class="glyphicon glyphicon-save"></i> 등록</a>
+      </div>
+    </form>
   </div>
-  </form>{#pageNaviForm form#}
-  </div>{#col-xs-12#}
 
   <table class="table table-bordered table-hover" id="admin_user_table">
     <colgroup>
