@@ -1,10 +1,13 @@
-//var BowerWebpackPlugin = require("bower-webpack-plugin");
+var webpack = require('webpack');
 
 module.exports = {
   entry: './js/app.js',
   output: {
     path: './dist',
     filename: 'app.bundle.js'
+  },
+  resolve: {
+    modulesDirectories: ['node_modules', 'bower_components']
   },
   module: {
     loaders: [
@@ -22,5 +25,13 @@ module.exports = {
       }
     ]
   },
-  //plugins: [new BowerWebpackPlugin()]
+  plugins: [
+    new webpack.ResolverPlugin(
+      new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(".bower.json", ["main"])
+    ),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    })
+  ]
 };
