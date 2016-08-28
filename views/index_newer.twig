@@ -36,6 +36,9 @@
   {% endblock %}
 
   <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
+  <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/node_modules/select2/dist/css/select2.min.css">
+
   <script src="/static/dist/commons.js"></script>
 </head>
 <body>
@@ -70,12 +73,15 @@
       <ul>
         <li><h3>{{ block('title') }}</h3></li>
         {% if purpose %}
-        <li>사용목적: {% block purpose %}{% endblock %}</li>
+          <li>사용목적: {% block purpose %}{% endblock %}</li>
         {% endif %}
         {% if usage %}
-        <li>사용방법: {% block usage %}{% endblock %}</li>
+          <li>사용방법: {% block usage %}{% endblock %}</li>
         {% endif %}
       </ul>
+
+      <div id="content">
+      </div>
       {% block body %}
       {% endblock %}
     </div>

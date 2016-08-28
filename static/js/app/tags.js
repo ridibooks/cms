@@ -1,8 +1,169 @@
 import './base';
-import 'select2';
-import 'bootstrap';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-var global_tag_id;
+
+class UsersDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      admins: []
+    };
+  }
+
+  componentDidMount() {
+    $('#js_users_dialog').on('show.bs.modal', (e) => {
+      const tagId = $(e.relatedTarget).data('tag-id');
+
+      // clear
+      this.setState({ admins: [] });
+      //$('#tag_admins').html('불러오는 중입니다...');
+
+      this.loadUsers(tagId);
+    });
+  }
+
+  loadUsers(tagId) {
+    $.get('/super/tags/' + tagId + '/users', (result) => {
+      if (!result.success) {
+        return;
+      }
+
+      this.setState({ admins: result.data });
+    });
+  }
+
+  render() {
+    return <div id="js_users_dialog" className="modal fade" role="dialog">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 className="modal-title">태그 사용자 관리</h4>
+          </div>
+          <div className="modal-body">
+            <ul id="tag_admins">
+              {this.state.admins.map((admin) => (
+                <li key={admin.id}>
+                  <h4>
+                    <a className="label label-default" href={"/super/users/" + admin.id} target="_blank">{admin.name}</a>
+                  </h4>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>;
+  }
+}
+
+
+class MenusDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  componentDidMount() {
+    $('#js_menus_dialog').on('show.bs.modal', (e) => {
+      const tagId = $(e.relatedTarget).data('tag-id');
+
+      this.loadMenus(tagId);
+    });
+
+    var tag_menu_select = $("#tag_menu_select");
+    tag_menu_select.select2();
+
+    // 권한 선택 시
+    tag_menu_select.on('select2:select', (e) => {
+      const data = e.params.data;
+      const menuId = data.id.trim();
+      this.updateTagMenu(menuId, 'mapping_tag_menu')
+    });
+
+    // 선택된 권한 삭제 시
+    tag_menu_select.on('select2:unselect', (e) => {
+      const data = e.params.data;
+      const menuId = data.id.trim();
+      if (confirm("삭제하시겠습니까?")) {
+        this.updateTagMenu(menuId, 'delete_tag_menu')
+      }
+    });
+  }
+
+  loadMenus(tag_id) {
+    this.setState({ tagId: tag_id });
+
+    $.post('/super/tag_action.ajax', { 'id': tag_id, 'command': 'show_mapping' }, function (returnData) {
+      if (!returnData.success) {
+        alert(returnData.msg);
+        return;
+      }
+
+      $("#updateForm tr").attr("class", "");
+      $("#tag_tr_" + tag_id).attr("class", "info");
+      //$("#js_menus_dialog").modal();
+
+      const menus = returnData.data.menus;
+      const menus_html = menus.map(function (menu) {
+        var menu_url_array = menu['menu_url'].split('#');
+
+        var html = '<option value=" ' + menu['id'] + ' " ';
+        if (menu['selected'] == 'selected') {
+          html += ' selected="selected" ';
+        }
+        html += '>';
+        html += menu['menu_title'];
+        html += (menu_url_array[1] ? '#' + menu_url_array[1] : '');
+        html += '</option>';
+        return html;
+      }).join('');
+
+      const tag_menu_select = $("#tag_menu_select");
+      tag_menu_select.html(menus_html);
+      tag_menu_select.select2();
+
+    }, 'json');
+
+    return false;
+  }
+
+  updateTagMenu(menu_id, command) {
+    var jsonArray = {
+      'tag_id': this.state.tagId,
+      'menu_id': menu_id,
+      'command': command
+    };
+    $.post('/super/tag_action.ajax', jsonArray, function (returnData) {
+      if (!returnData.success) {
+        alert(returnData.msg);
+      }
+    }, 'json');
+  }
+
+  render() {
+    return <div id="js_menus_dialog" className="modal fade">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 className="modal-title">태그 메뉴 관리</h4>
+          </div>
+          <div className="modal-body">
+            <select id="tag_menu_select" className="input-block-level" multiple data-placeholder="권한 추가하기"></select>
+          </div>
+        </div>
+      </div>
+    </div>;
+  }
+}
+
 
 $(function () {
   // 태그 목록 컬럼 변동 시 check
@@ -35,19 +196,6 @@ $(function () {
     }, 'json');
   });
 
-  var tag_menu_select = $("#tag_menu_select");
-  tag_menu_select.select2().change(function (e) {
-    if (e.added) {
-      // 권한 선택 시
-      fn_executeTagMenu(e.added.id, 'mapping_tag_menu')
-    } else if (e.removed) {
-      // 선택된 권한 삭제 시
-      if (confirm("삭제하시겠습니까?")) {
-        fn_executeTagMenu(e.removed.id, 'delete_tag_menu');
-      }
-    }
-  });
-
   $('#js_delete').click(() => {
     if (!confirm('선택한 항목들을 삭제하시겠습니까?')) {
       return;
@@ -70,80 +218,10 @@ $(function () {
   });
 });
 
-window.showTagUsers = function (tagId) {
-  $('#js_users_dialog').modal();
-
-  // clear
-  $('#tag_admins').html('불러오는 중입니다...');
-
-  $.get('/super/tags/' + tagId + '/users', function (result) {
-    if (!result.success) {
-      return;
-    }
-
-    const admins = result.data;
-    const admins_html = admins.map(function (admin) {
-      return (`
-            <li>
-              <h4>
-                <a class="label label-default" href="/super/users/${admin.id}" target="_blank">${admin.name}</a>
-              </h4>
-            </li>`
-      );
-    }).join(' ');
-
-    $('#tag_admins').html(admins_html);
-  });
-  return false;
-};
-
-window.showTagMenus = function (tag_id) {
-  $.post('/super/tag_action.ajax', { 'id': tag_id, 'command': 'show_mapping' }, function (returnData) {
-    if (!returnData.success) {
-      alert(returnData.msg);
-      return;
-    }
-
-    global_tag_id = tag_id;
-
-    $("#updateForm tr").attr("class", "");
-    $("#tag_tr_" + tag_id).attr("class", "info");
-    $("#tag_menu_div").modal();
-
-    const menus = returnData.data.menus;
-    const menus_html = menus.map(function (menu) {
-      var menu_url_array = menu['menu_url'].split('#');
-
-      var html = '<option value=" ' + menu['id'] + ' " ';
-      if (menu['selected'] == 'selected') {
-        html += ' selected="selected" ';
-      }
-      html += '>';
-      html += menu['menu_title'];
-      html += (menu_url_array[1] ? '#' + menu_url_array[1] : '');
-      html += '</option>';
-      return html;
-    }).join('');
-
-    const tag_menu_select = $("#tag_menu_select");
-    tag_menu_select.html(menus_html);
-    tag_menu_select.select2();
-
-  }, 'json');
-
-  return false;
-};
-
-// Tag에 Menu 등록 / 삭제 한다.
-function fn_executeTagMenu(menu_id, command) {
-  var jsonArray = {
-    'tag_id': global_tag_id,
-    'menu_id': menu_id,
-    'command': command
-  };
-  $.post('/super/tag_action.ajax', jsonArray, function (returnData) {
-    if (!returnData.success) {
-      alert(returnData.msg);
-    }
-  }, 'json');
-}
+ReactDOM.render(
+  <div>
+    <MenusDialog/>
+    <UsersDialog/>
+  </div>,
+  document.getElementById('content')
+);

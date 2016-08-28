@@ -85,8 +85,16 @@
           </td>
           <td>{{ tag.created_at }}</td>
           <td>{{ tag.updated_at }}</td>
-          <td><a href='#' onclick="showTagMenus({{ tag.id }})">{{ tag.menus_count }}</a></td>
-          <td><a href='#' onclick="showTagUsers({{ tag.id }})">{{ tag.users_count }}</a></td>
+          <td>
+            <a href='#' data-toggle="modal" data-target="#js_menus_dialog" data-tag-id="{{ tag.id }}">
+              {{ tag.menus_count }}
+            </a>
+          </td>
+          <td>
+            <a href="#" data-toggle="modal" data-target="#js_users_dialog" data-tag-id="{{ tag.id }}">
+              {{ tag.users_count }}
+            </a>
+          </td>
         </tr>
       {% endfor %}
       </tbody>
@@ -98,30 +106,4 @@
       </div>
     </div>
   </form>
-
-  <div id="js_users_dialog" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">태그 사용자 관리</h4>
-        </div>
-        <div class="modal-body">
-          <ul id="tag_admins"></ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="tag_menu_div" class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">태그 메뉴 관리</h4>
-        </div>
-        <div class="modal-body">
-          <select id="tag_menu_select" class="input-block-level" multiple data-placeholder="권한 추가하기"></select>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock %}
