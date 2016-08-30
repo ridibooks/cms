@@ -8,9 +8,9 @@ use Ridibooks\Platform\Common\ValidationUtils;
 
 class AdminTagService
 {
-	public function getTagList()
+	public static function getAllTags()
 	{
-		return AdminTag::all()->toArray();
+		return AdminTag::where('is_use', 1)->get(['id', 'name']);
 	}
 
 	public function getMappedAdminMenuListForSelectBox($tag_id)

@@ -6,8 +6,8 @@
 {% block script %}
   <script>
     requirejs(
-      ["jquery", "/static/js/super/user_tag.js", "/static/js/super/user_menu.js", "comm/jquery.cp_user"],
-      function ($, user_tag, user_menu) {
+      ["jquery", "comm/common", "comm/jquery.cp_user"],
+      function ($, common) {
         $(function () {
           loadPermissions();
 
@@ -50,9 +50,10 @@
           const $form = $('form[id=permissions]');
 
           // 태그 관리
-          user_tag.setSelect2($form.find('[name=tag_ids]'));
+          loadAssignedTags($form.find('[name=tag_ids]'));
+
           // 메뉴 관리
-          user_menu.setSelect2($form.find('[name=menu_ids]'));
+          loadAssignedMenus($form.find('[name=menu_ids]'));
 
           // 제휴CP 관리
           setManagingCpList($form.find('[name=partner_cp_ids]'), 2);
@@ -62,6 +63,62 @@
 
           // 제작CP 관리
           setManagingCpList($form.find("[name=production_cp_ids]"), 1);
+        }
+
+        function loadAssignedTags($tagSelect) {
+          $.ajax({
+            url: '/super/tags',
+            accepts: {
+              json: 'application/json'
+            },
+            dataType: 'json',
+            beforeSend: function () {
+              common.setProgressBar($tagSelect);
+            },
+            success: function (data) {
+              $tagSelect.select2({
+                multiple: true,
+                placeholder: '태그를 지정하세요',
+                tokenSeparators: [',', ' '],
+                data: data.map((tag) => {
+                  return { id: tag.id, text: tag.name };
+                })
+              });
+              common.removeProgressBar($tagSelect);
+            },
+            error: function (xhr, status, e) {
+              alert(e);
+            },
+          });
+        }
+
+        function loadAssignedMenus($menuSelect) {
+          $.ajax({
+            url: '/super/menus',
+            accepts: {
+              json: 'application/json'
+            },
+            dataType: 'json',
+            beforeSend: function () {
+              common.setProgressBar($menuSelect);
+            },
+            success: function (data) {
+              $menuSelect.select2({
+                multiple: true,
+                placeholder: '메뉴를 지정하세요',
+                tokenSeparators: [',', ' '],
+                data: data.map((menu) => {
+                  const menu_url_array = menu.menu_url.split('#');
+                  const text = menu.menu_title + (menu_url_array[1] ? '#' + menu_url_array[1] : '');
+                  return { id: menu.id, text: text };
+                })
+              });
+              common.removeProgressBar($menuSelect);
+            },
+            error: function (xhr, status, e) {
+              alert(e);
+            },
+          });
         }
 
         function setManagingCpList(target, type) {

@@ -159,8 +159,12 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->redirect('/super/users/' . $user_id);
 	}
 
-	public function tags(CmsApplication $app)
+	public function tags(CmsApplication $app, Request $request)
 	{
+		if (in_array('application/json', $request->getAcceptableContentTypes())) {
+			return $app->json(AdminTagService::getAllTags());
+		}
+
 		return $app->render('super/tags.twig',
 			[
 				'title' => '태그 관리',
@@ -231,9 +235,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 				case 'delete_tag_menu': //메뉴를 Tag에서 삭제한다.
 					$tagService->deleteTagMenu($tagMenuDto);
 					break;
-				case "showTagArray": //전체 Tag 목록 가져온다.
-					$jsonDto->data = (array)$tagService->getTagList();
-					break;
 			}
 		} catch (\Exception $e) {
 			$jsonDto->setException($e);
@@ -242,8 +243,12 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->json((array)$jsonDto);
 	}
 
-	public function menus(CmsApplication $app)
+	public function menus(CmsApplication $app, Request $request)
 	{
+		if (in_array('application/json', $request->getAcceptableContentTypes())) {
+			return $app->json(AdminMenuService::getMenuList(1));
+		}
+
 		return $app->render('super/menus.twig',
 			[
 				'title' => '메뉴 관리',
