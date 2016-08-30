@@ -7,7 +7,8 @@ class UsersDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      admins: []
+      admins: [],
+      loading: false
     };
   }
 
@@ -16,7 +17,7 @@ class UsersDialog extends React.Component {
       const tagId = $(e.relatedTarget).data('tag-id');
 
       // clear
-      this.setState({ admins: [] });
+      this.setState({ admins: [], loading: true });
       //$('#tag_admins').html('불러오는 중입니다...');
 
       this.loadUsers(tagId);
@@ -29,8 +30,24 @@ class UsersDialog extends React.Component {
         return;
       }
 
-      this.setState({ admins: result.data });
+      this.setState({ admins: result.data, loading: false });
     });
+  }
+
+  renderAdmins() {
+    if (this.state.loading) {
+      return <span>불러오는 중입니다</span>;
+    }
+
+    return <ul id="tag_admins">
+      {this.state.admins.map((admin) => (
+        <li key={admin.id}>
+          <h4>
+            <a className="label label-default" href={"/super/users/" + admin.id} target="_blank">{admin.name}</a>
+          </h4>
+        </li>
+      ))}
+    </ul>;
   }
 
   render() {
@@ -44,15 +61,7 @@ class UsersDialog extends React.Component {
             <h4 className="modal-title">태그 사용자 관리</h4>
           </div>
           <div className="modal-body">
-            <ul id="tag_admins">
-              {this.state.admins.map((admin) => (
-                <li key={admin.id}>
-                  <h4>
-                    <a className="label label-default" href={"/super/users/" + admin.id} target="_blank">{admin.name}</a>
-                  </h4>
-                </li>
-              ))}
-            </ul>
+            {this.renderAdmins()}
           </div>
         </div>
       </div>
@@ -65,12 +74,17 @@ class MenusDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      menus: [],
+      loading: false
     };
   }
 
   componentDidMount() {
     $('#js_menus_dialog').on('show.bs.modal', (e) => {
       const tagId = $(e.relatedTarget).data('tag-id');
+
+      // clear
+      this.setState({ tagId: tagId, menus: [], loading: true });
 
       this.loadMenus(tagId);
     });
@@ -96,36 +110,16 @@ class MenusDialog extends React.Component {
   }
 
   loadMenus(tag_id) {
-    this.setState({ tagId: tag_id });
-
-    $.post('/super/tag_action.ajax', { 'id': tag_id, 'command': 'show_mapping' }, function (returnData) {
+    $.post('/super/tag_action.ajax', { id: tag_id, command: 'show_mapping' }, (returnData) => {
       if (!returnData.success) {
         alert(returnData.msg);
         return;
       }
 
-      $("#updateForm tr").attr("class", "");
-      $("#tag_tr_" + tag_id).attr("class", "info");
-      //$("#js_menus_dialog").modal();
+      this.setState({ menus: returnData.data.menus, loading: false });
 
-      const menus = returnData.data.menus;
-      const menus_html = menus.map(function (menu) {
-        var menu_url_array = menu['menu_url'].split('#');
-
-        var html = '<option value=" ' + menu['id'] + ' " ';
-        if (menu['selected'] == 'selected') {
-          html += ' selected="selected" ';
-        }
-        html += '>';
-        html += menu['menu_title'];
-        html += (menu_url_array[1] ? '#' + menu_url_array[1] : '');
-        html += '</option>';
-        return html;
-      }).join('');
-
-      const tag_menu_select = $("#tag_menu_select");
-      tag_menu_select.html(menus_html);
-      tag_menu_select.select2();
+      var tag_menu_select = $("#tag_menu_select");
+      tag_menu_select.change();
 
     }, 'json');
 
@@ -145,6 +139,23 @@ class MenusDialog extends React.Component {
     }, 'json');
   }
 
+  renderSelect() {
+    const selected = this.state.menus
+      .filter((menu) => menu.selected === 'selected')
+      .map((menu) => menu.id);
+
+    return <select style={{ width: '100%' }} id="tag_menu_select" data-placeholder="권한 추가하기" multiple={true} value={selected} onChange={() => {}}>
+      {this.state.menus.map(this.renderOption)}
+    </select>;
+  }
+
+  renderOption(menu) {
+    const menuUrls = menu['menu_url'].split('#');
+    return <option key={menu.id} value={menu.id}>
+      {menu.menu_title}{menuUrls[1] ? '#' + menuUrls[1] : ''}
+    </option>;
+  }
+
   render() {
     return <div id="js_menus_dialog" className="modal fade">
       <div className="modal-dialog">
@@ -156,7 +167,8 @@ class MenusDialog extends React.Component {
             <h4 className="modal-title">태그 메뉴 관리</h4>
           </div>
           <div className="modal-body">
-            <select id="tag_menu_select" className="input-block-level" multiple data-placeholder="권한 추가하기"></select>
+            {this.state.loading ? <p>불러오는 중입니다...</p> : '' }
+            {this.renderSelect()}
           </div>
         </div>
       </div>
