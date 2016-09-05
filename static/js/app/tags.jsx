@@ -1,7 +1,8 @@
 import './base';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import Elm from 'react-elm-components';
+import { Test } from './Test';
 
 class UsersDialog extends React.Component {
   constructor(props) {
@@ -234,6 +235,7 @@ ReactDOM.render(
   <div>
     <MenusDialog/>
     <UsersDialog/>
+    <Elm src={Test} />
   </div>,
   document.getElementById('content')
 );

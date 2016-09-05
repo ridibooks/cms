@@ -3,31 +3,39 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: {
-    users: './js/app/users.js',
-    tags: './js/app/tags.js'
+    tags: './js/app/tags.jsx',
+    users: './js/app/users.jsx'
   },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js',
   },
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components']
+    modulesDirectories: ['node_modules', 'bower_components'],
+    extensions: ['', '.js', '.jsx', '.elm']
   },
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.jsx$/,
         loader: 'babel',
         query: {
           presets: ['es2015', 'react']
         },
-        exclude: /(node_modules|bower_components)/
+        exclude: [/elm-stuff/, /node_modules/, /bower_components/]
+      },
+      {
+        test: /\.elm$/,
+        exclude: [/elm-stuff/, /node_modules/, /bower_components/],
+        loader: 'elm-webpack'
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg)$/,
         loader: 'url'
       }
-    ]
+    ],
+
+    noParse: /\.elm$/
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
