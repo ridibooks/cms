@@ -34,6 +34,10 @@ $app->error(function (\Exception $e) use ($app) {
 	throw $e;
 });
 
+$app->get('/', function () use ($app) {
+	return $app->redirect('/welcome');
+});
+
 $app->get('/welcome', function (CmsApplication $app) {
 	return $app->render('welcome.twig');
 });
