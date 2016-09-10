@@ -1,6 +1,22 @@
 {
+    "name": "ridibooks/platform-cms",
+    "description": "Ridibooks CMS framework",
     "require": {
         "gnf/gnfcache": "^0.1.0",
         "illuminate/database": "^5.2"
-    }
+    },
+    "authors": [
+        {
+            "name": "김범준",
+            "email": "bj.kim@ridi.com"
+        },
+        {
+            "name": "박주현",
+            "email": "blu@ridi.com"
+        },
+        {
+            "name": "이영규",
+            "email": "younggyu.lee@ridi.com"
+        }
+    ]
 }
