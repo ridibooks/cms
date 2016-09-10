@@ -1,6 +1,6 @@
 {
     "name": "ridibooks/platform-cms",
-    "description": "Ridibooks CMS framework",
+    "description": "Ridibooks CMS SDK",
     "license": "MIT",
     "authors": [
         {
@@ -23,6 +23,9 @@
     "autoload": {
         "psr-0": {
             "Ridibooks\\": "src/"
-        }
+        },
+        "files": [
+            "bootstrap.php"
+        ]
     }
 }
