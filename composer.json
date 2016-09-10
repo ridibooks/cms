@@ -1,10 +1,7 @@
 {
     "name": "ridibooks/platform-cms",
     "description": "Ridibooks CMS framework",
-    "require": {
-        "gnf/gnfcache": "^0.1.0",
-        "illuminate/database": "^5.2"
-    },
+    "license": "MIT",
     "authors": [
         {
             "name": "김범준",
@@ -18,5 +15,14 @@
             "name": "이영규",
             "email": "younggyu.lee@ridi.com"
         }
-    ]
+    ],
+    "require": {
+        "gnf/gnfcache": "^0.1.0",
+        "illuminate/database": "^5.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "Ridibooks\\": "src/"
+        }
+    }
 }
