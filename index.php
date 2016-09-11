@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 require_once __DIR__ . '/include/bootstrap_cms.php';
 
+session_set_cookie_params(60 * 60 * 24 * 30, '/', Config::$ADMIN_DOMAIN);
+session_start();
+
 // Try MiniRouter first
 $response = MiniRouter::shouldRedirectForLogin(Request::createFromGlobals());
 if ($response) {
