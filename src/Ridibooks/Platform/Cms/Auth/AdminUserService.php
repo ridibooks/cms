@@ -9,8 +9,6 @@ use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
 use Ridibooks\Platform\Common\StringUtils;
 use Ridibooks\Platform\Common\ValidationUtils;
-use Ridibooks\Platform\Publisher\Constants\PublisherManagerTypes;
-use Ridibooks\Platform\Publisher\Model\TbPublisherManager;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class AdminUserService
@@ -192,25 +190,7 @@ class AdminUserService
 		DB::connection()->transaction(function () use ($user, $adminUserAuthDto) {
 			$user->tags()->sync($adminUserAuthDto->tag_ids);
 			$user->menus()->sync($adminUserAuthDto->menu_ids);
-			self::_updateManagingCps($user, PublisherManagerTypes::PARTNERSHIP_MANAGER, $adminUserAuthDto->partner_cp_ids);
-			self::_updateManagingCps($user, PublisherManagerTypes::OPERATOR_MANAGER, $adminUserAuthDto->operator_cp_ids);
-			self::_updateManagingCps($user, PublisherManagerTypes::PRODUCTION_MANAGER, $adminUserAuthDto->production_cp_ids);
 		});
-	}
-
-	private static function _updateManagingCps(AdminUser $user, $manager_type, array $cp_ids)
-	{
-		$publisherManager = new TbPublisherManager();
-
-		$publisherManager->deleteAllManager($user->id, $manager_type);
-
-		foreach ($cp_ids as $cp_id) {
-			$publisherManager->insertManager(
-				$cp_id,
-				$manager_type,
-				$user->id
-			);
-		}
 	}
 
 	/**Admin 계정 insert validator
