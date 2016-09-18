@@ -30,7 +30,7 @@
     "jquery-iframe-auto-height": "^2.0.0",
     "jquery-resizable-columns": "^0.1.3",
     "jquery-ui": "^1.12.0",
-    "jquery.attrajax": "^0.1.4",
+    "jquery.attrajax": "^0.1.6",
     "jquery.browser": "^0.1.0",
     "jquery.cookie": "^1.4.1",
     "json2": "*",

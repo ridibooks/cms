@@ -1,6 +1,5 @@
 <?php
 use Ridibooks\Library\UrlHelper;
-use Ridibooks\Platform\Cms\Auth\AdminTagSessionOperator;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Cms\CmsApplication;
 use Ridibooks\Platform\Cms\Controller\SuperControllerProvider;
@@ -9,7 +8,11 @@ use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-require_once __DIR__ . '/include/bootstrap_cms.php';
+require_once __DIR__ . '/../../include/config.php';
+require __DIR__ . "/vendor/autoload.php";
+
+session_set_cookie_params(60 * 60 * 24 * 30, '/', Config::$ADMIN_DOMAIN);
+session_start();
 
 // Try MiniRouter first
 $response = MiniRouter::shouldRedirectForLogin(Request::createFromGlobals());
@@ -34,6 +37,10 @@ $app->error(function (\Exception $e) use ($app) {
 	throw $e;
 });
 
+$app->get('/', function () use ($app) {
+	return $app->redirect('/welcome');
+});
+
 $app->get('/welcome', function (CmsApplication $app) {
 	return $app->render('welcome.twig');
 });
@@ -52,18 +59,6 @@ $app->post('/login', function (Request $req) {
 	try {
 		$login_service = new LoginService();
 		$login_service->doLoginAction($id, $passwd);
-
-		if (AdminTagSessionOperator::isPart1stCheck()) {
-			$return_url = '/admin/book2/productList?type=1stCompleted';
-		} elseif (AdminTagSessionOperator::isPart2ndCheck()) {
-			$return_url = '/admin/book2/productList?type=2ndCompleted';
-		} elseif (AdminTagSessionOperator::isPartMake()) {
-			$return_url = '/admin/book2/productList?type=scheduled';
-		} elseif (AdminTagSessionOperator::isPartRegister()) {
-			$return_url = '/admin/book2/productList?type=received';
-		} elseif (AdminTagSessionOperator::isPartPrincipal()) {
-			$return_url = '/admin/book/withholdList?type=withhold';
-		}
 
 		return RedirectResponse::create($return_url);
 	} catch (Exception $e) {
