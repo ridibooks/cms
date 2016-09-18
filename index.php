@@ -1,6 +1,5 @@
 <?php
 use Ridibooks\Library\UrlHelper;
-use Ridibooks\Platform\Cms\Auth\AdminTagSessionOperator;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Cms\CmsApplication;
 use Ridibooks\Platform\Cms\Controller\SuperControllerProvider;
@@ -60,18 +59,6 @@ $app->post('/login', function (Request $req) {
 	try {
 		$login_service = new LoginService();
 		$login_service->doLoginAction($id, $passwd);
-
-		if (AdminTagSessionOperator::isPart1stCheck()) {
-			$return_url = '/admin/book2/productList?type=waitingOpen';
-		} elseif (AdminTagSessionOperator::isPart2ndCheck()) {
-			$return_url = '/admin/book2/productList?type=checkingCompleted';
-		} elseif (AdminTagSessionOperator::isPartMake()) {
-			$return_url = '/admin/book2/productList?type=scheduled';
-		} elseif (AdminTagSessionOperator::isPartRegister()) {
-			$return_url = '/admin/book2/productList?type=received';
-		} elseif (AdminTagSessionOperator::isPartPrincipal()) {
-			$return_url = '/admin/book/withholdList?type=withhold';
-		}
 
 		return RedirectResponse::create($return_url);
 	} catch (Exception $e) {
