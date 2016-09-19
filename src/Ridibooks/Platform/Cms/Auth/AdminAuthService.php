@@ -301,7 +301,7 @@ class AdminAuthService
 		}
 
 		$allowed_urls = [
-			'/admin/welcome',    // deprecated
+			'/admin/book/pa',
 			'/comm/user_info',// 본인 비밀번호 변경 가능
 			'/comm/user_info_action.ajax',// 본인 비밀번호 변경 가능 #2
 			'/welcome',
