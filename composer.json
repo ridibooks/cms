@@ -1,5 +1,6 @@
 {
     "name": "ridibooks/platform-cms",
+    "version": "0.1",
     "description": "Ridibooks CMS SDK",
     "license": "MIT",
     "authors": [
