@@ -42,7 +42,6 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menus', [$this, 'menus']);
-		$controllers->get('menu_list', [$this, 'menus']);
 		$controllers->post('menus', [$this, 'createMenu']);
 		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
