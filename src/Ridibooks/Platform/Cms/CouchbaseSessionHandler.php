@@ -63,7 +63,7 @@ class CouchbaseSessionHandler implements \SessionHandlerInterface
 	public function close()
 	{
 		unset($this->bucket);
-		unset($this->ttl_seconds);
+
 		return true;
 	}
 
@@ -159,7 +159,7 @@ class CouchbaseSessionHandler implements \SessionHandlerInterface
 	 */
 	public function gc($maxlifetime)
 	{
-		// 구조상 GC가 의미 없음
+		// 구조상 GC가 의미 없음 (write시 ttl을 넘겨줘서 couchbase에서 자체적으로 처리하도록)
 		return true;
 	}
 }
