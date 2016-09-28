@@ -1,5 +1,4 @@
 <?php
-use Ridibooks\Library\CouchbaseSessionHandler;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Cms\CmsApplication;
@@ -12,13 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 require_once __DIR__ . '/../../include/config.php';
 require __DIR__ . "/vendor/autoload.php";
 
-const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 30;
-
-if (strlen(Config::$COUCHBASE_ENABLE)) {
-	session_set_save_handler(new CouchbaseSessionHandler(implode(',', \Config::$COUCHBASE_SERVER_HOSTS), 'session_cms', SESSION_TIMEOUT_SEC), true);
-}
-session_set_cookie_params(SESSION_TIMEOUT_SEC, '/', Config::$ADMIN_DOMAIN);
-session_start();
+LoginService::startSession();
 
 // Try MiniRouter first
 $response = MiniRouter::shouldRedirectForLogin(Request::createFromGlobals());
