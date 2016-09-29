@@ -96,15 +96,12 @@ class LoginService
 
 	public static function startSession()
 	{
-		// TODO: Couchbase Bucket 이전시 주석 해제
-		/*
 		if (strlen(\Config::$COUCHBASE_ENABLE)) {
 			session_set_save_handler(
 				new CouchbaseSessionHandler(implode(',', \Config::$COUCHBASE_SERVER_HOSTS), 'session_cms', self::SESSION_TIMEOUT_SEC),
 				true
 			);
 		}
-		*/
 		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', \Config::$ADMIN_DOMAIN);
 		session_start();
 	}
