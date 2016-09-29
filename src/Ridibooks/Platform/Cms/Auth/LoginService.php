@@ -2,10 +2,13 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
+use Ridibooks\Library\CouchbaseSessionHandler;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 
 class LoginService
 {
+	const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 30;
+
 	/**
 	 * @var AdminUserService
 	 */
@@ -89,5 +92,20 @@ class LoginService
 	public static function isSessionableEnviroment()
 	{
 		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler']);
+	}
+
+	public static function startSession()
+	{
+		// TODO: Couchbase Bucket 이전시 주석 해제
+		/*
+		if (strlen(\Config::$COUCHBASE_ENABLE)) {
+			session_set_save_handler(
+				new CouchbaseSessionHandler(implode(',', \Config::$COUCHBASE_SERVER_HOSTS), 'session_cms', self::SESSION_TIMEOUT_SEC),
+				true
+			);
+		}
+		*/
+		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', \Config::$ADMIN_DOMAIN);
+		session_start();
 	}
 }

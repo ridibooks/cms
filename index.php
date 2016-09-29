@@ -11,8 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 require_once __DIR__ . '/../../include/config.php';
 require __DIR__ . "/vendor/autoload.php";
 
-session_set_cookie_params(60 * 60 * 24 * 30, '/', Config::$ADMIN_DOMAIN);
-session_start();
+LoginService::startSession();
 
 // Try MiniRouter first
 $response = MiniRouter::shouldRedirectForLogin(Request::createFromGlobals());
