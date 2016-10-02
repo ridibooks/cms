@@ -1,8 +1,6 @@
 import './base';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Elm from 'react-elm-components';
-import { Test } from './Test';
 
 class UsersDialog extends React.Component {
   constructor(props) {
@@ -97,7 +95,7 @@ class MenusDialog extends React.Component {
     tag_menu_select.on('select2:select', (e) => {
       const data = e.params.data;
       const menuId = data.id.trim();
-      this.updateTagMenu(menuId, 'mapping_tag_menu')
+      this.addTagMenu(menuId)
     });
 
     // 선택된 권한 삭제 시
@@ -105,13 +103,13 @@ class MenusDialog extends React.Component {
       const data = e.params.data;
       const menuId = data.id.trim();
       if (confirm("삭제하시겠습니까?")) {
-        this.updateTagMenu(menuId, 'delete_tag_menu')
+        this.deleteTagMenu(menuId)
       }
     });
   }
 
-  loadMenus(tag_id) {
-    $.post('/super/tag_action.ajax', { id: tag_id, command: 'show_mapping' }, (returnData) => {
+  loadMenus(tagId) {
+    $.get(`/super/tags/${tagId}/menus`, (returnData) => {
       if (!returnData.success) {
         alert(returnData.msg);
         return;
@@ -127,17 +125,21 @@ class MenusDialog extends React.Component {
     return false;
   }
 
-  updateTagMenu(menu_id, command) {
-    var jsonArray = {
-      'tag_id': this.state.tagId,
-      'menu_id': menu_id,
-      'command': command
-    };
-    $.post('/super/tag_action.ajax', jsonArray, function (returnData) {
-      if (!returnData.success) {
-        alert(returnData.msg);
+  addTagMenu(menuId) {
+    $.post(`/super/tags/${this.state.tagId}/menus/${menuId}`,
+      function (returnData) {
+        if (!returnData.success) {
+          alert(returnData.msg);
+        }
       }
-    }, 'json');
+    );
+  }
+
+  deleteTagMenu(menuId) {
+    $.ajax({
+      url: `/super/tags/${this.state.tagId}/menus/${menuId}`,
+      type: 'DELETE'
+    });
   }
 
   renderSelect() {
@@ -235,7 +237,6 @@ ReactDOM.render(
   <div>
     <MenusDialog/>
     <UsersDialog/>
-    <Elm src={Test} />
   </div>,
   document.getElementById('content')
 );

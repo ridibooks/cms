@@ -39,6 +39,9 @@ class SuperControllerProvider implements ControllerProviderInterface
 		$controllers->post('tags', [$this, 'createTag']);
 		$controllers->delete('tags/{tag_id}', [$this, 'deleteTag']);
 		$controllers->get('tags/{tag_id}/users', [$this, 'tagUsers']);
+		$controllers->get('tags/{tag_id}/menus', [$this, 'tagMenus']);
+		$controllers->post('tags/{tag_id}/menus/{menu_id}', [$this, 'createTagMenu']);
+		$controllers->delete('tags/{tag_id}/menus/{menu_id}', [$this, 'deleteTagMenu']);
 		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		$controllers->get('menus', [$this, 'menus']);
@@ -208,31 +211,51 @@ class SuperControllerProvider implements ControllerProviderInterface
 		return $app->json((array)$json);
 	}
 
+	public function tagMenus(Application $app, $tag_id)
+	{
+		$jsonDto = new JsonDto();
+		$jsonDto->data = [
+			'menus' => AdminTagService::getMappedAdminMenuListForSelectBox($tag_id),
+			'admins' => AdminTagService::getMappedAdmins($tag_id)
+		];
+
+		return $app->json((array)$jsonDto);
+	}
+
+	public function createTagMenu(CmsApplication $app, $tag_id, $menu_id)
+	{
+		$jsonDto = new JsonDto();
+		try {
+			AdminTagService::insertTagMenu($tag_id, $menu_id);
+		} catch (\Exception $e) {
+			$jsonDto->setException($e);
+		}
+
+		return $app->json((array)$jsonDto);
+	}
+
+	public function deleteTagMenu(Application $app, $tag_id, $menu_id)
+	{
+		try {
+			AdminTagService::deleteTagMenu($tag_id, $menu_id);
+		} catch (\Exception $e) {
+			return $app->abort(Response::HTTP_INTERNAL_SERVER_ERROR);
+		}
+
+		return Response::create(Response::HTTP_NO_CONTENT);
+	}
+
 	public function tagAction(Application $app, Request $request)
 	{
 		$jsonDto = new JsonDto();
 
-		$tagService = new AdminTagService();
 		$tagDto = new AdminTagDto($request);
-		$tagMenuDto = new AdminTagMenuDto($request);
 
 		try {
 			switch ($tagDto->command) {
 				case 'update':
 					AdminTagService::updateTag($tagDto);
 					$jsonDto->setMsg("성공적으로 수정하였습니다.");
-					break;
-				case 'show_mapping': //Tag에 매핑된 메뉴 리스트
-					$jsonDto->data = [
-						'menus' => $tagService->getMappedAdminMenuListForSelectBox($tagDto->id),
-						'admins' => AdminTagService::getMappedAdmins($tagDto->id)
-					];
-					break;
-				case 'mapping_tag_menu': //메뉴를 Tag에 매핑시킨다.
-					$tagService->insertTagMenu($tagMenuDto);
-					break;
-				case 'delete_tag_menu': //메뉴를 Tag에서 삭제한다.
-					$tagService->deleteTagMenu($tagMenuDto);
 					break;
 			}
 		} catch (\Exception $e) {

@@ -13,7 +13,7 @@ class AdminTagService
 		return AdminTag::where('is_use', 1)->get(['id', 'name']);
 	}
 
-	public function getMappedAdminMenuListForSelectBox($tag_id)
+	public static function getMappedAdminMenuListForSelectBox($tag_id)
 	{
 		$menus = AdminMenuService::getMenuList();
 
@@ -100,37 +100,26 @@ class AdminTagService
 		AdminTag::destroy($id);
 	}
 
-	/**
-	 * @param AdminTagMenuDto $tagMenuDto
-	 */
-	public function insertTagMenu($tagMenuDto)
+	public static function insertTagMenu($tag_id, $menu_id)
 	{
-		$this->_validateTagMenu((array)$tagMenuDto);
+		ValidationUtils::checkNullField($tag_id, "태그 ID가 없습니다.");
+		ValidationUtils::checkNullField($menu_id, "메뉴 ID가 없습니다.");
 
 		/** @var AdminTag $tag */
-		$tag = AdminTag::find($tagMenuDto->tag_id);
-		$tag->menus()->attach($tagMenuDto->menu_id);
+		$tag = AdminTag::find($tag_id);
+		$tag->menus()->attach($menu_id);
 	}
 
-	/**
-	 * @param AdminTagMenuDto $tagMenuDto
-	 */
-	public function deleteTagMenu($tagMenuDto)
+	public static function deleteTagMenu($tag_id, $menu_id)
 	{
 		/** @var AdminTag $tag */
-		$tag = AdminTag::find($tagMenuDto->tag_id);
-		$tag->menus()->detach($tagMenuDto->menu_id);
+		$tag = AdminTag::find($tag_id);
+		$tag->menus()->detach($menu_id);
 	}
 
 	private static function _validateTag($tagArray)
 	{
 		ValidationUtils::checkNullField($tagArray['name'], '태그 이름을 입력하여 주십시오.');
-	}
-
-	private function _validateTagMenu($tagArray)
-	{
-		ValidationUtils::checkNullField($tagArray['tag_id'], "태그 ID가 없습니다.");
-		ValidationUtils::checkNullField($tagArray['menu_id'], "메뉴 ID가 없습니다.");
 	}
 
 	public static function getTagListWithUseCount()
