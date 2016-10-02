@@ -2,7 +2,9 @@
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Cms\CmsApplication;
-use Ridibooks\Platform\Cms\Controller\SuperControllerProvider;
+use Ridibooks\Platform\Cms\Controller\AdminMenuControllerProvider;
+use Ridibooks\Platform\Cms\Controller\AdminTagControllerProvider;
+use Ridibooks\Platform\Cms\Controller\AdminUserControllerProvider;
 use Ridibooks\Platform\Cms\Controller\UserControllerProvider;
 use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -71,7 +73,10 @@ $app->get('/logout', function () {
 	return RedirectResponse::create('/');
 });
 
-$app->mount('/super', new SuperControllerProvider());
+$app->mount('/super', new AdminUserControllerProvider());
+$app->mount('/super', new AdminTagControllerProvider());
+$app->mount('/super', new AdminMenuControllerProvider());
+
 $app->mount('/comm', new UserControllerProvider());
 
 $app->run();

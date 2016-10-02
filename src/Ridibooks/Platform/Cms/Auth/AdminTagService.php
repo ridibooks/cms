@@ -2,7 +2,6 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Exception\MsgException;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminTagMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminTag;
 use Ridibooks\Platform\Common\ValidationUtils;
 
@@ -66,33 +65,33 @@ class AdminTagService
 		return AdminAuthService::getHashesFromMenus($check_url, $menus);
 	}
 
-	public static function insertTag($tagDto)
+	public static function insertTag($name, $is_use)
 	{
-		self::_validateTag((array)$tagDto);
+		ValidationUtils::checkNullField($name, '태그 이름을 입력하여 주십시오.');
 
 		$tag = new AdminTag();
-		$tag->fill((array)$tagDto);
+		$tag->name = $name;
+		$tag->is_use = $is_use;
 		$tag->creator = LoginService::GetAdminID();
 		$tag->save();
 	}
 
-	public static function updateTag($tagDto)
+	public static function updateTag($tag_id, $name, $is_use)
 	{
-		foreach ($tagDto->tag_list as $tag) {
-			self::_validateTag($tag);
+		ValidationUtils::checkNullField($name, '태그 이름을 입력하여 주십시오.');
 
-			if ($tag['is_use'] != 1) {
-				$user_count = AdminTag::find($tag['id'])->users()->count();
-				if ($user_count > 0) { //해당 태그와 매핑되어있는 사용자가 있으면 사용중지를 할 수 없다.
-					throw new MsgException('해당 태그를 사용하고 있는 유저가 있습니다. 사용중인 유저: ' . $user_count);
-				}
+		if ($is_use != 1) {
+			$user_count = AdminTag::find($tag_id)->users()->count();
+			if ($user_count > 0) { //해당 태그와 매핑되어있는 사용자가 있으면 사용중지를 할 수 없다.
+				throw new MsgException('해당 태그를 사용하고 있는 유저가 있습니다. 사용중인 유저: ' . $user_count);
 			}
-
-			/** @var AdminTag $adminTag */
-			$adminTag = AdminTag::find($tag['id']);
-			$adminTag->fill($tag);
-			$adminTag->save();
 		}
+
+		/** @var AdminTag $tag */
+		$tag = AdminTag::find($tag_id);
+		$tag->name = $name;
+		$tag->is_use = $is_use;
+		$tag->save();
 	}
 
 	public static function deleteTag($id)
@@ -115,11 +114,6 @@ class AdminTagService
 		/** @var AdminTag $tag */
 		$tag = AdminTag::find($tag_id);
 		$tag->menus()->detach($menu_id);
-	}
-
-	private static function _validateTag($tagArray)
-	{
-		ValidationUtils::checkNullField($tagArray['name'], '태그 이름을 입력하여 주십시오.');
 	}
 
 	public static function getTagListWithUseCount()

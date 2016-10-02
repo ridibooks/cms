@@ -126,13 +126,15 @@ class MenusDialog extends React.Component {
   }
 
   addTagMenu(menuId) {
-    $.post(`/super/tags/${this.state.tagId}/menus/${menuId}`,
-      function (returnData) {
+    $.ajax({
+      url: `/super/tags/${this.state.tagId}/menus/${menuId}`,
+      type: 'PUT',
+      success: function (returnData) {
         if (!returnData.success) {
           alert(returnData.msg);
         }
       }
-    );
+    });
   }
 
   deleteTagMenu(menuId) {
@@ -188,27 +190,24 @@ $(function () {
 
   // 태그 목록 수정
   $('#updateBtn').click(function () {
-    var container = '';
-    $('#updateForm input:checked').each(function (i) {
-      var id = $(this).parents('tr').find('input[name=id]').val();
-      var name = $(this).parents('tr').find('input[name=name]').val();
-      var is_use = $(this).parents('tr').find('select[name=is_use]').val();
+    $.when.apply($,
+      $('#updateForm input:checked').map((i, e) => {
+        const $tr = $(e).parents('tr');
+        const tagId = $tr.find('input[name=id]').val();
+        const data = {
+          name: $tr.find('input[name=name]').val(),
+          is_use: $tr.find('select[name=is_use]').val()
+        };
 
-      container += '<input type="text" name="tag_list[' + i + '][id]" value="' + id + '" />';
-      container += '<input type="text" name="tag_list[' + i + '][name]" value="' + name + '" />';
-      container += '<input type="text" name="tag_list[' + i + '][is_use]" value="' + is_use + '" />';
-
+        return $.ajax({
+          url: `/super/tags/${tagId}`,
+          type: 'PUT',
+          data: data
+        });
+      })
+    ).done((result) => {
+      window.location.reload();
     });
-    container += '<input type="text" name="command" value="update" />\n';
-
-    $.post('/super/tag_action.ajax', $('<form />').append(container).serializeArray(), function (returnData) {
-      if (returnData.success) {
-        alert(returnData.msg);
-        window.location.reload();
-      } else {
-        alert(returnData.msg);
-      }
-    }, 'json');
   });
 
   $('#js_delete').click(() => {
