@@ -1,5 +1,7 @@
 .idea
 composer.lock
 static/bower_components
+static/dist
+static/elm-stuff
 static/node_modules
 vendor

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{{ title }}{% endblock %} - Ridibooks CMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  {% if BASE_HREF %}
+    <base href="//{{ BASE_HREF }}"/>
+  {% endif %}
+
+  <style>
+    .DEV_environment_ribbon, .STAGING_environment_ribbon {
+      position: fixed; left: -30px; top: 10px; z-index: 99999;
+      width: 100px; height: 24px; margin: 0; padding: 0;
+      line-height: 25px; text-align: center;
+      font-size: 14px; font-weight: 700; color: white; letter-spacing: 0;
+
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+
+      box-shadow: 0 2px 2px rgba(0,0,0,.3);
+      -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+      -moz-box-shadow: 0 2px 2px rgba(0,0,0,.3);
+    }
+    .DEV_environment_ribbon{
+      background: #5fce0c;
+    }
+    .STAGING_environment_ribbon {
+      background: #e74c3c; font-size: 11px;
+    }
+  </style>
+
+  {% block style %}
+  {% endblock %}
+
+  <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
+  <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/node_modules/select2/dist/css/select2.min.css">
+
+  <script src="/static/dist/commons.js"></script>
+</head>
+<body>
+
+{% if ENV_NAME and ENV_NAME != 'REAL' %}
+  <div class="{{ ENV_NAME }}_environment_ribbon">{{ ENV_NAME }}</div>
+{% endif %}
+
+<div class="container-fluid marginBottom30 marginTop20">
+  {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+  <div hidden class="col-xs-push-8" id="js_ie_alert" style="position: fixed; z-index: 10; opacity: 0.75;">
+    <div class="alert alert-danger">
+      <strong>경고!</strong> Internet Explorer 에서는 일부 기능이 정상적으로 작동하지 않을 수 있습니다. <a
+        href="https://www.google.co.kr/chrome/browser/desktop/" class="alert-link">Chrome 브라우저</a>를 사용해주세요.
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-lg-2">
+      {% include '/comm/left_menu_new.twig' %}
+    </div>
+    <div class="col-xs-12 col-lg-10">
+      {% for type, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+
+      <ul>
+        <li><h3>{{ block('title') }}</h3></li>
+        {% if purpose %}
+          <li>사용목적: {% block purpose %}{% endblock %}</li>
+        {% endif %}
+        {% if usage %}
+          <li>사용방법: {% block usage %}{% endblock %}</li>
+        {% endif %}
+      </ul>
+
+      <div id="content">
+      </div>
+      {% block body %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+
+{% block script %}
+{% endblock %}
+</body>
+</html>

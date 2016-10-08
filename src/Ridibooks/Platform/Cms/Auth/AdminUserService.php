@@ -3,7 +3,6 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Exception\MsgException;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserAuthDto;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminUser;
@@ -179,7 +178,7 @@ class AdminUserService
 		AdminUser::destroy($user_id);
 	}
 
-	public static function updateUserPermissions($user_id, AdminUserAuthDto $adminUserAuthDto)
+	public static function updateUserPermissions($user_id, $tag_ids, $menu_ids)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($user_id);
@@ -187,9 +186,9 @@ class AdminUserService
 			throw new ResourceNotFoundException();
 		}
 
-		DB::connection()->transaction(function () use ($user, $adminUserAuthDto) {
-			$user->tags()->sync($adminUserAuthDto->tag_ids);
-			$user->menus()->sync($adminUserAuthDto->menu_ids);
+		DB::connection()->transaction(function () use ($user, $tag_ids, $menu_ids) {
+			$user->tags()->sync($tag_ids);
+			$user->menus()->sync($menu_ids);
 		});
 	}
 
