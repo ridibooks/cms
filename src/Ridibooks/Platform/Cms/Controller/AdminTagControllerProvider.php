@@ -62,7 +62,7 @@ class AdminTagControllerProvider implements ControllerProviderInterface
 	public function updateTag(CmsApplication $app, Request $request, $tag_id)
 	{
 		$name = $request->get('name');
-		$is_use = $request->get('is_use');
+		$is_use = $request->request->getBoolean('is_use');
 
 		$jsonDto = new JsonDto();
 

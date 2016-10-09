@@ -80,7 +80,7 @@ class AdminTagService
 	{
 		ValidationUtils::checkNullField($name, '태그 이름을 입력하여 주십시오.');
 
-		if ($is_use != 1) {
+		if (!$is_use) {
 			$user_count = AdminTag::find($tag_id)->users()->count();
 			if ($user_count > 0) { //해당 태그와 매핑되어있는 사용자가 있으면 사용중지를 할 수 없다.
 				throw new MsgException('해당 태그를 사용하고 있는 유저가 있습니다. 사용중인 유저: ' . $user_count);

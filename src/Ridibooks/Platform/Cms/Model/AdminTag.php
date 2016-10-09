@@ -14,6 +14,12 @@ class AdminTag extends Model
 		'creator'
 	];
 
+	protected $casts = [
+		'is_use' => 'boolean',
+		'users_count' => 'integer',
+		'menus_count' => 'integer'
+	];
+
 	public function users()
 	{
 		return $this->belongsToMany(
