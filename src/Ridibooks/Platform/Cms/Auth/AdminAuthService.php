@@ -17,16 +17,12 @@ class AdminAuthService
 	private $adminAuth; //권한이 있는 메뉴 array
 	private $adminMenu; //권한이 없는 순수 메뉴 array
 	private $adminTag; //로그인 한 유저의 Tag Array
-	private $isCache = false; //세션을 사용한 cache를 하지 않는다.
 
 	public function __construct()
 	{
-		if (!$this->isCache || !isset($_SESSION['session_user_auth']) || count($_SESSION['session_user_auth']) == 0) {
-			// session_user_auth가 session에 없을 경우에만 query
-			$this->initAdminAuth();
-			$this->initAdminMenu();
-			$this->initAdminTag();
-		}
+		$this->initAdminAuth();
+		$this->initAdminMenu();
+		$this->initAdminTag();
 	}
 
 	/**해당 유저의 모든 권한을 셋팅한다.*/
@@ -424,9 +420,7 @@ class AdminAuthService
 				$login_url .= '?return_url=' . urlencode($request_uri);
 			}
 
-			$protocol = \Config::$ENABLE_SSL ? 'https' : 'http';
-
-			return RedirectResponse::create($protocol . '://' . $request->getHttpHost() . $login_url);
+			return RedirectResponse::create($login_url);
 		}
 
 		try {

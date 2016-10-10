@@ -81,33 +81,31 @@ class MiniRouter
 	 */
 	public static function shouldRedirectForLogin(Request $request)
 	{
-		$request_uri = $request->getRequestUri();
+		$response = self::conformAllowedProtocol($request);
+		if ($response) {
+			return $response;
+		}
 
-		$login_url = '/login';
-		$on_login_page = (strncmp($request_uri, $login_url, strlen($login_url)) === 0);
+		if (self::onLoginPage($request)) {
+			return null;
+		}
 
-		if ($on_login_page) {
-			if (\Config::$ENABLE_SSL && !self::onHttps($request)) {
-				if (!empty($request_uri) && $request_uri != $login_url) {
-					$request_uri = str_replace('/login?return_url=', '', $request_uri);
-					$login_url .= '?return_url=' . urlencode($request_uri);
-				}
+		AdminAuthService::initSession();
+		$login_required_response = AdminAuthService::authorize($request);
 
-				return RedirectResponse::create('https://' . $request->getHttpHost() . $login_url);
-			}
-		} else {
-			AdminAuthService::initSession();
-			$login_required_response = AdminAuthService::authorize($request);
+		if ($login_required_response !== null) {
+			return $login_required_response;
+		}
 
-			if ($login_required_response !== null) {
-				return $login_required_response;
-			}
+		return null;
+	}
 
-			if (\Config::$ENABLE_SSL && !self::onHttps($request)) {
-				return RedirectResponse::create('https://' . $request->getHttpHost() . $request_uri);
-			} elseif (!\Config::$ENABLE_SSL && self::onHttps($request)) {
-				return RedirectResponse::create('http://' . $request->getHttpHost() . $request_uri);
-			}
+	private static function conformAllowedProtocol(Request $request)
+	{
+		if (\Config::$ENABLE_SSL && !self::onHttps($request)) {
+			return RedirectResponse::create('https://' . $request->getHttpHost() . $request->getRequestUri());
+		} elseif (!\Config::$ENABLE_SSL && self::onHttps($request)) {
+			return RedirectResponse::create('http://' . $request->getHttpHost() . $request->getRequestUri());
 		}
 
 		return null;
@@ -120,6 +118,16 @@ class MiniRouter
 	private static function onHttps($request)
 	{
 		return $request->isSecure() || $request->server->get('HTTP_X_FORWARDED_PROTO') == 'https';
+	}
+
+	/**
+	 * @param Request $request
+	 * @return bool
+	 */
+	private static function onLoginPage($request)
+	{
+		$login_url = '/login';
+		return strncmp($request->getRequestUri(), $login_url, strlen($login_url)) === 0;
 	}
 
 	private function callController($query)
