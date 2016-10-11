@@ -7,7 +7,7 @@ use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 
 class LoginService
 {
-	const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 30;
+	const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 14; // 2주
 
 	/**
 	 * @var AdminUserService
