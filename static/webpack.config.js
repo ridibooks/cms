@@ -1,5 +1,6 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -30,6 +31,10 @@ module.exports = {
         loader: 'elm-webpack'
       },
       {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
+      },
+      {
         test: /\.(woff|woff2|eot|ttf|svg)$/,
         loader: 'url'
       }
@@ -49,6 +54,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"
-    })
+    }),
+    new ExtractTextPlugin("styles.css")
   ]
 };

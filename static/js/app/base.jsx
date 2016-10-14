@@ -1,10 +1,10 @@
 import $ from 'jquery';
-import 'bootstrap';
-import 'select2';
 
-// FOUT 현상 때문에 html 에 직접 inline
-//import 'style!css!bootstrap/dist/css/bootstrap.min.css';
-//import 'style!css!select2/dist/css/select2.min.css';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import 'select2';
+import 'select2/dist/css/select2.min.css';
 
 $(function() {
   'use strict';
