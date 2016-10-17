@@ -3,7 +3,7 @@
 all: composer bower build
 
 composer:
-	@php ../../bin/composer.phar update --no-dev
+	composer update --no-dev
 
 bower:
 	@cd static && bower update -p && bower prune -p
