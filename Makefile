@@ -8,8 +8,5 @@ composer:
 bower:
 	@cd static && bower update -p && bower prune -p
 
-build:
-	cd static && npm install && npm update && npm run build
-
 clean:
 	rm -rvf static/bower_components

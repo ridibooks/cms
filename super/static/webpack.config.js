@@ -9,10 +9,10 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: '[name].js',
+    filename: '[name].js'
   },
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components'],
+    modulesDirectories: ['node_modules'],
     extensions: ['', '.js', '.jsx', '.elm']
   },
   module: {
@@ -23,11 +23,11 @@ module.exports = {
         query: {
           presets: ['es2015', 'react']
         },
-        exclude: [/elm-stuff/, /node_modules/, /bower_components/]
+        exclude: [/elm-stuff/, /node_modules/]
       },
       {
         test: /\.elm$/,
-        exclude: [/elm-stuff/, /node_modules/, /bower_components/],
+        exclude: [/elm-stuff/, /node_modules/],
         loader: 'elm-webpack'
       },
       {
@@ -48,9 +48,6 @@ module.exports = {
       chunks: ['users', 'tags'],
       minChunks: 2
     }),
-    new webpack.ResolverPlugin(
-      new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(".bower.json", ["main"])
-    ),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"

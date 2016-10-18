@@ -1,7 +1,6 @@
-import './base';
-import React from 'react';
-import ReactDOM from 'react-dom';
-
+import "./base";
+import React from "react";
+import ReactDOM from "react-dom";
 
 const TagCreate = () => {
   return (
