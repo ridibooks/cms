@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-all: composer bower build
+all: composer bower
 
 composer:
 	composer update --no-dev
