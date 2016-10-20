@@ -10,7 +10,7 @@ use Ridibooks\Platform\Cms\MiniRouter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-require_once __DIR__ . '/../../include/config.php';
+require_once __DIR__ . '/../config.php';
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 $autoloader->addPsr4('Ridibooks\\Platform\\Cms\\', __DIR__ . '/super/src');
