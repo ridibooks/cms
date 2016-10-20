@@ -19,6 +19,8 @@ class AdminMenu extends Model
 	];
 
 	protected $casts = [
+		'menu_deep' => 'integer',
+		'menu_order' => 'integer',
 		'is_use' => 'boolean',
 		'is_show' => 'boolean',
 		'is_newtab' => 'boolean'
