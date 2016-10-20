@@ -1,4 +1,4 @@
-{% extends 'index_new.twig' %}
+{% extends 'index_newer.twig' %}
 
 {% block title %}
   어드민 메뉴 관리
@@ -6,6 +6,10 @@
 
 {% block script %}
   <script>
+    window.menus = {{ menu_list|json_encode|raw }};
+  </script>
+  <script src="/super/static/dist/menus.js"></script>
+  <!--script>
     require(['jquery', 'Sortable', 'bootstrap'], function ($, Sortable) {
       $(function () {
 
@@ -193,10 +197,10 @@
         }
       });
     });
-  </script>
+  </script-->
 {% endblock %}
 
-{% block body %}
+{# block body %}
   <h4>메뉴 등록</h4>
   <form class="form-group" method="POST">
     <input type="hidden" id="command" name="command"/>
@@ -395,4 +399,4 @@
     </div>
   </div>
 
-{% endblock %}
+{% endblock #}

@@ -5,7 +5,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: {
     tags: './js/app/tags.jsx',
-    users: './js/app/users.jsx'
+    menus: './js/app/menus.jsx'
   },
   output: {
     path: path.join(__dirname, 'dist'),
