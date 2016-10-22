@@ -3,8 +3,8 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Exception\MsgException;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;
+use Ridibooks\Platform\Cms\Dto\AdminMenuAjaxDto;
+use Ridibooks\Platform\Cms\Dto\AdminMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\ValidationUtils;

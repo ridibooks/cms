@@ -3,8 +3,8 @@ namespace Ridibooks\Platform\Cms\Controller;
 
 use Ridibooks\Library\Util;
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\CmsApplication;
+use Ridibooks\Platform\Cms\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\PaginationHelper;
 use Ridibooks\Platform\Common\PagingUtil;
 use Silex\Application;

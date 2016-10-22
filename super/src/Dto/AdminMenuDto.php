@@ -1,12 +1,8 @@
 <?php
-namespace Ridibooks\Platform\Cms\Auth\Dto;
+namespace Ridibooks\Platform\Cms\Dto;
 
 use Ridibooks\Platform\Common\Base\AdminBaseDto;
 
-/**메뉴 등록 / 수정을 위한 Dto
- * Class MenuDto
- * @package Ridibooks\Platform\Cms\Auth\Dto
- */
 class AdminMenuDto extends AdminBaseDto
 {
 	public $menu_title; // 메뉴 제목

@@ -2,9 +2,9 @@
 namespace Ridibooks\Platform\Cms\Controller;
 
 use Ridibooks\Platform\Cms\Auth\AdminMenuService;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;
 use Ridibooks\Platform\Cms\CmsApplication;
+use Ridibooks\Platform\Cms\Dto\AdminMenuAjaxDto;
+use Ridibooks\Platform\Cms\Dto\AdminMenuDto;
 use Ridibooks\Platform\Common\Base\JsonDto;
 use Silex\Application;
 use Silex\ControllerCollection;
