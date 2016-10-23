@@ -22,6 +22,9 @@ class AdminMenuControllerProvider implements ControllerProviderInterface
 		$controllers->post('menus', [$this, 'createMenu']);
 		$controllers->match('menu_action.ajax', [$this, 'menuAction']);
 
+		$controllers->get('menus/{menu_id}/submenus', [$this, 'submenus']);
+		$controllers->delete('menus/{menu_id}/submenus/{submenu_id}', [$this, 'deleteSubmenu']);
+
 		return $controllers;
 	}
 
@@ -53,6 +56,28 @@ class AdminMenuControllerProvider implements ControllerProviderInterface
 		return $app->redirect('/super/menus');
 	}
 
+	public function submenus(CmsApplication $app, $menu_id)
+	{
+		$json = new JsonDto();
+		$json->data = AdminMenuService::getMenuAjaxList($menu_id);
+
+		return $app->json((array)$json);
+	}
+
+	public function deleteSubmenu(CmsApplication $app, $menu_id, $submenu_id)
+	{
+		$json_dto = new JsonDto();
+		try {
+			AdminMenuService::deleteMenuAjax($menu_id, $submenu_id);
+			$json_dto->setMsg('성공적으로 삭제하였습니다.');
+
+		} catch (\Exception $e) {
+			$json_dto->setException($e);
+		}
+
+		return $app->json((array)$json_dto);
+	}
+
 	public function menuAction(Application $app, Request $request)
 	{
 		$menu_service = new AdminMenuService();
@@ -67,9 +92,6 @@ class AdminMenuControllerProvider implements ControllerProviderInterface
 					$menu_service->updateMenu($menu_dto);
 					$json_dto->setMsg('성공적으로 수정하였습니다.');
 					break;
-				case 'show_ajax_list': //Ajax 메뉴 리스트
-					$json_dto->data = $menu_service->getMenuAjaxList($menu_ajax_dto->menu_id);
-					break;
 				case 'ajax_insert': //Ajax 메뉴 등록
 					$menu_service->insertMenuAjax($menu_ajax_dto);
 					$json_dto->setMsg('성공적으로 등록하였습니다.');
@@ -77,13 +99,6 @@ class AdminMenuControllerProvider implements ControllerProviderInterface
 				case 'ajax_update': //Ajax 메뉴 수정
 					$menu_service->updateMenuAjax($menu_ajax_dto);
 					$json_dto->setMsg('성공적으로 수정하였습니다.');
-					break;
-				case 'ajax_delete': //Ajax 메뉴 삭제
-					$menu_service->deleteMenuAjax($menu_ajax_dto);
-					$json_dto->setMsg('성공적으로 삭제하였습니다.');
-					break;
-				case "showMenuArray": //전체 메뉴 목록 가져온다.
-					$json_dto->data = (array)AdminMenuService::getMenuList(1);
 					break;
 			}
 

@@ -2,7 +2,7 @@ import './base';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Sortable from 'react-sortablejs';
-import AjaxMenuModal from './AjaxMenuModal';
+import Submenus from './Submenus';
 
 const MenuCreate = () =>
   <form className="form-group" method="POST">
@@ -254,7 +254,7 @@ class MenuList extends React.Component {
           </nav>
         </form>
 
-        <AjaxMenuModal ref={(e) => this.modal = e}/>
+        <Submenus ref={(e) => this.modal = e}/>
       </div>
     );
   }

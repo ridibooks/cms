@@ -35,7 +35,36 @@ function fn_executeAjaxMenus(command) {
   }, 'json');
 }
 
-export default class AjaxMenuModal extends React.Component {
+function fn_showAjaxMenus(menu_id, menu_title) {
+  $.get(`/super/menus/${menu_id}/submenus`, (returnData) => {
+    if (returnData.success) {
+      var menu_list = returnData.data;
+      var html = '';
+      if (menu_list.length != 0) {
+        for (var i in menu_list) {
+          html += '<tr>';
+          html += '<td>' + menu_list[i]['id'] + '</td>';
+          html += '<td><input type="checkbox" value="' + menu_list[i]['id'] + '"/></td>';
+          html += '<td><input type="text" class="form-control" name="ajax_url" value="' + menu_list[i]['ajax_url'] + '"/></td>';
+          html += '</tr>';
+        }
+      } else {
+        html += '<tr><td colspan="3">등록된 Ajax 메뉴가 없습니다.</td></tr>';
+      }
+
+      $("#ajaxMenuBody").html(html);
+      $("#ajaxMenuModalLabel").html(menu_title + ' Ajax 등록 및 수정');
+      $("#ajax_menu_id").val(menu_id);
+      $("#ajax_menu_title").val(menu_title);
+      $("#ajax_url").val('');
+      $("#ajaxMenuModal").modal('show');
+    } else {
+      alert(returnData.msg);
+    }
+  }, 'json');
+}
+
+export default class Submenus extends React.Component {
   componentDidMount() {
     $("#ajaxMenuModal").modal({
       keyboard: true,
@@ -66,39 +95,35 @@ export default class AjaxMenuModal extends React.Component {
     //Ajax Menu Url 삭제
     $("#deleteAjaxUrlBtn").click(function () {
       fn_executeAjaxMenus('ajax_delete');
+
+      $('#ajaxMenuUpdateForm').find("input:checked").each(function (i) {
+        var id = $(this).parents('tr').find('input[type=checkbox]').val();
+        var menu_id = $("#ajax_menu_id").val();
+        var ajax_url = $(this).parents('tr').find('input[name=ajax_url]').val();
+
+        /*
+        $.ajax({
+          url: `/super/menus/${menu_id}/submenus/${submenu_id}`,
+          type: 'DELETE'
+        });
+        */
+      });
+
+      /*
+      $.post('/super/menu_action.ajax', $('<form />').append(container).serializeArray(), function (returnData) {
+        if (returnData.success) {
+          alert(returnData.msg);
+          fn_showAjaxMenus($("#ajax_menu_id").val(), $("#ajax_menu_title").val());
+        } else {
+          alert(returnData.msg);
+        }
+      }, 'json');
+      */
     });
   }
 
   show(menu_id, menu_title) {
-    $.post('/super/menu_action.ajax', {
-      'menu_id': menu_id,
-      'command': 'show_ajax_list'
-    }, function (returnData) {
-      if (returnData.success) {
-        var menu_list = returnData.data;
-        var html = '';
-        if (menu_list.length != 0) {
-          for (var i in menu_list) {
-            html += '<tr>';
-            html += '<td>' + menu_list[i]['id'] + '</td>';
-            html += '<td><input type="checkbox" value="' + menu_list[i]['id'] + '"/></td>';
-            html += '<td><input type="text" class="form-control" name="ajax_url" value="' + menu_list[i]['ajax_url'] + '"/></td>';
-            html += '</tr>';
-          }
-        } else {
-          html += '<tr><td colspan="3">등록된 Ajax 메뉴가 없습니다.</td></tr>';
-        }
-
-        $("#ajaxMenuBody").html(html);
-        $("#ajaxMenuModalLabel").html(menu_title + ' Ajax 등록 및 수정');
-        $("#ajax_menu_id").val(menu_id);
-        $("#ajax_menu_title").val(menu_title);
-        $("#ajax_url").val('');
-        $("#ajaxMenuModal").modal('show');
-      } else {
-        alert(returnData.msg);
-      }
-    }, 'json');
+    fn_showAjaxMenus(menu_id, menu_title);
   }
 
   render() {
