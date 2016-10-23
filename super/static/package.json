@@ -8,7 +8,9 @@
     "jquery": "^3.1.1",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
-    "select2": "^4.0.3"
+    "react-sortablejs": "^1.1.1",
+    "select2": "^4.0.3",
+    "sortablejs": "^1.4.2"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
