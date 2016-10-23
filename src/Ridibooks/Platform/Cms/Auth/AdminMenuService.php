@@ -117,7 +117,7 @@ class AdminMenuService
 		if (!$submenu) {
 			throw new MsgException('존재하지 않는 서브메뉴입니다.');
 		}
-		if ($submenu->menu_id === $menu_id) {
+		if ($submenu->menu_id != $menu_id) {
 			throw new MsgException('잘못된 서브메뉴입니다.');
 		}
 		$submenu->delete();

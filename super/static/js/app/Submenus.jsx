@@ -11,30 +11,6 @@ function fn_validateAjax() {
   return true;
 }
 
-//Ajax 메뉴 수정 / 삭제 한다.
-function fn_executeAjaxMenus(command) {
-  var container = '';
-  $('#ajaxMenuUpdateForm').find("input:checked").each(function (i) {
-    var id = $(this).parents('tr').find('input[type=checkbox]').val();
-    var menu_id = $("#ajax_menu_id").val();
-    var ajax_url = $(this).parents('tr').find('input[name=ajax_url]').val();
-
-    container += '<input type="text" name="menu_ajax_list[' + i + '][id]" value="' + id + '" />';
-    container += '<input type="text" name="menu_ajax_list[' + i + '][menu_id]" value="' + menu_id + '" />';
-    container += '<input type="text" name="menu_ajax_list[' + i + '][ajax_url]" value="' + ajax_url + '" />';
-  });
-  container += '<input type="text" name="command" value="' + command + '" />\n';
-
-  $.post('/super/menu_action.ajax', $('<form />').append(container).serializeArray(), function (returnData) {
-    if (returnData.success) {
-      alert(returnData.msg);
-      fn_showAjaxMenus($("#ajax_menu_id").val(), $("#ajax_menu_title").val());
-    } else {
-      alert(returnData.msg);
-    }
-  }, 'json');
-}
-
 function fn_showAjaxMenus(menu_id, menu_title) {
   $.get(`/super/menus/${menu_id}/submenus`, (returnData) => {
     if (returnData.success) {
@@ -86,39 +62,50 @@ export default class Submenus extends React.Component {
         }, 'json');
       }
     });
+  }
 
-    //Ajax Menu Url 수정
-    $("#updateAjaxUrlBtn").click(function () {
-      fn_executeAjaxMenus('ajax_update');
+  onUpdate() {
+    var container = '';
+    $('#ajaxMenuUpdateForm').find("input:checked").each(function (i) {
+      var id = $(this).parents('tr').find('input[type=checkbox]').val();
+      var menu_id = $("#ajax_menu_id").val();
+      var ajax_url = $(this).parents('tr').find('input[name=ajax_url]').val();
+
+      container += '<input type="text" name="menu_ajax_list[' + i + '][id]" value="' + id + '" />';
+      container += '<input type="text" name="menu_ajax_list[' + i + '][menu_id]" value="' + menu_id + '" />';
+      container += '<input type="text" name="menu_ajax_list[' + i + '][ajax_url]" value="' + ajax_url + '" />';
     });
+    container += '<input type="text" name="command" value="ajax_update" />\n';
 
-    //Ajax Menu Url 삭제
-    $("#deleteAjaxUrlBtn").click(function () {
-      fn_executeAjaxMenus('ajax_delete');
+    $.post('/super/menu_action.ajax', $('<form />').append(container).serializeArray(), function (returnData) {
+      if (returnData.success) {
+        alert(returnData.msg);
+        fn_showAjaxMenus($("#ajax_menu_id").val(), $("#ajax_menu_title").val());
+      } else {
+        alert(returnData.msg);
+      }
+    }, 'json');
+  }
 
-      $('#ajaxMenuUpdateForm').find("input:checked").each(function (i) {
-        var id = $(this).parents('tr').find('input[type=checkbox]').val();
-        var menu_id = $("#ajax_menu_id").val();
-        var ajax_url = $(this).parents('tr').find('input[name=ajax_url]').val();
+  onDelete() {
+    if (!confirm('선택한 항목들을 삭제하시겠습니까?')) {
+      return;
+    }
 
-        /*
-        $.ajax({
-          url: `/super/menus/${menu_id}/submenus/${submenu_id}`,
-          type: 'DELETE'
-        });
-        */
-      });
+    const menu_id = $("#ajax_menu_id").val();
+    $('#ajaxMenuUpdateForm').find("input:checked").map((i, e) => {
+      const $tr = $(e).parents('tr');
+      const submenu_id = $tr.find('input[type=checkbox]').val();
+      //const ajax_url = $tr.find('input[name=ajax_url]').val();
 
-      /*
-      $.post('/super/menu_action.ajax', $('<form />').append(container).serializeArray(), function (returnData) {
-        if (returnData.success) {
-          alert(returnData.msg);
-          fn_showAjaxMenus($("#ajax_menu_id").val(), $("#ajax_menu_title").val());
-        } else {
-          alert(returnData.msg);
+      $.ajax({
+        url: `/super/menus/${menu_id}/submenus/${submenu_id}`,
+        type: 'DELETE'
+      }).done((result) => {
+        if (result.success) {
+          $tr.detach();
         }
-      }, 'json');
-      */
+      });
     });
   }
 
@@ -167,10 +154,10 @@ export default class Submenus extends React.Component {
             </div>
             <div className="modal-footer">
               <div className="btn-group pull-left">
-                <button className="btn btn-warning btn-sm" id="deleteAjaxUrlBtn">삭제</button>
+                <button className="btn btn-warning btn-sm" onClick={this.onDelete}>삭제</button>
               </div>
               <div className="btn-group pull-right">
-                <button className="btn btn-primary btn-sm" id="updateAjaxUrlBtn">저장</button>
+                <button className="btn btn-primary btn-sm" onClick={this.onUpdate}>저장</button>
                 <button className="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Close</button>
               </div>
             </div>

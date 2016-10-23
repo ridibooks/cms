@@ -13,4 +13,8 @@ class AdminMenuAjax extends Model
 		'menu_id',
 		'ajax_url'
 	];
+
+	protected $casts = [
+		'menu_id' => 'integer',
+	];
 }
