@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 require_once __DIR__ . '/../config.php';
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
-$autoloader->addPsr4('Ridibooks\\Platform\\Cms\\', __DIR__ . '/super/src');
+$autoloader->addPsr4('Ridibooks\\Platform\\Cms\\', __DIR__ . '/super/server/src');
 
 
 LoginService::startSession();
@@ -30,7 +30,7 @@ if ($response) {
 $app = new CmsApplication();
 $app['debug'] = \Config::$UNDER_DEV;
 $app['twig.path'] = [
-	__DIR__ . '/super/views'
+	__DIR__ . '/super/server/views'
 ];
 
 $app->error(function (\Exception $e) use ($app) {
