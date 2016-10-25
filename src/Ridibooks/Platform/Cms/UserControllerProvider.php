@@ -1,10 +1,9 @@
 <?php
-namespace Ridibooks\Platform\Cms\Controller;
+namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
 use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Cms\CmsApplication;
 use Ridibooks\Platform\Common\Base\JsonDto;
 use Silex\Application;
 use Silex\ControllerCollection;

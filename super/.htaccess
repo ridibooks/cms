@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*) http://%1/$1 [L,R]
+
+RewriteCond %{REQUEST_URI} !index\.php
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteRule (.*) index.php?$0 [QSA,L]
+
+</IfModule>
