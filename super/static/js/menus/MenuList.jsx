@@ -25,20 +25,20 @@ class Menu extends React.Component {
         <td><input type="text" className="form-control" name="menu_order" defaultValue={this.props.menu_order}/></td>
         <td>
           <select className="form-control" name="is_newtab" defaultValue={this.props.is_newtab}>
-            <option value="1">Y</option>
-            <option value="0">N</option>
+            <option value={true}>Y</option>
+            <option value={false}>N</option>
           </select>
         </td>
         <td>
           <select className="form-control" name="is_use" defaultValue={this.props.is_use}>
-            <option value="1">Y</option>
-            <option value="0">N</option>
+            <option value={true}>Y</option>
+            <option value={false}>N</option>
           </select>
         </td>
         <td>
           <select className="form-control" name="is_show" defaultValue={this.props.is_show}>
-            <option value="1">Y</option>
-            <option value="0">N</option>
+            <option value={true}>Y</option>
+            <option value={false}>N</option>
           </select>
         </td>
         <td>
@@ -97,9 +97,9 @@ export default class MenuList extends React.Component {
         var menu_url = $(this).parents('tr').find('input[name=menu_url]').val();
         var menu_deep = $(this).parents('tr').find('input[name=menu_deep]').val();
         var menu_order = $(this).parents('tr').find('input[name=menu_order]').val();
-        var is_newtab = $(this).parents('tr').find('select[name=is_newtab]').val();
-        var is_use = $(this).parents('tr').find('select[name=is_use]').val();
-        var is_show = $(this).parents('tr').find('select[name=is_show]').val();
+        var is_newtab = $(this).parents('tr').find('select[name=is_newtab]').val() == "true" ? "1" : "0";
+        var is_use = $(this).parents('tr').find('select[name=is_use]').val() == "true" ? "1" : "0";
+        var is_show = $(this).parents('tr').find('select[name=is_show]').val() == "true" ? "1" : "0";
 
         container += '<input type="text" name="menu_list[' + i + '][id]" value="' + id + '" />';
         container += '<input type="text" name="menu_list[' + i + '][menu_title]" value="' + menu_title + '" />';
@@ -135,7 +135,7 @@ export default class MenuList extends React.Component {
     var newOrder = $tbody.find(`tr:nth-child(${targetIndex + 1}) input[name="menu_order"]`).attr('value');
 
     var changedRow = $tbody.find(`tr:nth-child(${evt.newIndex + 1})`);
-    changedRow.find('input[name="menu_order"]').attr('value', newOrder);
+    changedRow.find('input[name="menu_order"]').val(newOrder);
     checkChangedRow(changedRow);
   }
 
