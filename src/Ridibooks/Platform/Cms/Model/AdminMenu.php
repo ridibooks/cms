@@ -18,6 +18,14 @@ class AdminMenu extends Model
 		'is_newtab'
 	];
 
+	protected $casts = [
+		'menu_deep' => 'integer',
+		'menu_order' => 'integer',
+		'is_use' => 'boolean',
+		'is_show' => 'boolean',
+		'is_newtab' => 'boolean'
+	];
+
 	public function users()
 	{
 		return $this->belongsToMany(

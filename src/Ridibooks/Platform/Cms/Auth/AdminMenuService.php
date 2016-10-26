@@ -3,8 +3,8 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Exception\MsgException;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuAjaxDto;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminMenuDto;
+use Ridibooks\Platform\Cms\Dto\AdminMenuAjaxDto;
+use Ridibooks\Platform\Cms\Dto\AdminMenuDto;
 use Ridibooks\Platform\Cms\Model\AdminMenu;
 use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
 use Ridibooks\Platform\Common\ValidationUtils;
@@ -87,42 +87,43 @@ class AdminMenuService
 		});
 	}
 
-	public function getMenuAjaxList($menu_id)
+	public static function getMenuAjaxList($menu_id)
 	{
 		return AdminMenu::find($menu_id)->ajaxMenus->toArray();
 	}
 
 	public function insertMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
 	{
-		$this->_validateMenuAjax((array)$menuAjaxDto);
+		self::_validateMenuAjax($menuAjaxDto->menu_id, $menuAjaxDto->ajax_url);
 		AdminMenuAjax::create((array)$menuAjaxDto);
 	}
 
 	public function updateMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
 	{
-		$this->assertAjaxMenuArray($menuAjaxDto);
+		self::assertAjaxMenuArray($menuAjaxDto);
 
 		DB::connection()->transaction(function () use ($menuAjaxDto) {
 			foreach ($menuAjaxDto->menu_ajax_list as $menu_ajax) {
-				$this->_validateMenuAjax($menu_ajax);
+				self::_validateMenuAjax($menu_ajax['menu_id'], $menu_ajax['ajax_url']);
 				AdminMenuAjax::find($menu_ajax['id'])->update(['ajax_url' => $menu_ajax['ajax_url']]);
 			}
 		});
 	}
 
-	public function deleteMenuAjax(AdminMenuAjaxDto $menuAjaxDto)
+	public static function deleteMenuAjax($menu_id, $submenu_id)
 	{
-		$this->assertAjaxMenuArray($menuAjaxDto);
-
-		DB::connection()->transaction(function () use ($menuAjaxDto) {
-			foreach ($menuAjaxDto->menu_ajax_list as $menu_ajax) {
-				$this->_validateMenuAjax($menu_ajax);
-				AdminMenuAjax::destroy($menu_ajax['id']);
-			}
-		});
+		/** @var AdminMenuAjax $submenu */
+		$submenu = AdminMenuAjax::find($submenu_id);
+		if (!$submenu) {
+			throw new MsgException('존재하지 않는 서브메뉴입니다.');
+		}
+		if ($submenu->menu_id != $menu_id) {
+			throw new MsgException('잘못된 서브메뉴입니다.');
+		}
+		$submenu->delete();
 	}
 
-	private function assertAjaxMenuArray(AdminMenuAjaxDto $menu_ajax_dto)
+	private static function assertAjaxMenuArray(AdminMenuAjaxDto $menu_ajax_dto)
 	{
 		if (count($menu_ajax_dto->menu_ajax_list) === 0) {
 			throw new MsgException('수정할 Ajax 메뉴 URL이 없습니다.');
@@ -136,13 +137,10 @@ class AdminMenuService
 		ValidationUtils::checkNumberField($menuArray['menu_deep'], '메뉴 깊이는 숫자만 입력 가능합니다.');
 	}
 
-	private function _validateMenuAjax(array $menuAjaxArray)
+	private static function _validateMenuAjax($menu_id, $ajax_url)
 	{
-		ValidationUtils::checkNullField(
-			$menuAjaxArray['menu_id'],
-			'잘못된 메뉴 ID 입니다.' . ' / ' . $menuAjaxArray['menu_id']
-		);
-		ValidationUtils::checkNullField($menuAjaxArray['ajax_url'], '메뉴 Ajax URL을 입력하여 주십시오.');
+		ValidationUtils::checkNullField($menu_id, '잘못된 메뉴 ID 입니다.' . ' / ' . $menu_id);
+		ValidationUtils::checkNullField($ajax_url, '메뉴 Ajax URL을 입력하여 주십시오.');
 	}
 
 	public static function getAdminIdsByMenuId($menu_id)

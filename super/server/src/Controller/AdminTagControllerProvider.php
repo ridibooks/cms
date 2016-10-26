@@ -25,7 +25,6 @@ class AdminTagControllerProvider implements ControllerProviderInterface
 		$controllers->get('tags/{tag_id}/menus', [$this, 'tagMenus']);
 		$controllers->put('tags/{tag_id}/menus/{menu_id}', [$this, 'addTagMenu']);
 		$controllers->delete('tags/{tag_id}/menus/{menu_id}', [$this, 'deleteTagMenu']);
-		$controllers->match('tag_action.ajax', [$this, 'tagAction']);
 
 		return $controllers;
 	}

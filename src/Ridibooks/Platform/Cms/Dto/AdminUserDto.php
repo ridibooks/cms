@@ -1,13 +1,8 @@
 <?php
-
-namespace Ridibooks\Platform\Cms\Auth\Dto;
+namespace Ridibooks\Platform\Cms\Dto;
 
 use Ridibooks\Platform\Common\Base\AdminBaseDto;
 
-/**어드민 계정 등록 / 수정을 위한 Dto
- * Class AdminUserDto
- * @package Ridibooks\Platform\Cms\Auth\Dto
- */
 class AdminUserDto extends AdminBaseDto
 {
 	public $name; //이름

@@ -3,7 +3,7 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Library\CouchbaseSessionHandler;
-use Ridibooks\Platform\Cms\Auth\Dto\AdminUserDto;
+use Ridibooks\Platform\Cms\Dto\AdminUserDto;
 
 class LoginService
 {
