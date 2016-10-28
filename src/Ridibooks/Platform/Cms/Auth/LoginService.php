@@ -96,7 +96,7 @@ class LoginService
 
 	public static function startSession()
 	{
-		if (strlen(\Config::$COUCHBASE_ENABLE)) {
+		if (\Config::$COUCHBASE_ENABLE) {
 			session_set_save_handler(
 				new CouchbaseSessionHandler(implode(',', \Config::$COUCHBASE_SERVER_HOSTS), 'session_cms', self::SESSION_TIMEOUT_SEC),
 				true
