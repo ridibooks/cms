@@ -22,8 +22,8 @@
         "illuminate/database": "^5.2"
     },
     "autoload": {
-        "psr-0": {
-            "Ridibooks\\": "src/"
+        "psr-4": {
+            "Ridibooks\\Platform\\Cms\\": "src/Cms"
         },
         "files": [
             "bootstrap.php"
