@@ -1,6 +1,4 @@
 .idea
 composer.lock
 static/bower_components
-super/client/dist
-super/client/node_modules
 vendor

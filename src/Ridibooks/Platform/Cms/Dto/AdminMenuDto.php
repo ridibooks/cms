@@ -13,8 +13,6 @@ class AdminMenuDto extends AdminBaseDto
 	public $is_use; //사용 여부
 	public $is_show; //노출 여부
 
-	public $menu_list;
-
 	/**
 	 * @param mixed $param
 	 */
