@@ -1,3 +1,0 @@
-[submodule "super"]
-	path = super
-	url = git@gitlab.ridi.io:platform/cms-admin.git
