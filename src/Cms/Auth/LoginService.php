@@ -10,23 +10,13 @@ class LoginService
 	const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 14; // 2주
 
 	/**
-	 * @var AdminUserService
-	 */
-	private $adminUserService;
-
-	public function __construct()
-	{
-		$this->adminUserService = new AdminUserService();
-	}
-
-	/**
 	 * @param string $id
 	 * @param string $passwd
 	 * @throws \Exception
 	 */
 	public function doLoginAction($id, $passwd)
 	{
-		$adminUserDto = new AdminUserDto($this->adminUserService->getAdminUser($id));
+		$adminUserDto = new AdminUserDto(AdminUserService::getUser($id));
 		$this->validatePassword($passwd, $adminUserDto->passwd);
 		$this->validateUserInfo($adminUserDto);
 		$this->setSessions($id);

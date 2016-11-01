@@ -24,12 +24,6 @@ class AdminUserService
 		return $user->toArray();
 	}
 
-	/** @deprecated */
-	public function getAdminUser($id)
-	{
-		return self::getUser($id);
-	}
-
 	public static function getAdminUserTag($user_id)
 	{
 		/** @var AdminUser $user */
@@ -74,10 +68,5 @@ class AdminUserService
 		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
 
 		return $menu_ids;
-	}
-
-	public static function appendEmailAddress($admin_id)
-	{
-		return $admin_id . "@ridi.com";
 	}
 }

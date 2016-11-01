@@ -26,8 +26,7 @@ class UserControllerProvider implements ControllerProviderInterface
 
 	public function user(CmsApplication $app)
 	{
-		$adminUserService = new AdminUserService();
-		$user_info = $adminUserService->getAdminUser(LoginService::GetAdminID());
+		$user_info = AdminUserService::getUser(LoginService::GetAdminID());
 
 		return $app->render('comm/user_info.twig',
 			[
