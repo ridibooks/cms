@@ -1,19 +1,19 @@
 <div id="left" class="paddingLeft30">
-    <div id="menu">
-        <!-- 타이틀 -->
-        <h1 id="leftTit">Ridibooks CMS</h1>
-        <!-- 1뎁스메뉴 -->
-        <ul id="leftMenu">
-            {% for menu in session_user_menu %}
-                {% if menu.menu_deep == 0 %}
-                    <li><b>{{ menu.menu_title }}</b></li>
-                {% else %}
-                    <li class="sub"><a href="{{ menu.menu_url }}" {% if menu.is_newtab %}target="_blank"{% endif %}>{{ menu.menu_title }}</a></li>
-                {% endif %}
-            {% endfor %}
-            <li><a href="/comm/user_info"><b>개인정보 수정</b></a></li>
-            <li><a href="/logout"><b>Logout</b></a></li>
-        </ul>
-        <div id="bot"></div>
-    </div>
+  <div id="menu">
+    <!-- 타이틀 -->
+    <h1 id="leftTit">Ridibooks CMS</h1>
+    <!-- 1뎁스메뉴 -->
+    <ul id="leftMenu">
+      {% for menu in session_user_menu %}
+        {% if menu.menu_deep == 0 %}
+          <li><b>{{ menu.menu_title }}</b></li>
+        {% else %}
+          <li class="sub"><a href="{{ menu.menu_url }}" {% if menu.is_newtab %}target="_blank"{% endif %}>{{ menu.menu_title }}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li><a href="/me"><b>개인정보 수정</b></a></li>
+      <li><a href="/logout"><b>Logout</b></a></li>
+    </ul>
+    <div id="bot"></div>
+  </div>
 </div>

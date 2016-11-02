@@ -65,6 +65,6 @@ $app->get('/logout', function () {
 	return RedirectResponse::create('/');
 });
 
-$app->mount('/comm', new UserControllerProvider());
+$app->mount('/', new UserControllerProvider());
 
 $app->run();

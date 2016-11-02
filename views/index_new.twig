@@ -190,14 +190,6 @@
       {% include '/comm/left_menu_new.twig' %}
     </div>
     <div class="col-xs-12 col-lg-10">
-      {% for type, messages in app.flashes %}
-        {% for message in messages %}
-          <div class="alert alert-{{ type }} alert-dismissible" role="alert">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endfor %}
-
       <ul>
         <li><h3>{{ block('title') }}</h3></li>
         {% if purpose %}
@@ -207,6 +199,16 @@
         <li>사용방법: {% block usage %}{% endblock %}</li>
         {% endif %}
       </ul>
+      <hr>
+
+      {% for type, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+
       {% block body %}
       {% endblock %}
     </div>

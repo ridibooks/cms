@@ -2,6 +2,9 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Platform\Cms\Model\AdminUser;
+use Ridibooks\Platform\Common\StringUtils;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AdminUserService
 {
@@ -68,5 +71,27 @@ class AdminUserService
 		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
 
 		return $menu_ids;
+	}
+
+	public static function updateMyInfo($name, $team, $is_use, $passwd = '')
+	{
+		/** @var AdminUser $admin */
+		$me = AdminUser::find(LoginService::GetAdminID());
+		if (!$me) {
+			throw new HttpException(Response::HTTP_NOT_FOUND);
+		}
+
+		$filler = [
+			'name' => $name,
+			'team' => $team,
+			'is_use' => $is_use
+		];
+
+		if (!StringUtils::isEmpty($passwd) !== '') {
+			$filler['passwd'] = PasswordService::getPasswordAsHashed($passwd);
+		}
+
+		$me->fill($filler);
+		$me->save();
 	}
 }
