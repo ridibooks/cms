@@ -87,7 +87,7 @@ class AdminUserService
 			'is_use' => $is_use
 		];
 
-		if (!StringUtils::isEmpty($passwd) !== '') {
+		if (!StringUtils::isEmpty($passwd)) {
 			$filler['passwd'] = PasswordService::getPasswordAsHashed($passwd);
 		}
 
