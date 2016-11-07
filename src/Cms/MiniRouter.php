@@ -159,7 +159,7 @@ class MiniRouter
 
 		$response_str = $twig_helper->render($view_file_name, $args);
 		if (\Config::$ENABLE_DB_LOGGER && !$request->isXmlHttpRequest()) {
-			$response_str .= Profiler::getInstance()->buildQueryHtml();
+			$response_str .= Profiler::getCombinedHtml();
 		}
 
 		return Response::create($response_str);
