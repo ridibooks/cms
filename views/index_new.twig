@@ -87,6 +87,7 @@
           'bootstrap.lightbox': '/static/bower_components/ekko-lightbox/dist/ekko-lightbox',
           'bootstrap.datatables': '/static/bower_components/datatables/media/js/dataTables.bootstrap',
           'bootstrap.fileinput': '/static/bower_components/bootstrap-fileinput/js/fileinput.min',
+          'bootstrap-select': '{{ STATIC_URL }}/bower_components/bootstrap-select/dist/js/bootstrap-select',
 
           'datatables.net': '/static/bower_components/datatables/media/js/jquery.dataTables',
           'select2': '/static/bower_components/select2/select2',
@@ -111,13 +112,16 @@
 
           'comm': '{{ STATIC_URL }}/js/comm',
           'publisher': '{{ STATIC_URL }}/js/publisher',
-          'super': '{{ STATIC_URL }}/js/super'
+          'super': '{{ STATIC_URL }}/js/super',
+          'logiform': '{{ STATIC_URL }}/lib/logiform/custom_logiform'
+
         },
         shim: {
           "bootstrap": ["jquery"],
           "bootstrap.datepicker": ["jquery"],
           "bootstrap.datatables": ["datatables.net"],
           "bootstrap.fileinput": ["bootstrap"],
+          'bootstrap-select': ['jquery'],
 
           "jquery.attrajax": ["jquery", 'jquery-form', "jquery.tmpl"],
           "datatables.net": ["jquery"],
@@ -133,7 +137,9 @@
               this.tinyMCE.DOM.events.domLoaded = true;
               return this.tinyMCE;
             }
-          }
+          },
+
+          'logiform': ['jquery', 'bootstrap-select']
         }
       });
 
