@@ -16,19 +16,10 @@ LoginService::startSession();
 
 // Try Silex Route next
 $app = new CmsApplication();
-$app['debug'] = \Config::$UNDER_DEV;
 
 // Try MiniRouter first
 $app->before(function (Request $request) {
 	return MiniRouter::shouldRedirectForLogin($request);
-});
-
-$app->error(function (\Exception $e) use ($app) {
-	if ($app['debug']) {
-		return null;
-	}
-
-	throw $e;
 });
 
 $app->get('/', function () use ($app) {

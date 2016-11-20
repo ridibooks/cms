@@ -5,7 +5,9 @@ use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CmsApplication extends Application
 {
@@ -17,6 +19,8 @@ class CmsApplication extends Application
 
 		$this->registerTwigServiceProvider();
 		$this->registerSessionServiceProvider();
+
+		$this->setDefaultErrorHandler();
 	}
 
 	private function registerTwigServiceProvider()
@@ -110,6 +114,22 @@ class CmsApplication extends Application
 
 		$this['flashes'] = self::share(function () {
 			return $this->getFlashBag()->all();
+		});
+	}
+
+	private function setDefaultErrorHandler()
+	{
+		$this['debug'] = \Config::$UNDER_DEV;
+		$this->error(function (\Exception $e) {
+			if ($this['debug']) {
+				return null;
+			}
+
+			if ($e instanceof HttpException) {
+				return Response::create($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
+			}
+
+			throw $e;
 		});
 	}
 
