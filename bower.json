@@ -1,11 +1,11 @@
 {
-  "name": "ridibooks-cms-static",
+  "name": "ridibooks-cms",
   "license": "MIT",
   "private": true,
   "ignore": [
     "**/.*",
-    "*.php",
-    "*.twig",
+    "/src",
+    "/views",
     "node_modules",
     "bower_components",
     "test",

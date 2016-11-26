@@ -1,0 +1,64 @@
+/*CMS bootstrap 3 custom css*/
+.mouseHover {
+    cursor: pointer;
+}
+
+/*select2 drop mask를 bootstrap modal의 z-index보다 낮게 처리하여 modal 내의 link 클릭 가능하도록 수정*/
+.select2-drop-mask {
+    z-index: 1039;
+}
+
+/*fileinput 의 drag & drop zone 폰트 크기와 padding 조절*/
+.file-drop-zone-title {
+    color: #aaa;
+    font-size: 20px;
+    padding: 45px 10px;
+}
+
+/*fileinput의 미리보기 frame padding 조절*/
+.file-preview-frame {
+    padding: 3px;
+}
+
+/*fileinput의 미리보기 caption padding 조절*/
+.file-caption-name {
+    padding-right: 0;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+/**/
+.panel-primary > .panel-heading a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+.marginBottom4 {
+    margin-bottom: 4px !important;
+}
+
+/*modal-body 내에 사용할 경우 scroll 가능하도록 처리*/
+.modal-body-scrollwithin {
+    height: auto;
+    overflow: auto;
+    max-height: 700px;
+}
+
+/*popover 내의 문구가 길 경우를 위하여 조절*/
+.popover {
+    max-width: 100%;
+}
+
+/* bootstrap modal-lg 보다 큰 modal-xl 추가*/
+@media (min-width: 768px) {
+    .modal-xl {
+        width: 90%;
+        max-width: 1200px;
+    }
+}
+/* 도제시2 작가 select에 사용될 padding, margin을 제거한 col-xs-2*/
+.form-group .select-xs-2 {
+    width: 16.66666667%;
+}

@@ -50,18 +50,18 @@
 
   {% block head %}
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
-    <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
-    <link rel="stylesheet" href="/static/bower_components/datatables/media/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="/static/bower_components/select2/select2.css">
-    <link rel="stylesheet" href="/static/bower_components/select2-bootstrap-css/select2-bootstrap.css">
-    <link rel="stylesheet" href="/static/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/select2/select2.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/select2-bootstrap-css/select2-bootstrap.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/cms-bootstrap.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}/css/jquery.monthpicker-0.1.css">
-    <link rel="stylesheet" href="/static/bower_components/bootstrap-fileinput/css/fileinput.min.css">
-    <link rel="stylesheet" href="/static/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 
-    <script type="text/javascript" src="/static/bower_components/requirejs/require.js"></script>
+    <script type="text/javascript" src="{{ BOWER_PATH }}/requirejs/require.js"></script>
     <script>
       requirejs.config({
         waitSeconds: 14,
@@ -69,39 +69,39 @@
           urlArgs: 't={{ JS_LAST_MODIFIED_TIMESTAMP }}',
         {% endif %}
         paths: {
-          'jquery': '/static/bower_components/jquery/dist/jquery.min',
+          'jquery': '{{ BOWER_PATH }}/jquery/dist/jquery.min',
           // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
-          'jquery-ui': '/static/bower_components/jquery-ui/ui',
+          'jquery-ui': '{{ BOWER_PATH }}/jquery-ui/ui',
 
           // jquery.fileupload에서 아래 이름으로 하드코딩되어 있어서
-          'jquery.ui.widget': '/static/bower_components/jquery-ui/ui/widget',
+          'jquery.ui.widget': '{{ BOWER_PATH }}/jquery-ui/ui/widget',
 
-          'jquery.fileupload': '/static/bower_components/jquery-file-upload/js/jquery.fileupload',
-          'jquery.fileupload-process': '/static/bower_components/jquery-file-upload/js/jquery.fileupload-process',
-          'jquery.fileupload-validate': '/static/bower_components/jquery-file-upload/js/jquery.fileupload-validate',
-          'jquery.iframe-transport': '/static/bower_components/jquery-file-upload/js/jquery.iframe-transport',
+          'jquery.fileupload': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload',
+          'jquery.fileupload-process': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload-process',
+          'jquery.fileupload-validate': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload-validate',
+          'jquery.iframe-transport': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.iframe-transport',
 
-          'bootstrap': '/static/bower_components/bootstrap/dist/js/bootstrap.min',
-          'bootstrap.datepicker': '/static/bower_components/bootstrap-datepicker/js/bootstrap-datepicker',
-          'bootstrap.datetimepicker': '/static/bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
-          'bootstrap.lightbox': '/static/bower_components/ekko-lightbox/dist/ekko-lightbox',
-          'bootstrap.datatables': '/static/bower_components/datatables/media/js/dataTables.bootstrap',
-          'bootstrap.fileinput': '/static/bower_components/bootstrap-fileinput/js/fileinput.min',
+          'bootstrap': '{{ BOWER_PATH }}/bootstrap/dist/js/bootstrap.min',
+          'bootstrap.datepicker': '{{ BOWER_PATH }}/bootstrap-datepicker/js/bootstrap-datepicker',
+          'bootstrap.datetimepicker': '{{ BOWER_PATH }}/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+          'bootstrap.lightbox': '{{ BOWER_PATH }}/ekko-lightbox/dist/ekko-lightbox',
+          'bootstrap.datatables': '{{ BOWER_PATH }}/datatables/media/js/dataTables.bootstrap',
+          'bootstrap.fileinput': '{{ BOWER_PATH }}/bootstrap-fileinput/js/fileinput.min',
           'bootstrap-select': '{{ STATIC_URL }}/bower_components/bootstrap-select/dist/js/bootstrap-select',
 
-          'datatables.net': '/static/bower_components/datatables/media/js/jquery.dataTables',
-          'select2': '/static/bower_components/select2/select2',
-          'moment': '/static/bower_components/moment/moment',
-          'ckeditor': '/static/bower_components/ckeditor/ckeditor',
-          'stickyTableHeaders': '/static/bower_components/StickyTableHeaders/js/jquery.stickytableheaders',
-          'highlight': '/static/bower_components/jquery-highlight/jquery.highlight',
-          'ace': '/static/bower_components/ace-builds/src',
-          'spin': '/static/bower_components/spin.js/spin',
-          'jquery-form': '/static/bower_components/jquery-form/jquery.form',
-          'jquery.attrajax': '/static/bower_components/jquery.attrajax/jquery.attrajax',
+          'datatables.net': '{{ BOWER_PATH }}/datatables/media/js/jquery.dataTables',
+          'select2': '{{ BOWER_PATH }}/select2/select2',
+          'moment': '{{ BOWER_PATH }}/moment/moment',
+          'ckeditor': '{{ BOWER_PATH }}/ckeditor/ckeditor',
+          'stickyTableHeaders': '{{ BOWER_PATH }}/StickyTableHeaders/js/jquery.stickytableheaders',
+          'highlight': '{{ BOWER_PATH }}/jquery-highlight/jquery.highlight',
+          'ace': '{{ BOWER_PATH }}/ace-builds/src',
+          'spin': '{{ BOWER_PATH }}/spin.js/spin',
+          'jquery-form': '{{ BOWER_PATH }}/jquery-form/jquery.form',
+          'jquery.attrajax': '{{ BOWER_PATH }}/jquery.attrajax/jquery.attrajax',
           'jquery.tmpl': '{{ STATIC_URL }}/js/jquery.tmpl.min',
-          'tinyMCE': '/static/bower_components/tinymce/tinymce.min',
-          'lazyload': '/static/bower_components/vanilla-lazyload/dist/lazyload.min',
+          'tinyMCE': '{{ BOWER_PATH }}/tinymce/tinymce.min',
+          'lazyload': '{{ BOWER_PATH }}/vanilla-lazyload/dist/lazyload.min',
 
           'atagToDownloadTable': '{{ STATIC_URL }}/js/jquery.atag.to.download.table',
           'monthpicker': '{{ STATIC_URL }}/js/jquery.monthpicker-0.1',

@@ -81,6 +81,8 @@ class CmsApplication extends Application
 		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
+			'BOWER_PATH' => '/static/bower_components',
+
 			'MISC_URL' => \Config::$MISC_URL,
 			'BANNER_URL' => \Config::$ACTIVE_URL . '/ridibooks_banner/',
 			'ACTIVE_URL' => \Config::$ACTIVE_URL,
