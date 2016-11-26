@@ -1,10 +1,14 @@
 <?php
 namespace Ridibooks\Platform\Cms;
 
+use Ridibooks\Library\UrlHelper;
+use Ridibooks\Platform\Cms\Auth\LoginService;
 use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -21,6 +25,8 @@ class CmsApplication extends Application
 		$this->registerSessionServiceProvider();
 
 		$this->setDefaultErrorHandler();
+
+		$this->connectDefaultControllers();
 	}
 
 	private function registerTwigServiceProvider()
@@ -32,7 +38,7 @@ class CmsApplication extends Application
 				'twig.options' => [
 					'cache' => sys_get_temp_dir() . '/twig_cache_v12',
 					'auto_reload' => true,
-					// TwigServiceProvider에서 기본으로 $app['debug']와 같게 설정되어 있는데 true 일경우
+					// TwigServiceProvider에서 기본으로 $this['debug']와 같게 설정되어 있는데 true 일경우
 					// if xxx is defined로 변수를 일일이 체크해줘야 하는 문제가 있어서 override 함
 					'strict_variables' => false
 				]
@@ -130,6 +136,43 @@ class CmsApplication extends Application
 			}
 
 			throw $e;
+		});
+	}
+
+	private function connectDefaultControllers()
+	{
+		$this->get('/', function (CmsApplication $app) {
+			return $app->redirect('/welcome');
+		});
+
+		$this->get('/welcome', function (CmsApplication $app) {
+			return $app->render('welcome.twig');
+		});
+
+		$this->get('/login', function (CmsApplication $app) {
+			LoginService::resetSession();
+
+			return $app->render('login.twig');
+		});
+
+		$this->post('/login', function (Request $req) {
+			$id = $req->get('id');
+			$passwd = $req->get('passwd');
+			$return_url = $req->get('return_url', 'welcome');
+
+			try {
+				$login_service = new LoginService();
+				$login_service->doLoginAction($id, $passwd);
+
+				return RedirectResponse::create($return_url);
+			} catch (\Exception $e) {
+				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
+			}
+		});
+
+		$this->get('/logout', function () {
+			LoginService::resetSession();
+			return RedirectResponse::create('/');
 		});
 	}
 
