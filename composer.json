@@ -1,32 +1,42 @@
 {
-    "name": "ridibooks/platform-cms",
-    "version": "0.1",
-    "description": "Ridibooks CMS SDK",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "김범준",
-            "email": "bj.kim@ridi.com"
-        },
-        {
-            "name": "박주현",
-            "email": "blu@ridi.com"
-        },
-        {
-            "name": "이영규",
-            "email": "younggyu.lee@ridi.com"
-        }
-    ],
-    "require": {
-        "gnf/gnfcache": "^0.1.0",
-        "illuminate/database": "^5.2"
+  "name": "ridibooks/platform-cms",
+  "version": "0.1",
+  "description": "Ridibooks CMS SDK",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "김범준",
+      "email": "bj.kim@ridi.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Ridibooks\\Platform\\Cms\\": "src/Cms"
-        },
-        "files": [
-            "bootstrap.php"
-        ]
+    {
+      "name": "박주현",
+      "email": "blu@ridi.com"
+    },
+    {
+      "name": "이영규",
+      "email": "younggyu.lee@ridi.com"
     }
+  ],
+  "require": {
+    "gnf/gnfcache": "^0.1.0",
+    "illuminate/database": "^5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ridibooks\\Platform\\Cms\\": "src/Cms"
+    },
+    "files": [
+      "bootstrap.php"
+    ]
+  },
+  "archive": {
+    "exclude": [
+      "/static",
+      ".bowerrc",
+      "bower.json",
+      "favicon.ico",
+      "index.php",
+      "Makefile"
+    ]
+  }
 }
