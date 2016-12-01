@@ -28,15 +28,5 @@
     "files": [
       "bootstrap.php"
     ]
-  },
-  "archive": {
-    "exclude": [
-      "/static",
-      ".bowerrc",
-      "bower.json",
-      "favicon.ico",
-      "index.php",
-      "Makefile"
-    ]
   }
 }

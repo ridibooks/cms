@@ -1,0 +1,7 @@
+/static export-ignore
+.bowerrc export-ignore
+.htaccess export-ignore
+bower.json export-ignore
+favicon.ico export-ignore
+index.php export-ignore
+Makefile export-ignore
