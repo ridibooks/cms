@@ -81,7 +81,7 @@ class LoginService
 
 	public static function isSessionableEnviroment()
 	{
-		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler']);
+		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler', 'cli-server']);
 	}
 
 	public static function startSession()
