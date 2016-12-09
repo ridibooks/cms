@@ -113,8 +113,8 @@
           'comm': '{{ STATIC_URL }}/js/comm',
           'publisher': '{{ STATIC_URL }}/js/publisher',
           'super': '{{ STATIC_URL }}/js/super',
-          'logiform': '{{ STATIC_URL }}/lib/logiform/custom_logiform'
-
+          'logiform': '{{ STATIC_URL }}/lib/logiform/custom_logiform',
+          'jquery.resizableColumns': '{{ BOWER_PATH }}/jquery-resizable-columns/dist/jquery.resizableColumns.min'
         },
         shim: {
           "bootstrap": ["jquery"],
@@ -139,7 +139,8 @@
             }
           },
 
-          'logiform': ['jquery', 'bootstrap-select']
+          'logiform': ['jquery', 'bootstrap-select'],
+          'jquery.resizableColumns': ['jquery']
         }
       });
 
