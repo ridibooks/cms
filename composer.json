@@ -18,7 +18,9 @@
   ],
   "require": {
     "gnf/gnfcache": "^0.1.0",
-    "illuminate/database": "^5.2",
+    "illuminate/database": "^5.2"
+  },
+  "require-dev": {
     "silex/silex": "^1.3"
   },
   "autoload": {
