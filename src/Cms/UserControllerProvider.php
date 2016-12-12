@@ -3,7 +3,6 @@ namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Common\Base\JsonDto;
 use Silex\Application;
 use Silex\ControllerCollection;
 use Silex\ControllerProviderInterface;
@@ -64,12 +63,14 @@ class UserControllerProvider implements ControllerProviderInterface
 
 	public function userList(CmsApplication $app)
 	{
-		$jsonDto = new JsonDto();
+		$result = [];
 
 		try {
-			$jsonDto->data = AdminUserService::getAllAdminUserArray();
+			$result['data'] = AdminUserService::getAllAdminUserArray();
+			$result['success'] = true;
 		} catch (\Exception $e) {
-			$jsonDto->setException($e);
+			$result['success'] = false;
+			$result['msg'] = [$e->getMessage()];
 		}
 
 		return $app->json((array)$jsonDto);
