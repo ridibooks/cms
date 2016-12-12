@@ -3,7 +3,6 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Library\CouchbaseSessionHandler;
-use Ridibooks\Platform\Cms\Dto\AdminUserDto;
 
 class LoginService
 {
@@ -16,33 +15,16 @@ class LoginService
 	 */
 	public function doLoginAction($id, $passwd)
 	{
-		$adminUserDto = new AdminUserDto(AdminUserService::getUser($id));
-		$this->validatePassword($passwd, $adminUserDto->passwd);
-		$this->validateUserInfo($adminUserDto);
-		$this->setSessions($id);
-	}
-
-	/**
-	 * @param string $inputPassword
-	 * @param string $storedPassword
-	 * @throws \Exception
-	 */
-	private function validatePassword($inputPassword, $storedPassword)
-	{
-		if (!PasswordService::isPasswordMatchToHashed($inputPassword, $storedPassword)) {
+		$user = AdminUserService::getUser($id);
+		if (!$user || $user['is_use'] != '1') {
 			throw new \Exception('잘못된 계정정보입니다.');
 		}
-	}
 
-	/**
-	 * @param AdminUserDto $adminUserDto
-	 * @throws \Exception
-	 */
-	private function validateUserInfo($adminUserDto)
-	{
-		if (!$adminUserDto->is_use) {
-			throw new \Exception('사용하지 않는 계정입니다.');
+		if (!PasswordService::isPasswordMatchToHashed($passwd, $user['passwd'])) {
+			throw new \Exception('비밀번호가 맞지 않습니다.');
 		}
+
+		$this->setSessions($id);
 	}
 
 	/**
