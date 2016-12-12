@@ -4,7 +4,6 @@ namespace Ridibooks\Platform\Cms;
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Ridibooks\Platform\Common\Base\JsonDto;
-use Ridibooks\Platform\Common\StringUtils;
 use Silex\Application;
 use Silex\ControllerCollection;
 use Silex\ControllerProviderInterface;
@@ -45,9 +44,9 @@ class UserControllerProvider implements ControllerProviderInterface
 
 		try {
 			$passwd = '';
-			$new_passwd = $request->get('new_passwd');
-			$chk_passwd = $request->get('chk_passwd');
-			if (!StringUtils::isEmpty($new_passwd)) {
+			$new_passwd = trim($request->get('new_passwd'));
+			$chk_passwd = trim($request->get('chk_passwd'));
+			if (!empty($new_passwd)) {
 				if ($new_passwd != $chk_passwd) {
 					throw new \Exception('변경할 비밀번호가 일치하지 않습니다.');
 				}

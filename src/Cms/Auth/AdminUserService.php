@@ -2,7 +2,6 @@
 namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Platform\Cms\Model\AdminUser;
-use Ridibooks\Platform\Common\StringUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -87,7 +86,7 @@ class AdminUserService
 			'is_use' => $is_use
 		];
 
-		if (!StringUtils::isEmpty($passwd)) {
+		if (!empty($passwd)) {
 			$filler['passwd'] = PasswordService::getPasswordAsHashed($passwd);
 		}
 
