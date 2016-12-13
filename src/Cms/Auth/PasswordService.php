@@ -18,7 +18,10 @@ class PasswordService
 		return password_hash($plain_password, PASSWORD_DEFAULT);
 	}
 
-	private static function _v3Hash($plain_password)
+	/**
+	 * @deprecated No longer used by internal code and not recommended.
+	 */
+	private static function v3Hash($plain_password)
 	{
 		return self::PASSWORD_VERSION_KEY . hash('sha256', $plain_password . self::HASH_SALT);
 	}
@@ -29,29 +32,18 @@ class PasswordService
 			return true;
 		}
 
-		//v3
-		if (self::hash_equals($hashed_password, self::_v3Hash($plain_password))) {
+		//v3 (deprecated)
+		if ($hashed_password == self::v3Hash($plain_password)) {
 			return true;
 		}
-		//v2
-		if (self::hash_equals($hashed_password, hash('sha256', $plain_password))) {
+		//v2 (deprecated)
+		if ($hashed_password == hash('sha256', $plain_password)) {
 			return true;
 		}
-		//v1
-		if (self::hash_equals($hashed_password, crypt($plain_password, $hashed_password))) {
+		//v1 (deprecated)
+		if ($hashed_password == crypt($plain_password, $hashed_password)) {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * deprecated on php7
-	 * @param $a
-	 * @param $b
-	 * @return bool
-	 */
-	private static function hash_equals($a, $b)
-	{
-		return $a == $b;
 	}
 }
