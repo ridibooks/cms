@@ -24,6 +24,10 @@ class LoginService
 			throw new \Exception('비밀번호가 맞지 않습니다.');
 		}
 
+		if (PasswordService::needsRehash($user['passwd'])) {
+			AdminUserService::updatePassword($id, $passwd);
+		}
+
 		$this->setSessions($id);
 	}
 

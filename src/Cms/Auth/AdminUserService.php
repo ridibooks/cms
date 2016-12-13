@@ -93,4 +93,15 @@ class AdminUserService
 		$me->fill($filler);
 		$me->save();
 	}
+
+	public static function updatePassword($user_id, $plain_password)
+	{
+		$me = AdminUser::find($user_id);
+		if (!$me) {
+			throw new HttpException(Response::HTTP_NOT_FOUND);
+		}
+
+		$me->passwd = PasswordService::getPasswordAsHashed($plain_password);
+		$me->save();
+	}
 }
