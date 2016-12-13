@@ -30,28 +30,17 @@ class PasswordService
 		}
 
 		//v3
-		if (self::hash_equals($hashed_password, self::_v3Hash($plain_password))) {
+		if ($hashed_password == self::_v3Hash($plain_password)) {
 			return true;
 		}
 		//v2
-		if (self::hash_equals($hashed_password, hash('sha256', $plain_password))) {
+		if ($hashed_password == hash('sha256', $plain_password)) {
 			return true;
 		}
 		//v1
-		if (self::hash_equals($hashed_password, crypt($plain_password, $hashed_password))) {
+		if ($hashed_password == crypt($plain_password, $hashed_password)) {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * deprecated on php7
-	 * @param $a
-	 * @param $b
-	 * @return bool
-	 */
-	private static function hash_equals($a, $b)
-	{
-		return $a == $b;
 	}
 }
