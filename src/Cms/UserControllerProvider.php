@@ -28,7 +28,8 @@ class UserControllerProvider implements ControllerProviderInterface
 	{
 		$user_info = AdminUserService::getUser(LoginService::GetAdminID());
 
-		return $app->render('me.twig',
+		return $app->render(
+			'me.twig',
 			[
 				'user_info' => $user_info
 			]
@@ -57,8 +58,9 @@ class UserControllerProvider implements ControllerProviderInterface
 			$app->addFlashError($e->getMessage());
 		}
 
-		$subRequest = Request::create('/me');
-		return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+		$sub_request = Request::create('/me');
+
+		return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 
 	public function userList(CmsApplication $app)
@@ -73,6 +75,6 @@ class UserControllerProvider implements ControllerProviderInterface
 			$result['msg'] = [$e->getMessage()];
 		}
 
-		return $app->json((array)$jsonDto);
+		return $app->json((array)$result);
 	}
 }
