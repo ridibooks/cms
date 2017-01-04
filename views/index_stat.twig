@@ -5,38 +5,71 @@
 
 {% block script %}
   <script type="text/javascript">
-    require(['jquery', 'stickyTableHeaders'], function ($) {
-      $('.js-sticky-table-header').stickyTableHeaders();
+    require(['jquery', 'stickyTableHeaders', 'datatables.net'], function ($) {
+      $('table.js_datatable').dataTable();
+      $('table.js_sticky_table_header').stickyTableHeaders();
+
+      // http://stackoverflow.com/questions/1787322/htmlspecialchars-equivalent-in-javascript
+      function escapeHtml(text) {
+        var map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+
+        return text.replace(/[&<>"']/g, function (m) {
+          return map[m];
+        });
+      }
+
+      //http://stackoverflow.com/questions/15423870/find-next-table-when-click-in-a-div
+      // Temporary delimiter characters unlikely to be typed by keyboard
+      // This is to avoid accidentally splitting the actual contents
       function exportTableToCSV($table, filename) {
-        //http://stackoverflow.com/questions/15423870/find-next-table-when-click-in-a-div
-        // Temporary delimiter characters unlikely to be typed by keyboard
-        // This is to avoid accidentally splitting the actual contents
-        var $rows = $table.find('tr:has(td)'),
+        var csv;
+        var
           tmpColDelim = String.fromCharCode(11), // vertical tab character
           tmpRowDelim = String.fromCharCode(0), // null character
 
           colDelim = '</td><td>',
-          rowDelim = '</td></tr><tr><td>',
+          rowDelim = '</td></tr><tr><td>';
+        var dicts;
 
+        if ($table.hasClass('js_datatable')) {
+          var table_instance = $table.dataTable({"retrieve": true}).api();
+          var columns = $.map(table_instance.columns().header(), function (header) {
+            return $(header).text();
+          });
+          var rows = table_instance.rows().data();
+          rows.unshift(columns);
+          dicts = rows;
+        }
+        else {
+          var $rows = $table.find('tr:has(td)');
+          dicts = $rows.map(function (i, row) {
+            var $cols = $(row).find('td');
+            return $cols.map(function (j, col) {
+              var $col = $(col);
+
+              return $col.text();
+            });
+          });
+        }
+        console.log(dicts);
         // Grab text from table into CSV formatted string
-          csv = '<table><tr><td>' + $rows.map(function (i, row) {
-              var $row = $(row),
-                $cols = $row.find('td');
+        csv = '<table><tr><td>' + $.map(dicts, function (dict) {
+            return $.map(dict, function (text) {
+              return escapeHtml(text).replace('"', '""'); // escape double quotes
+            }).join(tmpColDelim);
 
-              return $cols.map(function (j, col) {
-                var $col = $(col),
-                  text = $col.text();
-
-                return text.replace('"', '""'); // escape double quotes
-
-              }).get().join(tmpColDelim);
-
-            }).get().join(tmpRowDelim)
-              .split(tmpRowDelim).join(rowDelim)
-              .split(tmpColDelim).join(colDelim) + '</td></tr></table>',
+          }).join(tmpRowDelim)
+            .split(tmpRowDelim).join(rowDelim)
+            .split(tmpColDelim).join(colDelim) + '</td></tr></table>';
 
         // Data URI
-          xlsData = 'data:application/xls;charset=utf-8,' + encodeURIComponent(csv);
+        var xlsData = 'data:application/xls;charset=utf-8,' + encodeURIComponent(csv);
 
         $(this)
           .attr({
@@ -47,16 +80,23 @@
       }
 
       // This must be a hyperlink
-      $(".js_export").on('click', function (event) {
-        exportTableToCSV.apply(this, [$(this).parent().parent().find('table'), 'export.xls']);
+      $(".js_export").on('click', function () {
+        exportTableToCSV.apply(this, [$(this).parent().find('table'), 'export.xls']);
       });
     })
   </script>
   <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r;
+      i[r] = i[r] || function () {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+      a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
     ga('create', 'UA-10567409-14', 'auto');
     ga('send', 'pageview');
@@ -71,7 +111,7 @@
       <div>
         <h3>{{ table_name }}</h3>
         <p>{{ descriptions[table_name] }}</p>
-        <table class="table table-striped table-bordered table-condensed js-sticky-table-header" datatable>
+        <table class="table table-striped table-bordered table-condensed js_sticky_table_header js_datatable">
           <thead>
           <tr>
             {% for key, value in (table|first) %}
