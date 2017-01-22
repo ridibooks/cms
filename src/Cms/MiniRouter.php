@@ -1,7 +1,6 @@
 <?php
 namespace Ridibooks\Platform\Cms;
 
-use Ridibooks\Library\DB\Profiler;
 use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -157,17 +156,12 @@ class MiniRouter
 		/** @var \Twig_Environment $twig_helper */
 		$twig_helper = $app['twig'];
 
-		$response_str = $twig_helper->render($view_file_name, $args);
-		if (\Config::$ENABLE_DB_LOGGER && !$request->isXmlHttpRequest()) {
-			$response_str .= Profiler::getCombinedHtml();
-		}
-
-		return Response::create($response_str);
+		return Response::create($twig_helper->render($view_file_name, $args));
 	}
 
 	private static function notFound()
 	{
-		return Response::create('<meta http-equiv="refresh" content="5;url=' . htmlspecialchars('http://' . \Config::$ADMIN_DOMAIN) .
+		return Response::create('<meta http-equiv="refresh" content="5;url=' . htmlspecialchars('http://' . $_SERVER['HTTP_HOST']) .
 			'"> 페이지를 찾을 수 없습니다. URL이 변경되었을 수 있습니다. 오류라고 생각되시면 담당자에게 문의해 주세요.<br />' .
 			'5초 후 자동으로 메인 페이지로 이동합니다.', Response::HTTP_NOT_FOUND);
 	}
