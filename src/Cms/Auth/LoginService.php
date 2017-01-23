@@ -72,13 +72,17 @@ class LoginService
 
 	public static function startSession()
 	{
-		if (\Config::$COUCHBASE_ENABLE) {
-			session_set_save_handler(
-				new CouchbaseSessionHandler(implode(',', \Config::$COUCHBASE_SERVER_HOSTS), 'session', self::SESSION_TIMEOUT_SEC),
-				true
-			);
-		}
-		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', \Config::$ADMIN_DOMAIN);
+		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $_SERVER['SERVER_NAME']);
 		session_start();
+	}
+
+	public static function startCouchbaseSession($server_hosts)
+	{
+		session_set_save_handler(
+			new CouchbaseSessionHandler(implode(',', $server_hosts), 'session', self::SESSION_TIMEOUT_SEC),
+			true
+		);
+
+		self::startSession();
 	}
 }

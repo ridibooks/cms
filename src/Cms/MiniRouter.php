@@ -26,9 +26,10 @@ class MiniRouter
 
 	/**
 	 * @param Request $request
+	 * @param bool $enable_ssl
 	 * @return Response
 	 */
-	public function route(Request $request)
+	public function route(Request $request, $enable_ssl = true)
 	{
 		$request_uri_wo_qs = self::getNormalizedUri($request->getRequestUri());
 
@@ -53,7 +54,7 @@ class MiniRouter
 			$controller_path = substr($request_uri_wo_qs, strlen($this->prefix_uri));
 		}
 
-		$response = self::shouldRedirectForLogin($request);
+		$response = self::shouldRedirectForLogin($request, $enable_ssl);
 		if ($response) {
 			return $response;
 		}
@@ -76,11 +77,12 @@ class MiniRouter
 
 	/**
 	 * @param Request $request
+	 * @param bool $enable_ssl
 	 * @return null|Response
 	 */
-	public static function shouldRedirectForLogin(Request $request)
+	public static function shouldRedirectForLogin(Request $request, $enable_ssl = true)
 	{
-		$response = self::conformAllowedProtocol($request);
+		$response = self::conformAllowedProtocol($request, $enable_ssl);
 		if ($response) {
 			return $response;
 		}
@@ -99,11 +101,11 @@ class MiniRouter
 		return null;
 	}
 
-	private static function conformAllowedProtocol(Request $request)
+	private static function conformAllowedProtocol(Request $request, $enable_ssl)
 	{
-		if (\Config::$ENABLE_SSL && !self::onHttps($request)) {
+		if ($enable_ssl && !self::onHttps($request)) {
 			return RedirectResponse::create('https://' . $request->getHttpHost() . $request->getRequestUri());
-		} elseif (!\Config::$ENABLE_SSL && self::onHttps($request)) {
+		} elseif (!$enable_ssl && self::onHttps($request)) {
 			return RedirectResponse::create('http://' . $request->getHttpHost() . $request->getRequestUri());
 		}
 
