@@ -5,7 +5,11 @@ use Ridibooks\Platform\Cms\MiniRouter;
 use Ridibooks\Platform\Cms\UserControllerProvider;
 use Symfony\Component\HttpFoundation\Request;
 
-require_once __DIR__ . '/../config.php';
+if (is_readable(__DIR__ . '/../config.php')) {
+    require_once __DIR__ . '/../config.php';
+} elseif (is_readable(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
@@ -17,7 +21,7 @@ $app = new CmsApplication();
 
 // Try MiniRouter first
 $app->before(function (Request $request) {
-	return MiniRouter::shouldRedirectForLogin($request);
+	return MiniRouter::shouldRedirectForLogin($request, false);
 });
 
 $app->mount('/', new UserControllerProvider());
