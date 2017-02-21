@@ -3,6 +3,7 @@ namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\LoginService;
+use Ridibooks\Platform\Cms\Auth\AzureLoginService;
 use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
@@ -154,7 +155,9 @@ class CmsApplication extends Application
 		$this->get('/login', function (CmsApplication $app) {
 			LoginService::resetSession();
 
-			return $app->render('login.twig');
+			$azure_config = $app['azure'];
+			$end_point = AzureLoginService::getAuthorizeEndPoint($azure_config);
+			return $app->render('login.twig', ['azure_login' => $end_point]);
 		});
 
 		$this->post('/login', function (Request $req) {
@@ -167,6 +170,29 @@ class CmsApplication extends Application
 				$login_service->doLoginAction($id, $passwd);
 
 				return RedirectResponse::create($return_url);
+			} catch (\Exception $e) {
+				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
+			}
+		});
+
+		$this->get('/login.azure', function (Request $req, CmsApplication $app) {
+			$code = $req->get('code');
+			$return_url = $req->get('return_url', 'welcome');
+
+			error_log("return_url=$return_url");
+
+			if (!$code) {
+				$error = $req->get('error');
+				$error_description = $req->get('error_description');
+				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), "$error: $error_description");
+			}
+
+			try {
+				$azure_config = $app['azure'];
+				$login_service = new LoginService();
+				$login_service->doAzureLoginAction($code, $azure_config);
+				return RedirectResponse::create($return_url);
+
 			} catch (\Exception $e) {
 				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
 			}

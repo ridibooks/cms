@@ -31,6 +31,24 @@ class LoginService
 		$this->setSessions($id);
 	}
 
+	public function doAzureLoginAction($code, $azure_config)
+	{
+		$tokenOutput = AzureLoginService::requestAccessToken($code, $azure_config);
+		$token_type = $tokenOutput->token_type;
+		$access_token = $tokenOutput->access_token;
+		if (!$token_type || !$access_token) {
+			throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
+		}
+
+		$resourceOutput = AzureLoginService::requestResource($token_type, $access_token, $azure_config);
+		if ($error = $resourceOutput->{'odata.error'}) {
+			throw new \Exception("[requestResource]\n $error->code: {$error->message->value}");
+		}
+
+		$id = $resourceOutput->mailNickname;
+		$this->setSessions($id);
+	}
+
 	/**
 	 * @param string $id
 	 */
