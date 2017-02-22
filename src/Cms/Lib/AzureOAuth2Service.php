@@ -1,8 +1,8 @@
 <?php
 
-namespace Ridibooks\Platform\Cms\Auth;
+namespace Ridibooks\Platform\Cms\Lib;
 
-class AzureLoginService
+class AzureOAuth2Service
 {
 	public static function getAuthorizeEndPoint($azure_config)
 	{

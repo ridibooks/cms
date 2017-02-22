@@ -3,7 +3,7 @@ namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Cms\Auth\AzureLoginService;
+use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
 use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
@@ -156,7 +156,7 @@ class CmsApplication extends Application
 			LoginService::resetSession();
 
 			$azure_config = $app['azure'];
-			$end_point = AzureLoginService::getAuthorizeEndPoint($azure_config);
+			$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
 			return $app->render('login.twig', ['azure_login' => $end_point]);
 		});
 
