@@ -14,7 +14,9 @@ if (is_readable(__DIR__ . '/../config.php')) {
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
 if (isset(\Config::$COUCHBASE_ENABLE) && \Config::$COUCHBASE_ENABLE) {
-	LoginService::startCouchbaseSession(\Config::$COUCHBASE_SERVER_HOSTS);
+	// REMARK: 모든 CMS 동시 배포 필요
+	//LoginService::startCouchbaseSession(\Config::$COUCHBASE_SERVER_HOSTS);
+	LoginService::startSession();
 } else {
 	LoginService::startSession();
 }
