@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
+use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Library\CouchbaseSessionHandler;
 
 class LoginService
@@ -26,6 +27,29 @@ class LoginService
 
 		if (PasswordService::needsRehash($user['passwd'])) {
 			AdminUserService::updatePassword($id, $passwd);
+		}
+
+		$this->setSessions($id);
+	}
+
+	public function doAzureLoginAction($code, $azure_config)
+	{
+		$tokenOutput = AzureOAuth2Service::requestAccessToken($code, $azure_config);
+		$token_type = $tokenOutput->token_type;
+		$access_token = $tokenOutput->access_token;
+		if (!$token_type || !$access_token) {
+			throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
+		}
+
+		$resourceOutput = AzureOAuth2Service::requestResource($token_type, $access_token, $azure_config);
+		if ($error = $resourceOutput->{'odata.error'}) {
+			throw new \Exception("[requestResource]\n $error->code: {$error->message->value}");
+		}
+
+		$id = $resourceOutput->mailNickname;
+		$user = AdminUserService::getUser($id);
+		if (!$user || $user['is_use'] != '1') {
+			throw new \Exception('Azure id와 일치하는 계정이 없습니다. 관리자에게 문의하세요.');
 		}
 
 		$this->setSessions($id);

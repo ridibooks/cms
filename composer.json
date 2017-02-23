@@ -28,7 +28,8 @@
   ],
   "require": {
     "gnf/gnfcache": "^0.1.0",
-    "illuminate/database": "^5.2"
+    "illuminate/database": "^5.2",
+    "vlucas/phpdotenv": "^2.4"
   },
   "require-dev": {
     "ridibooks/core": "dev-master",
