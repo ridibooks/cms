@@ -49,7 +49,7 @@ class LoginService
 		$id = $resourceOutput->mailNickname;
 		$user = AdminUserService::getUser($id);
 		if (!$user || $user['is_use'] != '1') {
-			throw new \Exception('잘못된 계정정보입니다.');
+			throw new \Exception('Azure id와 일치하는 계정이 없습니다. 관리자에게 문의하세요.');
 		}
 
 		$this->setSessions($id);
