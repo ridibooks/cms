@@ -1,38 +1,45 @@
 <?php
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Platform\Cms\Model\AdminMenu;
-use Ridibooks\Platform\Cms\Model\AdminMenuAjax;
+use Ridibooks\CmsServer\Thrift\ThriftService;
+
 
 class AdminMenuService
 {
+	private static $client = null;
+	private static function getTClient()
+	{
+		if (!self::$client) {
+			self::$client = ThriftService::getTClient('/menu', 'AdminMenu');
+		}
+
+		return self::$client;
+	}
+
 	public static function getMenuList($is_use = null)
 	{
-		$query = AdminMenu::query();
 		if (!is_null($is_use)) {
-			$query->where('is_use', $is_use);
+			$menus = self::getTClient()->getMenuList($is_use);
+		} else {
+			$menus = self::getTClient()->getAllMenuList();
 		}
-		return $query->orderBy('menu_order')->get()->toArray();
+		return ThriftService::convertMenuCollectionToArray($menus);
 	}
 
 	public static function getAllMenuAjax()
 	{
-		return AdminMenuAjax::all()->toArray();
+		$menus = self::getTClient()->getAllMenuAjax();
+		return ThriftService::convertMenuAjaxCollectionToArray($menus);
 	}
 
 	public static function getMenus(array $menu_ids) : array
 	{
-		return AdminMenu::findMany($menu_ids)->toArray();
+		$menus = self::getTClient()->getMenus($menu_ids);
+		return ThriftService::convertMenuCollectionToArray($menus);
 	}
 
 	public static function getAdminIdsByMenuId($menu_id)
 	{
-		/** @var AdminMenu $menu */
-		$menu = AdminMenu::find($menu_id);
-		if (!$menu) {
-			return [];
-		}
-
-		return $menu->users->pluck('id')->all();
+		return self::getTClient()->getAdminIdsByMenuId($menu_id);
 	}
 }

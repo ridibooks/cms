@@ -1,15 +1,11 @@
 <?php
 namespace Ridibooks\Platform\Cms;
 
-use Ridibooks\Library\UrlHelper;
-use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
+use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -22,12 +18,26 @@ class CmsApplication extends Application
 	{
 		parent::__construct($values);
 
+		$this->setDefaultErrorHandler();
 		$this->registerTwigServiceProvider();
 		$this->registerSessionServiceProvider();
+		$this->setRoutes();
+	}
 
-		$this->setDefaultErrorHandler();
+	private function setDefaultErrorHandler()
+	{
+		$this['debug'] = \Config::$UNDER_DEV;
+		$this->error(function (\Exception $e) {
+			if ($this['debug']) {
+				return null;
+			}
 
-		$this->connectDefaultControllers();
+			if ($e instanceof HttpException) {
+				return Response::create($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
+			}
+
+			throw $e;
+		});
 	}
 
 	private function registerTwigServiceProvider()
@@ -47,42 +57,48 @@ class CmsApplication extends Application
 		);
 
 		// see http://silex.sensiolabs.org/doc/providers/twig.html#customization
-		$this['twig'] = self::share(
-			$this->extend(
-				'twig',
-				function (\Twig_Environment $twig) {
-					$globals = array_merge($this->getTwigGlobalVariables(), $this['twig.env.globals']);
-					foreach ($globals as $k => $v) {
-						$twig->addGlobal($k, $v);
-					}
-
-					foreach ($this->getTwigGlobalFilters() as $filter) {
-						$twig->addFilter($filter);
-					}
-
-					return $twig;
+		$this['twig'] = $this->extend(
+			'twig',
+			function (\Twig_Environment $twig) {
+				$globals = array_merge($this->getTwigGlobalVariables(), $this['twig.env.globals']);
+				foreach ($globals as $k => $v) {
+					$twig->addGlobal($k, $v);
 				}
-			)
+
+				foreach ($this->getTwigGlobalFilters() as $filter) {
+					$twig->addFilter($filter);
+				}
+
+				return $twig;
+			}
 		);
 
-		$this['twig.loader.filesystem'] = self::share(
-			$this->extend(
-				'twig.loader.filesystem',
-				function (\Twig_Loader_Filesystem $loader) {
-					$loader->addPath(__DIR__ . '/../../views/');
+		$this['twig.loader.filesystem'] = $this->extend(
+			'twig.loader.filesystem',
+			function (\Twig_Loader_Filesystem $loader) {
+				$loader->addPath(__DIR__ . '/../../views/');
 
-					return $loader;
-				}
-			)
+				return $loader;
+			}
 		);
 	}
 
 	private function getTwigGlobalVariables()
 	{
+		$cms = $this['cms'];
+		$cms_host = $cms['host'];
+		$cms_port = $cms['port'];
+		if ($cms_host == 'localhost' && $cms_port == $_SERVER['SERVER_PORT']) {
+			$bower_path = '/static/bower_components';
+		} else {
+			$bower_path = "http://$cms_host:$cms_port/static/bower_components";
+		}
+
 		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
-			'BOWER_PATH' => '/static/bower_components',
+			//'BOWER_PATH' => '/static/bower_components',
+			'BOWER_PATH' => $bower_path,
 
 			'MISC_URL' => \Config::$MISC_URL,
 			'BANNER_URL' => \Config::$ACTIVE_URL . '/ridibooks_banner/',
@@ -121,86 +137,26 @@ class CmsApplication extends Application
 			]
 		);
 
-		$this['flashes'] = self::share(function () {
-			return $this->getFlashBag()->all();
-		});
+		$this['flashes'] = $this->getFlashBag()->all();
 	}
 
-	private function setDefaultErrorHandler()
+	private function setRoutes()
 	{
-		$this['debug'] = \Config::$UNDER_DEV;
-		$this->error(function (\Exception $e) {
-			if ($this['debug']) {
-				return null;
-			}
+		$this->mount('/', new LoginControllerProvider());
+		$this->mount('/me', new UserControllerProvider());
 
-			if ($e instanceof HttpException) {
-				return Response::create($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
-			}
-
-			throw $e;
-		});
-	}
-
-	private function connectDefaultControllers()
-	{
-		$this->get('/', function (CmsApplication $app) {
-			return $app->redirect('/welcome');
-		});
-
-		$this->get('/welcome', function (CmsApplication $app) {
-			return $app->render('welcome.twig');
-		});
-
-		$this->get('/login', function (CmsApplication $app) {
-			LoginService::resetSession();
-
-			$azure_config = $app['azure'];
-			$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
-			return $app->render('login.twig', ['azure_login' => $end_point]);
-		});
-
-		$this->post('/login', function (Request $req) {
-			$id = $req->get('id');
-			$passwd = $req->get('passwd');
-			$return_url = $req->get('return_url', 'welcome');
+		$this->get('comm/user_list.ajax', function () {
+			$result = [];
 
 			try {
-				$login_service = new LoginService();
-				$login_service->doLoginAction($id, $passwd);
-
-				return RedirectResponse::create($return_url);
+				$result['data'] = AdminUserService::getAllAdminUserArray();
+				$result['success'] = true;
 			} catch (\Exception $e) {
-				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
-			}
-		});
-
-		$this->get('/login.azure', function (Request $req, CmsApplication $app) {
-			$code = $req->get('code');
-			$return_url = $req->get('return_url', 'welcome');
-
-			error_log("return_url=$return_url");
-
-			if (!$code) {
-				$error = $req->get('error');
-				$error_description = $req->get('error_description');
-				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), "$error: $error_description");
+				$result['success'] = false;
+				$result['msg'] = [$e->getMessage()];
 			}
 
-			try {
-				$azure_config = $app['azure'];
-				$login_service = new LoginService();
-				$login_service->doAzureLoginAction($code, $azure_config);
-				return RedirectResponse::create($return_url);
-
-			} catch (\Exception $e) {
-				return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
-			}
-		});
-
-		$this->get('/logout', function () {
-			LoginService::resetSession();
-			return RedirectResponse::create('/');
+			return $this->json((array)$result);
 		});
 	}
 

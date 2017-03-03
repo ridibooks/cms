@@ -1,10 +1,20 @@
 <?php
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Platform\Cms\Model\AdminTag;
+use Ridibooks\CmsServer\Thrift\ThriftService;
 
 class AdminTagService
 {
+	private static $client = null;
+	private static function getTClient()
+	{
+		if (!self::$client) {
+			self::$client = ThriftService::getTClient('/tag', 'AdminTag');
+		}
+
+		return self::$client;
+	}
+
 	/**
 	 * 해당 tags 를 가지고 있는 사용중인 어드민 ID를 가져온다.
 	 * @param array $tag_ids
@@ -12,21 +22,26 @@ class AdminTagService
 	 */
 	public static function getAdminIdsFromTags($tag_ids)
 	{
-		return AdminTag::with('users')->find($tag_ids)
-			->map(function ($tag) {
-				return $tag->users->pluck('id');
-			})
-			->collapse()
-			->toArray();
+		return self::getTClient()->getAdminIdsFromTags($tag_ids);
+
+//		return AdminTag::with('users')->find($tag_ids)
+//			->map(function ($tag) {
+//				return $tag->users->pluck('id');
+//			})
+//			->collapse()
+//			->toArray();
 	}
 
 	public static function getAdminTagMenus($tag_id)
 	{
-		if (empty($tag_id)) {
-			return [];
-		}
+		$menus = self::getTClient()->getAdminTagMenus($tag_id);
+		return ThriftService::convertMenuCollectionToArray($menus);
 
-		return AdminTag::find($tag_id)->menus->pluck('id')->all();
+//		if (empty($tag_id)) {
+//			return [];
+//		}
+//
+//		return AdminTag::find($tag_id)->menus->pluck('id')->all();
 	}
 
 	public function getMappedAdminMenuHashes($check_url, $tag_id)

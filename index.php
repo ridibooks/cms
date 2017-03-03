@@ -1,9 +1,5 @@
 <?php
-use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Cms\CmsApplication;
-use Ridibooks\Platform\Cms\MiniRouter;
-use Ridibooks\Platform\Cms\UserControllerProvider;
-use Symfony\Component\HttpFoundation\Request;
+use Ridibooks\CmsServer\CmsServerApplication;
 
 if (is_readable(__DIR__ . '/../config.php')) {
 	require_once __DIR__ . '/../config.php';
@@ -16,16 +12,15 @@ $autoloader = require __DIR__ . "/vendor/autoload.php";
 $dotenv = new Dotenv\Dotenv(__DIR__, 'config.env');
 $dotenv->load();
 
-if (isset(\Config::$COUCHBASE_ENABLE) && \Config::$COUCHBASE_ENABLE) {
-	// REMARK: 모든 CMS 동시 배포 필요
-	//LoginService::startCouchbaseSession(\Config::$COUCHBASE_SERVER_HOSTS);
-	LoginService::startSession();
-} else {
-	LoginService::startSession();
-}
 
-// Try Silex Route next
-$app = new CmsApplication([
+$app = new CmsServerApplication([
+	'debug' => true,
+	'mysql' => [
+		'host' => $_ENV['MYSQL_HOST'],
+		'database' => $_ENV['MYSQL_DATABASE'],
+		'user' => $_ENV['MYSQL_USER'],
+		'password' => $_ENV['MYSQL_PASSWORD'],
+	],
 	'azure' => [
 		'tenent' => $_ENV['AZURE_TENENT'],
 		'client_id' => $_ENV['AZURE_CLIENT_ID'],
@@ -35,12 +30,5 @@ $app = new CmsApplication([
 		'api_version' => $_ENV['AZURE_API_VERSION'],
 	],
 ]);
-
-// Try MiniRouter first
-$app->before(function (Request $request) {
-	return MiniRouter::shouldRedirectForLogin($request, \Config::$ENABLE_SSL);
-});
-
-$app->mount('/', new UserControllerProvider());
 
 $app->run();

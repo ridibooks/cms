@@ -29,19 +29,18 @@
   "require": {
     "gnf/gnfcache": "^0.1.0",
     "illuminate/database": "^5.2",
-    "vlucas/phpdotenv": "^2.4"
+    "vlucas/phpdotenv": "^2.4",
+    "apache/thrift": "dev-master"
   },
   "require-dev": {
     "ridibooks/core": "dev-master",
-    "silex/silex": "^1.3",
+    "silex/silex": "^2.0",
     "twig/twig": "^1.0.0"
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Platform\\Cms\\": "src/Cms"
-    },
-    "files": [
-      "bootstrap.php"
-    ]
+      "Ridibooks\\Platform\\Cms\\": "src/Cms",
+      "Ridibooks\\CmsServer\\": "src/CmsServer"
+    }
   }
 }

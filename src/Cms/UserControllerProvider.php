@@ -5,7 +5,7 @@ use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Silex\Application;
 use Silex\ControllerCollection;
-use Silex\ControllerProviderInterface;
+use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -16,8 +16,8 @@ class UserControllerProvider implements ControllerProviderInterface
 		/** @var ControllerCollection $controllers */
 		$controllers = $app['controllers_factory'];
 
-		$controllers->get('me', [$this, 'getMyInfo']);
-		$controllers->post('me', [$this, 'updateMyInfo']);
+		$controllers->get('/', [$this, 'getMyInfo']);
+		$controllers->post('/', [$this, 'updateMyInfo']);
 
 		$controllers->get('comm/user_list.ajax', [$this, 'userList']);
 

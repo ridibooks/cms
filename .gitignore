@@ -2,3 +2,9 @@
 composer.lock
 static/bower_components
 vendor
+src/Cms/Thrift/*
+!src/Cms/Thrift/ThriftService.php
+src/CmsServer/Thrift/*
+!src/CmsServer/Thrift/ThriftResponse.php
+thrift/docs
+thrift/dist-gen
