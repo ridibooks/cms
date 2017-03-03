@@ -46,7 +46,7 @@ class AdminAuthService
 			$menu_id_array[] = $menuid;
 		}
 
-		if (\Config::$UNDER_DEV) {
+		if ($_ENV['debug']) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
 			$menuids_owned = $menu_id_array;
 		} else {
@@ -280,7 +280,7 @@ class AdminAuthService
 	 */
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
-		if (!self::hasHashAuth($method, $check_url) && !\Config::$UNDER_DEV) {
+		if (!$_ENV['debug'] && !self::hasHashAuth($method, $check_url)) {
 			throw new MsgException("해당 권한이 없습니다.");
 		}
 	}
@@ -403,10 +403,10 @@ class AdminAuthService
 	 */
 	public static function authorize($request)
 	{
-		if (!\Config::$UNDER_DEV && !AdminAuthService::isValidIp()) {
+		if (!$_ENV['debug'] && !AdminAuthService::isValidIp()) {
 			return new Response(
 				UrlHelper::printAlertRedirect(
-					'http://' . \Config::$DOMAIN,
+					'http://' . $_SERVER['SERVER_NAME'],
 					'허가된 IP가 아닙니다.'
 				)
 			);

@@ -53,7 +53,6 @@ class CmsServerApplication extends Application
 
 	private function setDefaultErrorHandler()
 	{
-		$this['debug'] = \Config::$UNDER_DEV;
 		$this->error(function (\Exception $e) {
 			if ($this['debug']) {
 				return null;

@@ -1,12 +1,6 @@
 <?php
 use Ridibooks\CmsServer\CmsServerApplication;
 
-if (is_readable(__DIR__ . '/../config.php')) {
-	require_once __DIR__ . '/../config.php';
-} elseif (is_readable(__DIR__ . '/config.local.php')) {
-	require_once __DIR__ . '/config.local.php';
-}
-
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
 $dotenv = new Dotenv\Dotenv(__DIR__, 'config.env');
