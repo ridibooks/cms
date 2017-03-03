@@ -1,10 +1,10 @@
 <?php
-namespace Ridibooks\CmsServer\Service;
+namespace Ridibooks\Cms\Server\Service;
 
-use Ridibooks\CmsServer\Model\AdminUser;
+use Ridibooks\Cms\Server\Model\AdminUser;
 
-use Ridibooks\CmsServer\Thrift\AdminUser\AdminUser as ThriftAdminUser;
-use Ridibooks\CmsServer\Thrift\AdminTag\AdminTag as ThriftAdminTag;
+use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 
 class AdminUserService
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\CmsServer\Thrift;
+namespace Ridibooks\Cms\Thrift;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

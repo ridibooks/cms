@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\CmsServer\Service;
+namespace Ridibooks\Cms\Server\Service;
 
 use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Library\CouchbaseSessionHandler;

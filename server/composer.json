@@ -1,0 +1,31 @@
+{
+  "name": "ridibooks/cms",
+  "description": "Ridibooks CMS SDK",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "강기태",
+      "email": "kt.kang@ridi.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@gitlab.ridi.io:common/php-core.git"
+    }
+  ],
+  "require": {
+    "gnf/gnfcache": "^0.1.0",
+    "illuminate/database": "^5.2",
+    "vlucas/phpdotenv": "^2.4",
+    "apache/thrift": "dev-master",
+    "silex/silex": "^2.0",
+    "ridibooks/core": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ridibooks\\Cms\\Server\\": "src",
+      "Ridibooks\\Cms\\Thrift\\": "../Thrift/src"
+    }
+  }
+}

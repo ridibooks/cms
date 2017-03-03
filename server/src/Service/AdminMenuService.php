@@ -1,9 +1,9 @@
 <?php
-namespace Ridibooks\CmsServer\Service;
+namespace Ridibooks\Cms\Server\Service;
 
-use Ridibooks\CmsServer\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
-use Ridibooks\CmsServer\Model\AdminMenu;
-use Ridibooks\CmsServer\Model\AdminMenuAjax;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
+use Ridibooks\Cms\Server\Model\AdminMenu;
+use Ridibooks\Cms\Server\Model\AdminMenuAjax;
 
 class AdminMenuService
 {

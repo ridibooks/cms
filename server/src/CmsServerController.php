@@ -1,21 +1,21 @@
 <?php
 
-namespace Ridibooks\CmsServer;
+namespace Ridibooks\Cms\Server;
 
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Ridibooks\CmsServer\Service\AdminAuthService;
-use Ridibooks\CmsServer\Service\AdminMenuService;
-use Ridibooks\CmsServer\Service\AdminTagService;
-use Ridibooks\CmsServer\Service\AdminUserService;
-use Ridibooks\CmsServer\Thrift\AdminAuth\AdminAuthServiceProcessor;
-use Ridibooks\CmsServer\Thrift\AdminMenu\AdminMenuServiceProcessor;
-use Ridibooks\CmsServer\Thrift\AdminTag\AdminTagServiceProcessor;
-use Ridibooks\CmsServer\Thrift\AdminUser\AdminUserServiceProcessor;
-use Ridibooks\CmsServer\Thrift\ThriftResponse;
+use Ridibooks\Cms\Server\Service\AdminAuthService;
+use Ridibooks\Cms\Server\Service\AdminMenuService;
+use Ridibooks\Cms\Server\Service\AdminTagService;
+use Ridibooks\Cms\Server\Service\AdminUserService;
+use Ridibooks\Cms\Thrift\AdminAuth\AdminAuthServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceProcessor;
+use Ridibooks\Cms\Thrift\ThriftResponse;
 
 class CmsServerController implements ControllerProviderInterface
 {

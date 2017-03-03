@@ -1,7 +1,7 @@
 <?php
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\CmsServer\Thrift\ThriftService;
+use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminTagService
 {

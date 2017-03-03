@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\CmsServer\Service;
+namespace Ridibooks\Cms\Server\Service;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;

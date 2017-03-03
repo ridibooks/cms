@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\CmsServer\Thrift;
+namespace Ridibooks\Cms\Thrift;
 
 use Thrift\Transport\THttpClient;
 use Thrift\Protocol\TJSONProtocol;
@@ -19,7 +19,7 @@ class ThriftService
 
 		$transport = new THttpClient($cms_host, $cms_port, $url);
 		$protocol = new TJSONProtocol($transport);
-		$clientClass = '\\Ridibooks\\CmsServer\\Thrift\\'.$thrift_name.'\\'.$thrift_name.'ServiceClient';
+		$clientClass = '\\Ridibooks\\Cms\\Thrift\\'.$thrift_name.'\\'.$thrift_name.'ServiceClient';
 		if (!class_exists($clientClass)) {
 			throw new \InvalidArgumentException(sprintf('Thrift client "%s" not found', $clientClass));
 		}

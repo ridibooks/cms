@@ -2,7 +2,7 @@ include "Errors.thrift"
 include "AdminTag.thrift"
 include "AdminMenu.thrift"
 
-namespace php Ridibooks.CmsServer.Thrift.AdminUser
+namespace php Ridibooks.Cms.Thrift.AdminUser
 
 /**
  * AdminUser 엔티티

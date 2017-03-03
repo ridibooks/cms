@@ -9,7 +9,7 @@ bower:
 	bower update -p && bower prune -p
 
 build-thrift:
-	make -C thrift thrift
+	make -C Thrift thrift
 
 clean:
 	rm -rvf static/bower_components

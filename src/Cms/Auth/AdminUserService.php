@@ -3,7 +3,7 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Ridibooks\CmsServer\Thrift\ThriftService;
+use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminUserService
 {

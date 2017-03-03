@@ -27,9 +27,6 @@
     }
   ],
   "require": {
-    "gnf/gnfcache": "^0.1.0",
-    "illuminate/database": "^5.2",
-    "vlucas/phpdotenv": "^2.4",
     "apache/thrift": "dev-master"
   },
   "require-dev": {
@@ -39,8 +36,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Platform\\Cms\\": "src/Cms",
-      "Ridibooks\\CmsServer\\": "src/CmsServer"
+      "Ridibooks\\Platform\\Cms\\": "src/Cms"
     }
   }
 }
