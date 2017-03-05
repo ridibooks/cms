@@ -27,16 +27,16 @@
     }
   ],
   "require": {
-    "apache/thrift": "dev-master"
+    "apache/thrift": "dev-master",
+    "ridibooks/core": "dev-master"
   },
-  "require-dev": {
-    "ridibooks/core": "dev-master",
+  "suggest": {
     "silex/silex": "^2.0",
     "twig/twig": "^1.0.0"
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Platform\\Cms\\": "src/Cms"
+      "Ridibooks\\Platform\\Cms\\": "src"
     }
   }
 }
