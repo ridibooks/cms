@@ -301,6 +301,7 @@ class AdminAuthService
 			'/me', // 본인 정보 수정
 			'/welcome',
 			'/logout',
+			'/login.azure',
 			'/'
 		];
 

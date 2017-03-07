@@ -14,7 +14,7 @@ class LoginService
 	 * @param string $passwd
 	 * @throws \Exception
 	 */
-	public function doLoginAction($id, $passwd)
+	public static function doLoginAction($id, $passwd)
 	{
 		$user = AdminUserService::getUser($id);
 		if (!$user || $user['is_use'] != '1') {
@@ -29,36 +29,38 @@ class LoginService
 			AdminUserService::updatePassword($id, $passwd);
 		}
 
-		$this->setSessions($id);
+		self::setSessions($id);
 	}
 
-	public function doAzureLoginAction($code, $azure_config)
+	public static function doAzureLoginAction($resource)
 	{
-		$tokenOutput = AzureOAuth2Service::requestAccessToken($code, $azure_config);
-		$token_type = $tokenOutput->token_type;
-		$access_token = $tokenOutput->access_token;
-		if (!$token_type || !$access_token) {
-			throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
-		}
-
-		$resourceOutput = AzureOAuth2Service::requestResource($token_type, $access_token, $azure_config);
-		if ($error = $resourceOutput->{'odata.error'}) {
-			throw new \Exception("[requestResource]\n $error->code: {$error->message->value}");
-		}
-
-		$id = $resourceOutput->mailNickname;
+		$id = $resource->mailNickname;
 		$user = AdminUserService::getUser($id);
 		if (!$user || $user['is_use'] != '1') {
 			throw new \Exception('Azure id와 일치하는 계정이 없습니다. 관리자에게 문의하세요.');
 		}
 
-		$this->setSessions($id);
+		self::setSessions($id);
+	}
+
+	public static function getCmsLoginEndPoint($login_endpoint, $callback_path, $return_path)
+	{
+		$scheme = isset($_SERVER['HTTPS'])? 'https' : 'http';
+		$host = $_SERVER['HTTP_HOST'];
+		if ($callback_path[0] != '/' ) {
+			$callback_path = '/'.$callback_path;
+		}
+		if ($return_path[0] != '/' ) {
+			$return_path = '/'.$return_path;
+		}
+		$callback_path = $scheme.'://'.$host.$callback_path;
+		return $login_endpoint.'?callback='.urlencode($callback_path).'&return_url='.urlencode($return_path);
 	}
 
 	/**
 	 * @param string $id
 	 */
-	private function setSessions($id)
+	private static function setSessions($id)
 	{
 		//GetAdminID에 사용할 id를미리 set 한다.
 		$_SESSION['session_admin_id'] = $id;

@@ -5,22 +5,23 @@ use Ridibooks\Cms\Server\Model\AdminUser;
 
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
+use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
 
-class AdminUserService
+class AdminUserService implements AdminUserServiceIf
 {
 	/**
 	 * 사용 가능한 모든 Admin 계정정보 가져온다.
 	 * @return array
 	 */
-	public static function getAllAdminUserArray()
+	public function getAllAdminUserArray()
 	{
 		$users = AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
 		return $users->map(function ($user) {
-			return new ThriftAdminMenu($user->toArray());
+			return new ThriftAdminUser($user->toArray());
 		})->all();
 	}
 
-	public static function getUser($id)
+	public function getUser($id)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($id);
@@ -30,7 +31,7 @@ class AdminUserService
 		return new ThriftAdminUser($user->toArray());
 	}
 
-	public static function getAdminUserTag($user_id)
+	public function getAdminUserTag($user_id)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($user_id);
@@ -44,7 +45,7 @@ class AdminUserService
 		})->all();
 	}
 
-	public static function getAdminUserMenu($user_id)
+	public function getAdminUserMenu($user_id)
 	{
 		/** @var AdminUser $user */
 		$user = AdminUser::find($user_id);
@@ -55,7 +56,7 @@ class AdminUserService
 		return $user->menus->pluck('id')->all();
 	}
 
-	public static function getAllMenuIds($user_id)
+	public function getAllMenuIds($user_id)
 	{
 		$user = AdminUser::with('tags.menus')->find($user_id);
 		if (!$user) {
@@ -79,10 +80,8 @@ class AdminUserService
 		return $menu_ids;
 	}
 
-	public static function updateMyInfo($user_id, $name, $team, $is_use, $passwd = '')
+	public function updateMyInfo($user_id, $name, $team, $is_use, $passwd = '')
 	{
-		error_log('updateMyInfo ' . $user_id . ' ' . $name . ' ' . $team . ' ' . $is_use . ' ' . $passwd);
-
 		/** @var AdminUser $admin */
 		$me = AdminUser::find($user_id);
 		if (!$me) {
@@ -105,9 +104,8 @@ class AdminUserService
 		return true;
 	}
 
-	public static function updatePassword($user_id, $plain_password)
+	public function updatePassword($user_id, $plain_password)
 	{
-		error_log('updatePassword ' . $user_id . ' ' . $plain_password);
 		$me = AdminUser::find($user_id);
 		if (!$me) {
 			return false;

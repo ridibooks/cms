@@ -2,24 +2,47 @@
 
 namespace Ridibooks\Cms\Thrift;
 
+use Thrift\Protocol\TMultiplexedProtocol;
 use Thrift\Transport\THttpClient;
+use Thrift\Transport\TSocket;
+use Thrift\Transport\TBufferedTransport;
 use Thrift\Protocol\TJSONProtocol;
 
 class ThriftService
 {
-	public static function getTClient($url, $thrift_name)
-	{
-		//$cms = $_ENV['cms'];
-		$cms = [
-			'host' => 'localhost',
-			'port' => '8001',
-		];
-		$cms_host = $cms['host'];
-		$cms_port = $cms['port'];
+	private static $host;
+	private static $port;
+	private static $path;
+	private static $scheme;
 
-		$transport = new THttpClient($cms_host, $cms_port, $url);
+	public static function init($host, $port, $path = '', $scheme = 'http')
+	{
+		self::$host = $host;
+		self::$port = $port;
+		self::$path = $path;
+		self::$scheme = $scheme;
+	}
+
+	public static function getHttpClient($thrift_name)
+	{
+		$transport = new THttpClient(self::$host, self::$port, self::$path, self::$scheme);
 		$protocol = new TJSONProtocol($transport);
-		$clientClass = '\\Ridibooks\\Cms\\Thrift\\'.$thrift_name.'\\'.$thrift_name.'ServiceClient';
+		$multiplexed_protocol = new TMultiplexedProtocol($protocol, $thrift_name);
+		return self::getClient($thrift_name, $multiplexed_protocol);
+	}
+
+	public static function getSocketClient($thrift_name)
+	{
+		$socket = new TSocket(self::$host, self::$port);
+		$transport = new TBufferedTransport($socket);
+		$protocol = new TJSONProtocol($transport);
+		$multiplexed_protocol = new TMultiplexedProtocol($protocol, $thrift_name);
+		return self::getClient($thrift_name, $multiplexed_protocol);
+	}
+
+	private static function getClient($thrift_name, $protocol)
+	{
+		$clientClass = __NAMESPACE__.'\\'.$thrift_name.'\\'.$thrift_name.'ServiceClient';
 		if (!class_exists($clientClass)) {
 			throw new \InvalidArgumentException(sprintf('Thrift client "%s" not found', $clientClass));
 		}

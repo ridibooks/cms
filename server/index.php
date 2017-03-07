@@ -1,11 +1,25 @@
 <?php
 use Ridibooks\Cms\Server\CmsServerApplication;
 
+use Illuminate\Database\Capsule;
+use Ridibooks\Cms\Server\Service\AdminMenuService;
+use Ridibooks\Cms\Server\Service\AdminUserService;
+use Ridibooks\Cms\Server\Service\AdminTagService;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceProcessor;
+
+use Symfony\Component\HttpFoundation\Request;
+
+use Thrift\Transport\TPhpStream;
+use Thrift\Transport\TBufferedTransport;
+use Thrift\Protocol\TJSONProtocol;
+use Thrift\TMultiplexedProcessor;
+
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
-
 
 $app = new CmsServerApplication([
 	'debug' => true,

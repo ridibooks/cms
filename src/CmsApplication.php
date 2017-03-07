@@ -1,6 +1,7 @@
 <?php
 namespace Ridibooks\Platform\Cms;
 
+use Ridibooks\Cms\Thrift\ThriftService;
 use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Silex\Application;
 use Silex\Application\TwigTrait;
@@ -21,6 +22,7 @@ class CmsApplication extends Application
 		$this->setDefaultErrorHandler();
 		$this->registerTwigServiceProvider();
 		$this->registerSessionServiceProvider();
+		$this->setThriftService();
 		$this->setRoutes();
 	}
 
@@ -85,20 +87,10 @@ class CmsApplication extends Application
 
 	private function getTwigGlobalVariables()
 	{
-		$cms = $this['cms'];
-		$cms_host = $cms['host'];
-		$cms_port = $cms['port'];
-		if ($cms_host == 'localhost' && $cms_port == $_SERVER['SERVER_PORT']) {
-			$bower_path = '/static/bower_components';
-		} else {
-			$bower_path = "http://$cms_host:$cms_port/static/bower_components";
-		}
-
 		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
-			//'BOWER_PATH' => '/static/bower_components',
-			'BOWER_PATH' => $bower_path,
+			'BOWER_PATH' => $this['cms'].'/static/bower_components',
 
 			'MISC_URL' => \Config::$MISC_URL,
 			'BANNER_URL' => \Config::$ACTIVE_URL . '/ridibooks_banner/',
@@ -158,6 +150,24 @@ class CmsApplication extends Application
 
 			return $this->json((array)$result);
 		});
+	}
+
+	private function setThriftService()
+	{
+		if (!isset($this['cms']) || !isset($this['login_path']) || !isset($this['thrift_path'])) {
+			throw new \InvalidArgumentException('Provide a config for cms server end points');
+		}
+
+		$parsed = parse_url($this['cms']);
+		$host = $parsed['host'];
+		$port = $parsed['port'];
+		$scheme = $parsed['scheme'];
+		$thrift_path = $this['thrift_path'];
+		if (!$port) {
+			$port = ($scheme === 'https')? 443 : 80;
+		}
+
+		ThriftService::init($host, $port, $thrift_path, $scheme);
 	}
 
 	public function addFlashInfo($message)

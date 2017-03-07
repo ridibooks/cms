@@ -35,6 +35,8 @@ service AdminTagService {
     ),
 
     list<string> getMappedAdminMenuHashes(
+        1: string check_url
+        2: i32 tag_id
     ) throws (
         1: Errors.UserException userException,
         2: Errors.SystemException systemException

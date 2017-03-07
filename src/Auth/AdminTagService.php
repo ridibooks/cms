@@ -9,7 +9,7 @@ class AdminTagService
 	private static function getTClient()
 	{
 		if (!self::$client) {
-			self::$client = ThriftService::getTClient('/tag', 'AdminTag');
+			self::$client = ThriftService::getHttpClient('AdminTag');
 		}
 
 		return self::$client;
@@ -23,25 +23,12 @@ class AdminTagService
 	public static function getAdminIdsFromTags($tag_ids)
 	{
 		return self::getTClient()->getAdminIdsFromTags($tag_ids);
-
-//		return AdminTag::with('users')->find($tag_ids)
-//			->map(function ($tag) {
-//				return $tag->users->pluck('id');
-//			})
-//			->collapse()
-//			->toArray();
 	}
 
 	public static function getAdminTagMenus($tag_id)
 	{
 		$menus = self::getTClient()->getAdminTagMenus($tag_id);
 		return ThriftService::convertMenuCollectionToArray($menus);
-
-//		if (empty($tag_id)) {
-//			return [];
-//		}
-//
-//		return AdminTag::find($tag_id)->menus->pluck('id')->all();
 	}
 
 	public function getMappedAdminMenuHashes($check_url, $tag_id)

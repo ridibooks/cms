@@ -3,14 +3,11 @@
 namespace Ridibooks\Platform\Cms;
 
 use Ridibooks\Library\UrlHelper;
-use Ridibooks\Platform\Cms\Auth\AdminUserService;
 use Ridibooks\Platform\Cms\Auth\LoginService;
-use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class LoginControllerProvider implements ControllerProviderInterface
 {
@@ -40,53 +37,41 @@ class LoginControllerProvider implements ControllerProviderInterface
 	{
 		LoginService::resetSession();
 
-		//$azure_config = $app['azure'];
-		//$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
+		$login_endpoint = $app['cms'].$app['login_path'];
+		$callback_path = '/login.azure';
+		$return_path = $request->get('return_url');
 
-		//thrift to cms server: getAuthorizeEndPost()
-		//Todo
-		//$end_point = Thrift::getAuthorizeEndPost();
-		$end_point = '/welcome';
+		$end_point = LoginService::getCmsLoginEndPoint($login_endpoint, $callback_path, $return_path);
 		return $app->render('login.twig', ['azure_login' => $end_point]);
-
-		//redirect to cms server
 	}
 
 	public function loginWithCms(Request $request, CmsApplication $app)
 	{
 		$id = $request->get('id');
 		$passwd = $request->get('passwd');
-		$return_url = $request->get('return_url', 'welcome');
+		$return_url = $request->get('return_url', '/welcome');
 
 		try {
-			$login_service = new LoginService();
-			$login_service->doLoginAction($id, $passwd);
-
+			LoginService::doLoginAction($id, $passwd);
 			return RedirectResponse::create($return_url);
+
 		} catch (\Exception $e) {
-			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
+			return UrlHelper::printAlertRedirect('/login?return_url='.urlencode($return_url), $e->getMessage());
 		}
 	}
 
 	public function loginWithAzure(Request $request, CmsApplication $app)
 	{
-		$code = $request->get('code');
-		$return_url = $request->get('return_url', 'welcome');
-
-		if (!$code) {
-			$error = $request->get('error');
-			$error_description = $request->get('error_description');
-			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), "$error: $error_description");
-		}
+		$resource = $request->get('resource');
+		$return_url = $request->get('return_url', '/welcome');
+		$resource = json_decode(urldecode($resource));
 
 		try {
-			$azure_config = $app['azure'];
-			$login_service = new LoginService();
-			$login_service->doAzureLoginAction($code, $azure_config);
+			LoginService::doAzureLoginAction($resource);
 			return RedirectResponse::create($return_url);
 
 		} catch (\Exception $e) {
-			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
+			return UrlHelper::printAlertRedirect('/login?return_url='.urlencode($return_url), $e->getMessage());
 		}
 	}
 

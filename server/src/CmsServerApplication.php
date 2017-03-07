@@ -3,14 +3,11 @@ namespace Ridibooks\Cms\Server;
 
 use Illuminate\Database\Capsule;
 use Silex\Application;
-use Silex\Application\TwigTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CmsServerApplication extends Application
 {
-	use TwigTrait;
-
 	public function __construct(array $values = [])
 	{
 		parent::__construct($values);

@@ -2,59 +2,106 @@
 
 namespace Ridibooks\Cms\Server;
 
+use Ridibooks\Cms\Server\Lib\AzureOAuth2Service;
+use Ridibooks\Cms\Thrift\ThriftResponse;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Ridibooks\Cms\Server\Service\AdminAuthService;
-use Ridibooks\Cms\Server\Service\AdminMenuService;
-use Ridibooks\Cms\Server\Service\AdminTagService;
-use Ridibooks\Cms\Server\Service\AdminUserService;
-use Ridibooks\Cms\Thrift\AdminAuth\AdminAuthServiceProcessor;
-use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceProcessor;
-use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceProcessor;
-use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceProcessor;
-use Ridibooks\Cms\Thrift\ThriftResponse;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class CmsServerController implements ControllerProviderInterface
 {
 	public function connect(Application $app)
 	{
 		$controller_collection = $app['controllers_factory'];
-		$controller_collection->post('/auth', [$this, 'auth']);
-		$controller_collection->post('/menu', [$this, 'menu']);
-		$controller_collection->post('/tag', [$this, 'tag']);
-		$controller_collection->post('/user', [$this, 'user']);
+
+		//thrift
+		$controller_collection->post('/', [$this, 'processThrift']);
+
+		//azure login
+		$controller_collection->get('/login', [$this, 'loginWithAzure']);
+		$controller_collection->get('/login.azure', [$this, 'azureLoginCallback']);
+		$controller_collection->get('/logout', [$this, 'azureLogoutCallback']);
+
+		//document
+		$controller_collection->get('/', [$this, 'index']);
+		$controller_collection->get('/menu', [$this, 'menu']);
+		$controller_collection->get('/tag', [$this, 'tag']);
+		$controller_collection->get('/user', [$this, 'user']);
 
 		return $controller_collection;
 	}
 
-	public function auth(Request $request, Application $app)
+	public function processThrift(Request $request)
 	{
-		$service = new AdminUserService();
-		$processor = new AdminUserServiceProcessor($service);
-		return ThriftResponse::make($request, $processor, 'json');
+		return ThriftResponse::create($request);
 	}
 
-	public function menu(Request $request, Application $app)
+	public function loginWithAzure(Request $request, Application $app)
 	{
-		$service = new AdminMenuService();
-		$processor = new AdminMenuServiceProcessor($service);
-		return ThriftResponse::make($request, $processor, 'json');
+		$azure_config = $app['azure'];
+		$response = RedirectResponse::create(AzureOAuth2Service::getAuthorizeEndPoint($azure_config));
+		$callback = $request->get('callback');
+		$return_url = $request->get('return_url');
+		$response->headers->setCookie(new Cookie('callback', $callback));
+		$response->headers->setCookie(new Cookie('return_url', $return_url));
+		return $response;
 	}
 
-	public function tag(Request $request, Application $app)
+	public function azureLoginCallback(Request $request, Application $app)
 	{
-		$service = new AdminTagService();
-		$processor = new AdminTagServiceProcessor($service);
-		return ThriftResponse::make($request, $processor, 'json');
+		$code = $request->get('code');
+		$callback = urldecode($request->cookies->get('callback'));
+		$return_url = urldecode($request->cookies->get('return_url'));
+
+		if (!$code) {
+			$error = $request->get('error');
+			$error_description = $request->get('error_description');
+			return UrlHelper::printAlertRedirect($callback, "$error: $error_description");
+		}
+
+		try {
+			$azure_config = $app['azure'];
+			$resource = AzureOAuth2Service::getResource($code, $azure_config);
+			$redirect_url = $callback.'?resource='.urlencode(json_encode($resource));
+			if ($return_url) {
+				$redirect_url .= '&return_url='.$return_url;
+			}
+			$response = RedirectResponse::create($redirect_url);
+			$response->headers->setCookie(new Cookie('callback', '', time()-3600));
+			$response->headers->setCookie(new Cookie('return_url', '', time()-3600));
+
+			return $response;
+
+		} catch (\Exception $e) {
+			return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
+		}
 	}
 
-	public function user(Request $request, Application $app)
+	public function azureLogoutCallback(Request $request)
 	{
-		$service = new AdminUserService();
-		$processor = new AdminUserServiceProcessor($service);
-		return ThriftResponse::make($request, $processor, 'json');
+		return Response::create('success', Response::HTTP_OK);
+	}
+
+	public function index()
+	{
+		return RedirectResponse::create('/static/docs/index.html');
+	}
+
+	public function menu()
+	{
+		return RedirectResponse::create('/static/docs/AdminMenu.html');
+	}
+
+	public function tag()
+	{
+		return RedirectResponse::create('/static/docs/AdminTag.html');
+	}
+
+	public function user()
+	{
+		return RedirectResponse::create('/static/docs/AdminUser.html');
 	}
 }

@@ -3,6 +3,10 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Cms\Thrift\ThriftService;
 
+use Thrift\Protocol\TMultiplexedProtocol;
+use Thrift\Transport\TSocket;
+use Thrift\Transport\TBufferedTransport;
+use Thrift\Protocol\TJSONProtocol;
 
 class AdminMenuService
 {
@@ -10,7 +14,7 @@ class AdminMenuService
 	private static function getTClient()
 	{
 		if (!self::$client) {
-			self::$client = ThriftService::getTClient('/menu', 'AdminMenu');
+			self::$client = ThriftService::getHttpClient('AdminMenu');
 		}
 
 		return self::$client;

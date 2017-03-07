@@ -415,7 +415,8 @@ class AdminAuthService
 		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
 			$login_url = '/login';
 			$request_uri = $request->getRequestUri();
-			if (!empty($request_uri) && $request_uri != '/login') {
+
+			if (!empty($request_uri) && $request_uri != '/login' && $request_uri != '/logout') {
 				$login_url .= '?return_url=' . urlencode($request_uri);
 			}
 

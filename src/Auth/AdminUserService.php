@@ -11,7 +11,7 @@ class AdminUserService
 	private static function getTClient()
 	{
 		if (!self::$client) {
-			self::$client = ThriftService::getTClient('/user', 'AdminUser');
+			self::$client = ThriftService::getHttpClient('AdminUser');
 		}
 
 		return self::$client;
