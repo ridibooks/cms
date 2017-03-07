@@ -25,7 +25,7 @@ class AdminUserService implements AdminUserServiceIf
 		/** @var AdminUser $user */
 		$user = AdminUser::find($id);
 		if (!$user) {
-			return null;
+			return new ThriftAdminUser();
 		}
 		return new ThriftAdminUser($user->toArray());
 	}
