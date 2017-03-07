@@ -3,7 +3,9 @@
 RewriteEngine On
 
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-RewriteRule ^(.*) http://%1/$1 [L,R]
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTPS}:s on:(s)
+RewriteRule ^(.*) http%2://%1/$1 [R=301,L]
 
 RewriteCond %{REQUEST_URI} !index\.php
 RewriteCond %{SCRIPT_FILENAME} !-f
