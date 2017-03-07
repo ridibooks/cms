@@ -1,10 +1,10 @@
 <?php
 namespace Ridibooks\Cms\Server\Service;
 
-use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
-use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
 use Ridibooks\Cms\Server\Model\AdminMenu;
 use Ridibooks\Cms\Server\Model\AdminMenuAjax;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 
 class AdminMenuService implements AdminMenuServiceIf
 {

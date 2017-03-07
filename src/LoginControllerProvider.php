@@ -6,8 +6,8 @@ use Ridibooks\Library\UrlHelper;
 use Ridibooks\Platform\Cms\Auth\LoginService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class LoginControllerProvider implements ControllerProviderInterface
 {
@@ -37,7 +37,7 @@ class LoginControllerProvider implements ControllerProviderInterface
 	{
 		LoginService::resetSession();
 
-		$login_endpoint = $app['cms'].$app['login_path'];
+		$login_endpoint = $app['cms'] . $app['login_path'];
 		$callback_path = '/login.azure';
 		$return_path = $request->get('return_url');
 
@@ -54,9 +54,8 @@ class LoginControllerProvider implements ControllerProviderInterface
 		try {
 			LoginService::doLoginAction($id, $passwd);
 			return RedirectResponse::create($return_url);
-
 		} catch (\Exception $e) {
-			return UrlHelper::printAlertRedirect('/login?return_url='.urlencode($return_url), $e->getMessage());
+			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
 		}
 	}
 
@@ -69,9 +68,8 @@ class LoginControllerProvider implements ControllerProviderInterface
 		try {
 			LoginService::doAzureLoginAction($resource);
 			return RedirectResponse::create($return_url);
-
 		} catch (\Exception $e) {
-			return UrlHelper::printAlertRedirect('/login?return_url='.urlencode($return_url), $e->getMessage());
+			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());
 		}
 	}
 

@@ -2,20 +2,17 @@
 
 namespace Ridibooks\Cms\Thrift;
 
+use Ridibooks\Cms\Server\Service\AdminMenuService;
+use Ridibooks\Cms\Server\Service\AdminTagService;
+use Ridibooks\Cms\Server\Service\AdminUserService;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceProcessor;
+use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Thrift\TMultiplexedProcessor;
 use Thrift\Protocol\TJSONProtocol;
-use Thrift\Transport\TBufferedTransport;
+use Thrift\TMultiplexedProcessor;
 use Thrift\Transport\TMemoryBuffer;
-use Thrift\Transport\TPhpStream;
-
-use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceProcessor;
-use Ridibooks\Cms\Server\Service\AdminMenuService;
-use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceProcessor;
-use Ridibooks\Cms\Server\Service\AdminUserService;
-use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceProcessor;
-use Ridibooks\Cms\Server\Service\AdminTagService;
 
 class ThriftResponse
 {

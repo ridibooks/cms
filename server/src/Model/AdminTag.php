@@ -12,13 +12,13 @@ class AdminTag extends Model
 		'name',
 		'is_use',
 		'creator'
-	];
+];
 
 	protected $casts = [
 		'is_use' => 'boolean',
 		'users_count' => 'integer',
 		'menus_count' => 'integer'
-	];
+];
 
 	public function users()
 	{

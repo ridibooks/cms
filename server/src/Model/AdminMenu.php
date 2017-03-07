@@ -16,7 +16,7 @@ class AdminMenu extends Model
 		'is_show',
 		'reg_date',
 		'is_newtab'
-	];
+];
 
 	protected $casts = [
 		'menu_deep' => 'integer',
@@ -24,7 +24,7 @@ class AdminMenu extends Model
 		'is_use' => 'boolean',
 		'is_show' => 'boolean',
 		'is_newtab' => 'boolean'
-	];
+];
 
 	public function users()
 	{

@@ -390,7 +390,7 @@ class AdminAuthService
 	public static function initSession()
 	{
 		// 세션 변수 설정
-		$auth_service = new AdminAuthService();
+		$auth_service = new self();
 		$_SESSION['session_user_auth'] = $auth_service->getAdminAuth();
 		$_SESSION['session_user_menu'] = $auth_service->getAdminMenu();
 		$_SESSION['session_user_tag'] = $auth_service->getAdminTag();
@@ -403,7 +403,7 @@ class AdminAuthService
 	 */
 	public static function authorize($request)
 	{
-		if (!\Config::$UNDER_DEV && !AdminAuthService::isValidIp()) {
+		if (!\Config::$UNDER_DEV && !self::isValidIp()) {
 			return new Response(
 				UrlHelper::printAlertRedirect(
 					'http://' . \Config::$DOMAIN,
@@ -412,7 +412,7 @@ class AdminAuthService
 			);
 		}
 
-		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
+		if (!self::isValidLogin() || !self::isValidUser()) {
 			$login_url = '/login';
 			$request_uri = $request->getRequestUri();
 
@@ -424,7 +424,7 @@ class AdminAuthService
 		}
 
 		try {
-			AdminAuthService::hasUrlAuth();
+			self::hasUrlAuth();
 		} catch (\Exception $e) {
 			// 이상하지만 기존과 호환성 맞추기 위해
 			if ($request->isXmlHttpRequest()) {

@@ -2,7 +2,6 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Platform\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Library\CouchbaseSessionHandler;
 
 class LoginService
@@ -45,16 +44,16 @@ class LoginService
 
 	public static function getCmsLoginEndPoint($login_endpoint, $callback_path, $return_path)
 	{
-		$scheme = isset($_SERVER['HTTPS'])? 'https' : 'http';
+		$scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';
 		$host = $_SERVER['HTTP_HOST'];
-		if ($callback_path[0] != '/' ) {
-			$callback_path = '/'.$callback_path;
+		if ($callback_path[0] != '/') {
+			$callback_path = '/' . $callback_path;
 		}
-		if ($return_path[0] != '/' ) {
-			$return_path = '/'.$return_path;
+		if ($return_path[0] != '/') {
+			$return_path = '/' . $return_path;
 		}
-		$callback_path = $scheme.'://'.$host.$callback_path;
-		return $login_endpoint.'?callback='.urlencode($callback_path).'&return_url='.urlencode($return_path);
+		$callback_path = $scheme . '://' . $host . $callback_path;
+		return $login_endpoint . '?callback=' . urlencode($callback_path) . '&return_url=' . urlencode($return_path);
 	}
 
 	/**
@@ -81,7 +80,6 @@ class LoginService
 
 	/**
 	 * Cron에서 사용이 예상되면 isSessionableEnviroment() 호출하여 체크 후, 다른 이름을 사용해야한다.
-	 * @return null
 	 */
 	public static function GetAdminID()
 	{

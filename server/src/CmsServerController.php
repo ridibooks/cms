@@ -6,10 +6,10 @@ use Ridibooks\Cms\Server\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Cookie;
 
 class CmsServerController implements ControllerProviderInterface
 {
@@ -65,16 +65,15 @@ class CmsServerController implements ControllerProviderInterface
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
-			$redirect_url = $callback.'?resource='.urlencode(json_encode($resource));
+			$redirect_url = $callback . '?resource=' . urlencode(json_encode($resource));
 			if ($return_url) {
-				$redirect_url .= '&return_url='.$return_url;
+				$redirect_url .= '&return_url=' . $return_url;
 			}
 			$response = RedirectResponse::create($redirect_url);
-			$response->headers->setCookie(new Cookie('callback', '', time()-3600));
-			$response->headers->setCookie(new Cookie('return_url', '', time()-3600));
+			$response->headers->setCookie(new Cookie('callback', '', time() - 3600));
+			$response->headers->setCookie(new Cookie('return_url', '', time() - 3600));
 
 			return $response;
-
 		} catch (\Exception $e) {
 			return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
 		}

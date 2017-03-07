@@ -138,7 +138,7 @@ class MiniRouter
 			return self::notFound();
 		}
 
-		return include($controller_file_path);
+		return include $controller_file_path;
 	}
 
 	/**

@@ -6,6 +6,7 @@ use Ridibooks\Cms\Thrift\ThriftService;
 class AdminTagService
 {
 	private static $client = null;
+
 	private static function getTClient()
 	{
 		if (!self::$client) {
@@ -33,7 +34,7 @@ class AdminTagService
 
 	public function getMappedAdminMenuHashes($check_url, $tag_id)
 	{
-		$menu_ids = AdminTagService::getAdminTagMenus($tag_id);
+		$menu_ids = self::getAdminTagMenus($tag_id);
 
 		$menus = AdminMenuService::getMenus($menu_ids);
 

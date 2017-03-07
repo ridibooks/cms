@@ -24,15 +24,15 @@ class CmsServerApplication extends Application
 
 		$capsule = new Capsule\Manager();
 		$capsule->addConnection([
-			'driver'    => 'mysql',
-			'host'      => $mysql['host'],
-			'database'  => $mysql['database'],
-			'username'  => $mysql['user'],
-			'password'  => $mysql['password'],
-			'charset'   => 'utf8',
+			'driver' => 'mysql',
+			'host' => $mysql['host'],
+			'database' => $mysql['database'],
+			'username' => $mysql['user'],
+			'password' => $mysql['password'],
+			'charset' => 'utf8',
 			'collation' => 'utf8_unicode_ci',
-			'prefix'    => '',
-			'options'   => [
+			'prefix' => '',
+			'options' => [
 				// mysqlnd 5.0.12-dev - 20150407 에서 PDO->prepare 가 매우 느린 현상
 				\PDO::ATTR_EMULATE_PREPARES => true
 			]

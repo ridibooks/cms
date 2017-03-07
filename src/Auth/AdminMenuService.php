@@ -3,14 +3,10 @@ namespace Ridibooks\Platform\Cms\Auth;
 
 use Ridibooks\Cms\Thrift\ThriftService;
 
-use Thrift\Protocol\TMultiplexedProtocol;
-use Thrift\Transport\TSocket;
-use Thrift\Transport\TBufferedTransport;
-use Thrift\Protocol\TJSONProtocol;
-
 class AdminMenuService
 {
 	private static $client = null;
+
 	private static function getTClient()
 	{
 		if (!self::$client) {
@@ -36,7 +32,7 @@ class AdminMenuService
 		return ThriftService::convertMenuAjaxCollectionToArray($menus);
 	}
 
-	public static function getMenus(array $menu_ids) : array
+	public static function getMenus(array $menu_ids): array
 	{
 		$menus = self::getTClient()->getMenus($menu_ids);
 		return ThriftService::convertMenuCollectionToArray($menus);

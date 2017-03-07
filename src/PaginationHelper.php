@@ -17,11 +17,11 @@ class PaginationHelper
 	public static function getArgs($request, $total_count, $cur_page, $rows_per_page, $button_count = 10)
 	{
 		$cur_page = max(1, $cur_page);
-		$total_page = intval(ceil((double) $total_count / $rows_per_page));
+		$total_page = intval(ceil((float) $total_count / $rows_per_page));
 		$cur_page = min($cur_page, $total_page);
 		$show_next_last = $cur_page < $total_page;
 
-		$start_page = (ceil((double)$cur_page / $button_count) - 1) * $button_count + 1;
+		$start_page = (ceil((float)$cur_page / $button_count) - 1) * $button_count + 1;
 		$start_page = $start_page < 1 ? 1 : $start_page;
 
 		$end_page = $start_page + $button_count - 1;

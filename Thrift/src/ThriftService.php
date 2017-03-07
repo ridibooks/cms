@@ -2,11 +2,11 @@
 
 namespace Ridibooks\Cms\Thrift;
 
+use Thrift\Protocol\TJSONProtocol;
 use Thrift\Protocol\TMultiplexedProtocol;
+use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\THttpClient;
 use Thrift\Transport\TSocket;
-use Thrift\Transport\TBufferedTransport;
-use Thrift\Protocol\TJSONProtocol;
 
 class ThriftService
 {
@@ -42,7 +42,7 @@ class ThriftService
 
 	private static function getClient($thrift_name, $protocol)
 	{
-		$clientClass = __NAMESPACE__.'\\'.$thrift_name.'\\'.$thrift_name.'ServiceClient';
+		$clientClass = __NAMESPACE__ . '\\' . $thrift_name . '\\' . $thrift_name . 'ServiceClient';
 		if (!class_exists($clientClass)) {
 			throw new \InvalidArgumentException(sprintf('Thrift client "%s" not found', $clientClass));
 		}

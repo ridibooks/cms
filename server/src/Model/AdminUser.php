@@ -16,11 +16,11 @@ class AdminUser extends Model
 		'team',
 		'is_use',
 		'reg_date',
-	];
+];
 
 	protected $casts = [
 		'id' => 'string'
-	];
+];
 
 	public function tags()
 	{

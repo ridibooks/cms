@@ -12,9 +12,9 @@ class AdminMenuAjax extends Model
 	protected $fillable = [
 		'menu_id',
 		'ajax_url'
-	];
+];
 
 	protected $casts = [
 		'menu_id' => 'integer',
-	];
+];
 }

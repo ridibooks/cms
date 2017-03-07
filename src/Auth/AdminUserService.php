@@ -1,13 +1,14 @@
 <?php
 namespace Ridibooks\Platform\Cms\Auth;
 
+use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminUserService
 {
 	private static $client = null;
+
 	private static function getTClient()
 	{
 		if (!self::$client) {

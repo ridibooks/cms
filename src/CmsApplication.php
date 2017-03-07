@@ -90,7 +90,7 @@ class CmsApplication extends Application
 		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
-			'BOWER_PATH' => $this['cms'].'/static/bower_components',
+			'BOWER_PATH' => $this['cms'] . '/static/bower_components',
 
 			'MISC_URL' => \Config::$MISC_URL,
 			'BANNER_URL' => \Config::$ACTIVE_URL . '/ridibooks_banner/',
@@ -164,7 +164,7 @@ class CmsApplication extends Application
 		$scheme = $parsed['scheme'];
 		$thrift_path = $this['thrift_path'];
 		if (!$port) {
-			$port = ($scheme === 'https')? 443 : 80;
+			$port = ($scheme === 'https') ? 443 : 80;
 		}
 
 		ThriftService::init($host, $port, $thrift_path, $scheme);
@@ -190,7 +190,7 @@ class CmsApplication extends Application
 		$this->getFlashBag()->add('danger', $message);
 	}
 
-	public function getFlashBag() : FlashBag
+	public function getFlashBag(): FlashBag
 	{
 		return $this['session']->getFlashBag();
 	}
