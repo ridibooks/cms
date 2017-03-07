@@ -31,9 +31,8 @@ class LoginService
 		self::setSessions($id);
 	}
 
-	public static function doAzureLoginAction($resource)
+	public static function doAzureLoginAction($id)
 	{
-		$id = $resource->mailNickname;
 		$user = AdminUserService::getUser($id);
 		if (!$user || $user['is_use'] != '1') {
 			throw new \Exception('Azure id와 일치하는 계정이 없습니다. 관리자에게 문의하세요.');

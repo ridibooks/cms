@@ -60,14 +60,24 @@ class LoginControllerProvider implements ControllerProviderInterface
 		}
 	}
 
+	private function decodeResource($resource)
+	{
+		$key = 'admin.ridibooks.com';
+		$method = 'aes-256-ctr';
+		$nonceSize = openssl_cipher_iv_length($method);
+		$nonce = mb_substr($resource, 0, $nonceSize, '8bit');
+		$ciphertext = mb_substr($resource, $nonceSize, null, '8bit');
+		return openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $nonce);
+	}
+
 	public function loginWithAzure(Request $request, CmsApplication $app)
 	{
 		$resource = $request->get('resource');
 		$return_url = $request->get('return_url', '/welcome');
-		$resource = json_decode(urldecode($resource));
+		$id = $this->decodeResource(urldecode($resource));
 
 		try {
-			LoginService::doAzureLoginAction($resource);
+			LoginService::doAzureLoginAction($id);
 			return RedirectResponse::create($return_url);
 		} catch (\Exception $e) {
 			return UrlHelper::printAlertRedirect('/login?return_url=' . urlencode($return_url), $e->getMessage());

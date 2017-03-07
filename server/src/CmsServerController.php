@@ -51,6 +51,17 @@ class CmsServerController implements ControllerProviderInterface
 		return $response;
 	}
 
+	private function encodeResource($resource)
+	{
+		$id = $resource->mailNickname;
+		$key = 'admin.ridibooks.com';
+		$method = 'aes-256-ctr';
+		$nonceSize = openssl_cipher_iv_length($method);
+		$nonce = openssl_random_pseudo_bytes($nonceSize);
+		$ciphertext = openssl_encrypt($id, $method, $key, OPENSSL_RAW_DATA, $nonce);
+		return $nonce.$ciphertext;
+	}
+
 	public function azureLoginCallback(Request $request, Application $app)
 	{
 		$code = $request->get('code');
@@ -66,7 +77,8 @@ class CmsServerController implements ControllerProviderInterface
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
-			$redirect_url = $callback . '?resource=' . urlencode(json_encode($resource));
+			$cipher = $this->encodeResource($resource);
+			$redirect_url = $callback . '?resource=' . urlencode($cipher);
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
 			}
