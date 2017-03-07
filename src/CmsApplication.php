@@ -87,10 +87,12 @@ class CmsApplication extends Application
 
 	private function getTwigGlobalVariables()
 	{
+		$cms = $this['cms'];
+
 		$globals = [
 			'FRONT_URL' => 'http://' . \Config::$DOMAIN,
 			'STATIC_URL' => '/admin/static',
-			'BOWER_PATH' => $this['cms'] . '/static/bower_components',
+			'BOWER_PATH' => $cms['url'] . '/static/bower_components',
 
 			'MISC_URL' => \Config::$MISC_URL,
 			'BANNER_URL' => \Config::$ACTIVE_URL . '/ridibooks_banner/',
@@ -154,18 +156,24 @@ class CmsApplication extends Application
 
 	private function setThriftService()
 	{
-		if (!isset($this['cms']) || !isset($this['login_path']) || !isset($this['thrift_path'])) {
+		if (!isset($this['cms'])) {
+			throw new \InvalidArgumentException('Provide a config for cms');
+		}
+
+		$cms = $this['cms'];
+		if ( !isset($cms['url']) || !isset($cms['login_path']) || !isset($cms['thrift_path'])) {
 			throw new \InvalidArgumentException('Provide a config for cms server end points');
 		}
 
-		$parsed = parse_url($this['cms']);
+		$parsed = parse_url($cms['url']);
 		$host = $parsed['host'];
 		$port = $parsed['port'];
 		$scheme = $parsed['scheme'];
-		$thrift_path = $this['thrift_path'];
 		if (!$port) {
 			$port = ($scheme === 'https') ? 443 : 80;
 		}
+
+		$thrift_path = $cms['thrift_path'];
 
 		ThriftService::init($host, $port, $thrift_path, $scheme);
 	}

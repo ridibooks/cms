@@ -4,6 +4,7 @@ namespace Ridibooks\Cms\Server;
 
 use Ridibooks\Cms\Server\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftResponse;
+use Ridibooks\Library\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;

@@ -37,7 +37,8 @@ class LoginControllerProvider implements ControllerProviderInterface
 	{
 		LoginService::resetSession();
 
-		$login_endpoint = $app['cms'] . $app['login_path'];
+		$cms = $app['cms'];
+		$login_endpoint = $cms['url'] . $cms['login_path'];
 		$callback_path = '/login.azure';
 		$return_path = $request->get('return_url');
 
