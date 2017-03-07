@@ -60,9 +60,8 @@ class LoginControllerProvider implements ControllerProviderInterface
 		}
 	}
 
-	private function decodeResource($resource)
+	private function decodeResource($resource, $key)
 	{
-		$key = 'admin.ridibooks.com';
 		$method = 'aes-256-ctr';
 		$nonceSize = openssl_cipher_iv_length($method);
 		$nonce = mb_substr($resource, 0, $nonceSize, '8bit');
@@ -74,7 +73,7 @@ class LoginControllerProvider implements ControllerProviderInterface
 	{
 		$resource = $request->get('resource');
 		$return_url = $request->get('return_url', '/welcome');
-		$id = $this->decodeResource(urldecode($resource));
+		$id = $this->decodeResource(urldecode($resource), $app['login_encrypt_key']);
 
 		try {
 			LoginService::doAzureLoginAction($id);

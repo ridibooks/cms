@@ -22,6 +22,7 @@ $app = new CmsServerApplication([
 		'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'],
 		'api_version' => $_ENV['AZURE_API_VERSION'],
 ],
+	'login_encrypt_key' => $_ENV['LOGIN_ENCRYPT_KEY'],
 ]);
 
 $app->run();

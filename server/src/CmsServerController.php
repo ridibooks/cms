@@ -51,10 +51,9 @@ class CmsServerController implements ControllerProviderInterface
 		return $response;
 	}
 
-	private function encodeResource($resource)
+	private function encodeResource($resource, $key)
 	{
 		$id = $resource->mailNickname;
-		$key = 'admin.ridibooks.com';
 		$method = 'aes-256-ctr';
 		$nonceSize = openssl_cipher_iv_length($method);
 		$nonce = openssl_random_pseudo_bytes($nonceSize);
@@ -77,7 +76,7 @@ class CmsServerController implements ControllerProviderInterface
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
-			$cipher = $this->encodeResource($resource);
+			$cipher = $this->encodeResource($resource, $app['login_encrypt_key']);
 			$redirect_url = $callback . '?resource=' . urlencode($cipher);
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
