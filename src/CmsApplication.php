@@ -78,7 +78,7 @@ class CmsApplication extends Application
 		$this['twig.loader.filesystem'] = $this->extend(
 			'twig.loader.filesystem',
 			function (\Twig_Loader_Filesystem $loader) {
-				$loader->addPath(__DIR__ . '/../../views/');
+				$loader->addPath(__DIR__ . '/../views/');
 
 				return $loader;
 			}
