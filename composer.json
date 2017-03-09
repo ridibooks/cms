@@ -36,7 +36,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Platform\\Cms\\": "src"
+      "Ridibooks\\Platform\\Cms\\": "src",
+      "Ridibooks\\Cms\\Thrift\\": "Thrift/src"
     }
   }
 }
