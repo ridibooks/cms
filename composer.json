@@ -27,7 +27,7 @@
     }
   ],
   "require": {
-    "apache/thrift": "dev-master",
+    "apache/thrift": "^0.10.0",
     "ridibooks/core": "dev-master"
   },
   "suggest": {
