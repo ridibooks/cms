@@ -1,15 +1,13 @@
-.PHONY: all clean
+.PHONY: all server client build-thrift
 
-all: composer bower build-thrift
+all: server client build-thrift
 
-composer:
+server:
+	make -C server
+
+client:
 	composer update --no-dev --optimize-autoloader
-
-bower:
-	bower update -p && bower prune -p
 
 build-thrift:
 	make -C Thrift thrift
 
-clean:
-	rm -rvf static/bower_components
