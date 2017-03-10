@@ -1,6 +1,6 @@
 {
   "name": "ridibooks/cms",
-  "description": "Ridibooks CMS SDK",
+  "description": "Ridibooks CMS Server Aplication",
   "license": "MIT",
   "authors": [
     {
@@ -17,9 +17,9 @@
   "require": {
     "illuminate/database": "^5.2",
     "vlucas/phpdotenv": "^2.4",
-    "apache/thrift": "dev-master",
     "silex/silex": "^2.0",
-    "ridibooks/core": "dev-master"
+    "ridibooks/core": "dev-master",
+    "ridibooks/cms-sdk": "dev-master"
   },
   "autoload": {
     "psr-4": {
