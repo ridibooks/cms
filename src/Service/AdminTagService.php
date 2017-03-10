@@ -1,7 +1,7 @@
 <?php
-namespace Ridibooks\Cms\Server\Service;
+namespace Ridibooks\Cms\Service;
 
-use Ridibooks\Cms\Server\Model\AdminTag;
+use Ridibooks\Cms\Model\AdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
 

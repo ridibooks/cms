@@ -1,13 +1,6 @@
 .idea
 .env
 config.local.php
-server/vender
-server/static/bower_components
-server/composer.lock
 composer.lock
 vendor
-Thrift/src/*
-!Thrift/src/ThriftResponse.php
-!Thrift/src/ThriftService.php
-Thrift/docs
-Thrift/dist-gen
+static/bower_components

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ridibooks\Cms\Server;
+namespace Ridibooks\Cms;
 
-use Ridibooks\Cms\Server\Lib\AzureOAuth2Service;
+use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Ridibooks\Library\UrlHelper;
 use Silex\Api\ControllerProviderInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace Ridibooks\Cms\Server;
+namespace Ridibooks\Cms;
 
 use Illuminate\Database\Capsule;
 use Silex\Application;

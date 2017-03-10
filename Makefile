@@ -1,13 +1,9 @@
-.PHONY: all server client build-thrift
+.PHONY: all composer
 
-all: server client build-thrift
+all: build composer
 
-server:
-	make -C server
+build:
+	bower install
 
-client:
+composer:
 	composer update --no-dev --optimize-autoloader
-
-build-thrift:
-	make -C Thrift thrift
-

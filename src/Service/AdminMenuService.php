@@ -1,8 +1,8 @@
 <?php
-namespace Ridibooks\Cms\Server\Service;
+namespace Ridibooks\Cms\Service;
 
-use Ridibooks\Cms\Server\Model\AdminMenu;
-use Ridibooks\Cms\Server\Model\AdminMenuAjax;
+use Ridibooks\Cms\Model\AdminMenu;
+use Ridibooks\Cms\Model\AdminMenuAjax;
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 

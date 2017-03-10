@@ -4,18 +4,6 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "김범준",
-      "email": "bj.kim@ridi.com"
-    },
-    {
-      "name": "박주현",
-      "email": "blu@ridi.com"
-    },
-    {
-      "name": "이영규",
-      "email": "younggyu.lee@ridi.com"
-    },
-    {
       "name": "강기태",
       "email": "kt.kang@ridi.com"
     }
@@ -27,16 +15,15 @@
     }
   ],
   "require": {
-    "apache/thrift": "^0.10.0",
-    "ridibooks/core": "dev-master"
-  },
-  "suggest": {
+    "illuminate/database": "^5.2",
+    "vlucas/phpdotenv": "^2.4",
+    "apache/thrift": "dev-master",
     "silex/silex": "^2.0",
-    "twig/twig": "^1.0.0"
+    "ridibooks/core": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Platform\\Cms\\": "src"
+      "Ridibooks\\Cms\\": "src"
     }
   }
 }

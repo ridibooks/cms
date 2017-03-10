@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\Platform\Cms\Lib;
+namespace Ridibooks\Cms\Lib;
 
 class AzureOAuth2Service
 {
@@ -67,5 +67,22 @@ class AzureOAuth2Service
 		$output = curl_exec($ch);
 		curl_close($ch);
 		return json_decode($output);
+	}
+
+	public static function getResource($code, $azure_config)
+	{
+		$tokenOutput = self::requestAccessToken($code, $azure_config);
+		$token_type = $tokenOutput->token_type;
+		$access_token = $tokenOutput->access_token;
+		if (!$token_type || !$access_token) {
+			throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
+		}
+
+		$resourceOutput = self::requestResource($token_type, $access_token, $azure_config);
+		if ($error = $resourceOutput->{'odata.error'}) {
+			throw new \Exception("[requestResource]\n $error->code: {$error->message->value}");
+		}
+
+		return $resourceOutput;
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Ridibooks\Cms\Server\Model;
+namespace Ridibooks\Cms\Model;
 
 use Illuminate\Database\Eloquent\Model;
 

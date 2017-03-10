@@ -1,5 +1,5 @@
 <?php
-use Ridibooks\Cms\Server\CmsServerApplication;
+use Ridibooks\Cms\CmsServerApplication;
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
