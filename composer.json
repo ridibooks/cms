@@ -18,8 +18,9 @@
     "illuminate/database": "^5.2",
     "vlucas/phpdotenv": "^2.4",
     "silex/silex": "^2.0",
-    "ridibooks/core": "dev-master",
-    "ridibooks/cms-sdk": "dev-master"
+    "twig/twig": "^2.0.0",
+    "ridibooks/cms-sdk": "dev-master",
+    "ridibooks/core": "dev-master"
   },
   "autoload": {
     "psr-4": {

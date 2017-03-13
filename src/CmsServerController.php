@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Ridibooks\Cms\Service\AdminUserService;
+use Ridibooks\Platform\Cms\Auth\PasswordService;
+
 class CmsServerController implements ControllerProviderInterface
 {
 	public function connect(Application $app)
@@ -21,10 +24,17 @@ class CmsServerController implements ControllerProviderInterface
 		//thrift
 		$controller_collection->post('/', [$this, 'processThrift']);
 
-		//azure login
-		$controller_collection->get('/login', [$this, 'loginWithAzure']);
+		//login
+		$controller_collection->get('/login', [$this, 'getLoginPage']);
+		$controller_collection->post('/login.cms', [$this, 'loginWithCms']);
+		$controller_collection->post('/login.azure', [$this, 'loginWithAzure']);
+
+		//azure login callback
 		$controller_collection->get('/login.azure', [$this, 'azureLoginCallback']);
-		$controller_collection->get('/logout', [$this, 'azureLogoutCallback']);
+		$controller_collection->get('/logout.azure', [$this, 'azureLogoutCallback']);
+
+		//user info
+		$controller_collection->get('/me', [$this, 'getMyInfoPage']);
 
 		//document
 		$controller_collection->get('/', [$this, 'index']);
@@ -40,6 +50,55 @@ class CmsServerController implements ControllerProviderInterface
 		return ThriftResponse::create($request);
 	}
 
+	public function getLoginPage(Request $request, Application $app)
+	{
+		$azure_config = $app['azure'];
+		$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
+		$callback = $request->get('callback');
+		$return_url = $request->get('return_url');
+		return $app->render('login.twig', [
+			'callback' => $callback,
+			'return_url' => $return_url,
+			'azure_login' => $end_point
+		]);
+	}
+
+	public function loginWithCms(Request $request, Application $app)
+	{
+		$id = $request->get('id');
+		$passwd = $request->get('passwd');
+		$callback = urldecode($request->get('callback'));
+		$return_url = urldecode($request->get('return_url'));
+
+		try {
+			$userService = new AdminUserService();
+			$user = $userService->getUser($id);
+			if (!$user || $user->is_use != '1') {
+				throw new \Exception('잘못된 계정정보입니다.');
+			}
+
+			if (!PasswordService::isPasswordMatchToHashed($passwd, $user->passwd)) {
+				throw new \Exception('비밀번호가 맞지 않습니다.');
+			}
+
+			if (PasswordService::needsRehash($user->passwd)) {
+				$userService->updatePassword($id, $passwd);
+			}
+
+			$cipher = $this->encodeResource($user->id, $app['login_encrypt_key']);
+			$redirect_url = $callback . '?resource=' . urlencode($cipher);
+			if ($return_url) {
+				$redirect_url .= '&return_url=' . $return_url;
+			}
+
+			$response = RedirectResponse::create($redirect_url);
+
+			return $response;
+		} catch (\Exception $e) {
+			return UrlHelper::printAlertRedirect('/login?callback='.urlencode($callback).'&return_url='.urlencode($return_url), $e->getMessage());
+		}
+	}
+
 	public function loginWithAzure(Request $request, Application $app)
 	{
 		$azure_config = $app['azure'];
@@ -53,11 +112,10 @@ class CmsServerController implements ControllerProviderInterface
 
 	private function encodeResource($resource, $key)
 	{
-		$id = $resource->mailNickname;
 		$method = 'aes-256-ctr';
 		$nonceSize = openssl_cipher_iv_length($method);
 		$nonce = openssl_random_pseudo_bytes($nonceSize);
-		$ciphertext = openssl_encrypt($id, $method, $key, OPENSSL_RAW_DATA, $nonce);
+		$ciphertext = openssl_encrypt($resource, $method, $key, OPENSSL_RAW_DATA, $nonce);
 		return $nonce.$ciphertext;
 	}
 
@@ -76,7 +134,7 @@ class CmsServerController implements ControllerProviderInterface
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
-			$cipher = $this->encodeResource($resource, $app['login_encrypt_key']);
+			$cipher = $this->encodeResource($resource->mailNickname, $app['login_encrypt_key']);
 			$redirect_url = $callback . '?resource=' . urlencode($cipher);
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
