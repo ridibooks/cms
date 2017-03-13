@@ -38,10 +38,7 @@ class AdminUserService implements AdminUserServiceIf
 			return [];
 		}
 
-		$tags = $user->tags->pluck('id');
-		return $tags->map(function ($tag) {
-			return new ThriftAdminTag($tag->toArray());
-		})->all();
+		return $user->tags->pluck('id')->all();
 	}
 
 	public function getAdminUserMenu($user_id)
