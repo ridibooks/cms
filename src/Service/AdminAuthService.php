@@ -417,7 +417,7 @@ class AdminAuthService
 			$login_url = '/login';
 			$request_uri = $request->getRequestUri();
 			if (!empty($request_uri) && $request_uri != '/login') {
-				$login_url .= '?return_url=' . $request_uri;
+				$login_url .= '?return_url=' . urlencode($request_uri);
 			}
 
 			return RedirectResponse::create($login_url);

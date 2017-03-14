@@ -95,8 +95,8 @@ class CmsServerController implements ControllerProviderInterface
 			}
 
 			$response = RedirectResponse::create($redirect_url);
-			$response->headers->setCookie(new Cookie('callback', ''));
-			$response->headers->setCookie(new Cookie('return_url', ''));
+			$response->headers->clearCookie('callback');
+			$response->headers->clearCookie('return_url');
 
 			return $response;
 		} catch (\Exception $e) {
@@ -131,13 +131,13 @@ class CmsServerController implements ControllerProviderInterface
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
 			$cipher = $this->encodeResource($resource->mailNickname, $app['login_encrypt_key']);
-			$redirect_url = $callback . '?resource=' . $cipher;
+			$redirect_url = $callback . '?resource=' . urlencode($cipher);
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
 			}
 			$response = RedirectResponse::create($redirect_url);
-			$response->headers->setCookie(new Cookie('callback', ''));
-			$response->headers->setCookie(new Cookie('return_url', ''));
+			$response->headers->clearCookie('callback');
+			$response->headers->clearCookie('return_url');
 
 			return $response;
 		} catch (\Exception $e) {
