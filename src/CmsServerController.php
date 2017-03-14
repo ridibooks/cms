@@ -70,8 +70,8 @@ class CmsServerController implements ControllerProviderInterface
 	{
 		$id = $request->get('id');
 		$passwd = $request->get('passwd');
-		$callback = urldecode($request->cookies->get('callback'));
-		$return_url = urldecode($request->cookies->get('return_url'));
+		$callback = $request->cookies->get('callback');
+		$return_url = $request->cookies->get('return_url');
 
 		try {
 			$userService = new AdminUserService();
@@ -89,14 +89,14 @@ class CmsServerController implements ControllerProviderInterface
 			}
 
 			$cipher = $this->encodeResource($user->id, $app['login_encrypt_key']);
-			$redirect_url = $callback . '?resource=' . urlencode($cipher);
+			$redirect_url = $callback . '?resource=' . $cipher;
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
 			}
 
 			$response = RedirectResponse::create($redirect_url);
-			$response->headers->setCookie(new Cookie('callback', '', time() - 3600));
-			$response->headers->setCookie(new Cookie('return_url', '', time() - 3600));
+			$response->headers->setCookie(new Cookie('callback', ''));
+			$response->headers->setCookie(new Cookie('return_url', ''));
 
 			return $response;
 		} catch (\Exception $e) {
@@ -116,30 +116,28 @@ class CmsServerController implements ControllerProviderInterface
 	public function azureLoginCallback(Request $request, Application $app)
 	{
 		$code = $request->get('code');
-		$callback = urldecode($request->cookies->get('callback'));
-		$return_url = urldecode($request->cookies->get('return_url'));
+		$callback = $request->cookies->get('callback');
+		$return_url = $request->cookies->get('return_url');
 
 		if (!$code) {
 			$error = $request->get('error');
 			$error_description = $request->get('error_description');
-			if ($error && $error_description) {
-				return UrlHelper::printAlertHistoryBack("$error: $error_description");
-			} else {
-				return UrlHelper::printAlertHistoryBack("Azure에서만 접근 가능한 페이지입니다");
-			}
+
+			//Todo: send log to sentry
+			return Response::create('azure login fail', Response::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
 			$cipher = $this->encodeResource($resource->mailNickname, $app['login_encrypt_key']);
-			$redirect_url = $callback . '?resource=' . urlencode($cipher);
+			$redirect_url = $callback . '?resource=' . $cipher;
 			if ($return_url) {
 				$redirect_url .= '&return_url=' . $return_url;
 			}
 			$response = RedirectResponse::create($redirect_url);
-			$response->headers->setCookie(new Cookie('callback', '', time() - 3600));
-			$response->headers->setCookie(new Cookie('return_url', '', time() - 3600));
+			$response->headers->setCookie(new Cookie('callback', ''));
+			$response->headers->setCookie(new Cookie('return_url', ''));
 
 			return $response;
 		} catch (\Exception $e) {
