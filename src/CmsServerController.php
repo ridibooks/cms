@@ -56,19 +56,22 @@ class CmsServerController implements ControllerProviderInterface
 		$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
 		$callback = $request->get('callback');
 		$return_url = $request->get('return_url');
+
+		$response = Response::create();
+		$response->headers->setCookie(new Cookie('callback', $callback));
+		$response->headers->setCookie(new Cookie('return_url', $return_url));
+
 		return $app->render('login.twig', [
-			'callback' => $callback,
-			'return_url' => $return_url,
 			'azure_login' => $end_point
-		]);
+		], $response);
 	}
 
 	public function loginWithCms(Request $request, Application $app)
 	{
 		$id = $request->get('id');
 		$passwd = $request->get('passwd');
-		$callback = urldecode($request->get('callback'));
-		$return_url = urldecode($request->get('return_url'));
+		$callback = urldecode($request->cookies->get('callback'));
+		$return_url = urldecode($request->cookies->get('return_url'));
 
 		try {
 			$userService = new AdminUserService();
@@ -92,22 +95,13 @@ class CmsServerController implements ControllerProviderInterface
 			}
 
 			$response = RedirectResponse::create($redirect_url);
+			$response->headers->setCookie(new Cookie('callback', '', time() - 3600));
+			$response->headers->setCookie(new Cookie('return_url', '', time() - 3600));
 
 			return $response;
 		} catch (\Exception $e) {
-			return UrlHelper::printAlertRedirect('/login?callback='.urlencode($callback).'&return_url='.urlencode($return_url), $e->getMessage());
+			return UrlHelper::printAlertHistoryBack($e->getMessage());
 		}
-	}
-
-	public function loginWithAzure(Request $request, Application $app)
-	{
-		$azure_config = $app['azure'];
-		$response = RedirectResponse::create(AzureOAuth2Service::getAuthorizeEndPoint($azure_config));
-		$callback = $request->get('callback');
-		$return_url = $request->get('return_url');
-		$response->headers->setCookie(new Cookie('callback', $callback));
-		$response->headers->setCookie(new Cookie('return_url', $return_url));
-		return $response;
 	}
 
 	private function encodeResource($resource, $key)
@@ -128,7 +122,11 @@ class CmsServerController implements ControllerProviderInterface
 		if (!$code) {
 			$error = $request->get('error');
 			$error_description = $request->get('error_description');
-			return UrlHelper::printAlertRedirect($callback, "$error: $error_description");
+			if ($error && $error_description) {
+				return UrlHelper::printAlertHistoryBack("$error: $error_description");
+			} else {
+				return UrlHelper::printAlertHistoryBack("Azure에서만 접근 가능한 페이지입니다");
+			}
 		}
 
 		try {
