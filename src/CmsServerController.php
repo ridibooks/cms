@@ -24,7 +24,7 @@ class CmsServerController implements ControllerProviderInterface
 
 		//login
 		$controller_collection->get('/login', [$this, 'getLoginPage']);
-		$controller_collection->post('/logincms', [$this, 'loginWithCms']);
+		$controller_collection->post('/login.cms', [$this, 'loginWithCms']);
 		//$controller_collection->post('/login.azure', [$this, 'loginWithAzure']);
 
 		//azure login callback
