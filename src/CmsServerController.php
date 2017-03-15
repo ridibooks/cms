@@ -5,15 +5,13 @@ namespace Ridibooks\Cms;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Ridibooks\Library\UrlHelper;
+use Ridibooks\Platform\Cms\Auth\LoginService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Ridibooks\Cms\Service\AdminUserService;
-use Ridibooks\Platform\Cms\Auth\PasswordService;
 
 class CmsServerController implements ControllerProviderInterface
 {
@@ -26,8 +24,8 @@ class CmsServerController implements ControllerProviderInterface
 
 		//login
 		$controller_collection->get('/login', [$this, 'getLoginPage']);
-		$controller_collection->post('/login.cms', [$this, 'loginWithCms']);
-		$controller_collection->post('/login.azure', [$this, 'loginWithAzure']);
+		$controller_collection->post('/logincms', [$this, 'loginWithCms']);
+		//$controller_collection->post('/login.azure', [$this, 'loginWithAzure']);
 
 		//azure login callback
 		$controller_collection->get('/login.azure', [$this, 'azureLoginCallback']);
@@ -57,6 +55,10 @@ class CmsServerController implements ControllerProviderInterface
 		$callback = $request->get('callback');
 		$return_url = $request->get('return_url');
 
+		if (!$callback) {
+			return Response::create('Need a param: callback', Response::HTTP_BAD_REQUEST);
+		}
+
 		$response = Response::create();
 		$response->headers->setCookie(new Cookie('callback', $callback));
 		$response->headers->setCookie(new Cookie('return_url', $return_url));
@@ -74,27 +76,9 @@ class CmsServerController implements ControllerProviderInterface
 		$return_url = $request->cookies->get('return_url');
 
 		try {
-			$userService = new AdminUserService();
-			$user = $userService->getUser($id);
-			if (!$user || $user->is_use != '1') {
-				throw new \Exception('잘못된 계정정보입니다.');
-			}
+			LoginService::doLoginAction($id, $passwd);
 
-			if (!PasswordService::isPasswordMatchToHashed($passwd, $user->passwd)) {
-				throw new \Exception('비밀번호가 맞지 않습니다.');
-			}
-
-			if (PasswordService::needsRehash($user->passwd)) {
-				$userService->updatePassword($id, $passwd);
-			}
-
-			$cipher = $this->encodeResource($user->id, $app['login_encrypt_key']);
-			$redirect_url = $callback . '?resource=' . $cipher;
-			if ($return_url) {
-				$redirect_url .= '&return_url=' . $return_url;
-			}
-
-			$response = RedirectResponse::create($redirect_url);
+			$response = RedirectResponse::create($callback);
 			$response->headers->clearCookie('callback');
 			$response->headers->clearCookie('return_url');
 
