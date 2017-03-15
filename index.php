@@ -7,7 +7,7 @@ $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
 
 $app = new CmsServerApplication([
-	'debug' => true,
+	'debug' => $_ENV['DEBUG'],
 	'mysql' => [
 		'host' => $_ENV['MYSQL_HOST'],
 		'database' => $_ENV['MYSQL_DATABASE'],
@@ -21,8 +21,13 @@ $app = new CmsServerApplication([
 		'resource' => $_ENV['AZURE_RESOURCE'],
 		'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'],
 		'api_version' => $_ENV['AZURE_API_VERSION'],
-	],
-	'login_encrypt_key' => $_ENV['LOGIN_ENCRYPT_KEY'],
+	]
 ]);
+
+if (isset($_ENV['COUCHBASE_HOST'])) {
+	$app['couchbase'] = [
+		'host' => $_ENV['COUCHBASE_HOST'],
+	];
+}
 
 $app->run();

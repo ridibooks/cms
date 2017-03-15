@@ -5,7 +5,8 @@ namespace Ridibooks\Cms;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Ridibooks\Library\UrlHelper;
-use Ridibooks\Platform\Cms\Auth\LoginService;
+use Ridibooks\Cms\Service\AdminUserService;
+use Ridibooks\Cms\Service\LoginService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -24,7 +25,7 @@ class CmsServerController implements ControllerProviderInterface
 
 		//login
 		$controller_collection->get('/login', [$this, 'getLoginPage']);
-		$controller_collection->post('/login.cms', [$this, 'loginWithCms']);
+		$controller_collection->post('/login-cms', [$this, 'loginWithCms']);
 		//$controller_collection->post('/login.azure', [$this, 'loginWithAzure']);
 
 		//azure login callback
@@ -76,9 +77,21 @@ class CmsServerController implements ControllerProviderInterface
 		$return_url = $request->cookies->get('return_url');
 
 		try {
+			if (isset($app['couchbase']) && $app['couchbase']!=='') {
+				$couchbase = $app['couchbase'];
+				LoginService::startCouchbaseSession($couchbase['host'], $callback);
+			} else {
+				LoginService::startSession($callback);
+			}
+
 			LoginService::doLoginAction($id, $passwd);
 
-			$response = RedirectResponse::create($callback);
+			$redirect_url = $callback;
+			if ($return_url) {
+				$redirect_url .= '?return_url=' . $return_url;
+			}
+
+			$response = RedirectResponse::create($redirect_url);
 			$response->headers->clearCookie('callback');
 			$response->headers->clearCookie('return_url');
 
