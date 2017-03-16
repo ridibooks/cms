@@ -36,13 +36,13 @@ class LoginService
 		self::setSessions($id);
 	}
 
-	public static function doCmsLoginAction($id)
+	public static function doLoginActionWithoutPasswd($id)
 	{
 		$user_service = new AdminUserService();
 		$user = $user_service->getUser($id);
 		$user = ThriftService::convertUserToArray($user);
 		if (!$user || $user['is_use'] != '1') {
-			throw new \Exception('ID와 일치하는 계정이 없습니다. 관리자에게 문의하세요.');
+			throw new \Exception('잘못된 계정정보입니다.');
 		}
 
 		self::setSessions($id);
@@ -69,8 +69,6 @@ class LoginService
 	{
 		//GetAdminID에 사용할 id를미리 set 한다.
 		$_SESSION['session_admin_id'] = $id;
-
-		//AdminAuthService::initSession();
 	}
 
 	public static function resetSession()
@@ -100,22 +98,22 @@ class LoginService
 		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler', 'cli-server']);
 	}
 
-	public static function startSession($host = null)
+	public static function startSession($cookie_domain = null)
 	{
-		if (!isset($host)) {
-			$host = $_SERVER['SERVER_NAME'];
+		if (!isset($cookie_domain)) {
+			$cookie_domain = $_SERVER['SERVER_NAME'];
 		}
-		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $host);
+		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $cookie_domain);
 		session_start();
 	}
 
-	public static function startCouchbaseSession($server_hosts, $cookie_host = null)
+	public static function startCouchbaseSession($server_hosts, $cookie_domain = null)
 	{
 		session_set_save_handler(
 			new CouchbaseSessionHandler($server_hosts, 'session', self::SESSION_TIMEOUT_SEC),
 			true
 		);
 
-		self::startSession($cookie_host);
+		self::startSession($cookie_domain);
 	}
 }
