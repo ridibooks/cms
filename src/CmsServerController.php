@@ -5,6 +5,7 @@ namespace Ridibooks\Cms;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Library\UrlHelper;
+use Ridibooks\Platform\Cms\CmsApplication;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -28,7 +29,7 @@ class CmsServerController implements ControllerProviderInterface
 		return $controller_collection;
 	}
 
-	public function getLoginPage(Request $request, Application $app)
+	public function getLoginPage(Request $request, CmsApplication $app)
 	{
 		$azure_config = $app['azure'];
 		$end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
@@ -56,7 +57,7 @@ class CmsServerController implements ControllerProviderInterface
 		$cookie_host = $parsed['host'];
 
 		try {
-			if (isset($app['couchbase']) && $app['couchbase']!=='') {
+			if (isset($app['couchbase']) && $app['couchbase'] !== '') {
 				$couchbase = $app['couchbase'];
 				LoginService::startCouchbaseSession($couchbase['host'], $cookie_host);
 			} else {
@@ -95,7 +96,7 @@ class CmsServerController implements ControllerProviderInterface
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
 
-			if (isset($app['couchbase']) && $app['couchbase']!=='') {
+			if (isset($app['couchbase']) && $app['couchbase'] !== '') {
 				$couchbase = $app['couchbase'];
 				LoginService::startCouchbaseSession($couchbase['host'], $cookie_host);
 			} else {
