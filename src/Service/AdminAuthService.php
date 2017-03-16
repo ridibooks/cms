@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\Platform\Cms\Auth;
+namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
@@ -46,7 +46,7 @@ class AdminAuthService
 			$menu_id_array[] = $menuid;
 		}
 
-		if (\Config::$UNDER_DEV) {
+		if ($_ENV['debug']) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
 			$menuids_owned = $menu_id_array;
 		} else {
@@ -280,7 +280,7 @@ class AdminAuthService
 	 */
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
-		if (!self::hasHashAuth($method, $check_url) && !\Config::$UNDER_DEV) {
+		if (!$_ENV['debug'] && !self::hasHashAuth($method, $check_url)) {
 			throw new MsgException("해당 권한이 없습니다.");
 		}
 	}
@@ -301,6 +301,7 @@ class AdminAuthService
 			'/me', // 본인 정보 수정
 			'/welcome',
 			'/logout',
+			'/login.azure',
 			'/'
 		];
 
@@ -390,7 +391,7 @@ class AdminAuthService
 	public static function initSession()
 	{
 		// 세션 변수 설정
-		$auth_service = new AdminAuthService();
+		$auth_service = new self();
 		$_SESSION['session_user_auth'] = $auth_service->getAdminAuth();
 		$_SESSION['session_user_menu'] = $auth_service->getAdminMenu();
 		$_SESSION['session_user_tag'] = $auth_service->getAdminTag();
@@ -403,16 +404,16 @@ class AdminAuthService
 	 */
 	public static function authorize($request)
 	{
-		if (!\Config::$UNDER_DEV && !AdminAuthService::isValidIp()) {
+		if (!$_ENV['debug'] && !self::isValidIp()) {
 			return new Response(
 				UrlHelper::printAlertRedirect(
-					'http://' . \Config::$DOMAIN,
+					'http://' . $_SERVER['SERVER_NAME'],
 					'허가된 IP가 아닙니다.'
 				)
 			);
 		}
 
-		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
+		if (!self::isValidLogin() || !self::isValidUser()) {
 			$login_url = '/login';
 			$request_uri = $request->getRequestUri();
 			if (!empty($request_uri) && $request_uri != '/login') {
@@ -423,7 +424,7 @@ class AdminAuthService
 		}
 
 		try {
-			AdminAuthService::hasUrlAuth();
+			self::hasUrlAuth();
 		} catch (\Exception $e) {
 			// 이상하지만 기존과 호환성 맞추기 위해
 			if ($request->isXmlHttpRequest()) {

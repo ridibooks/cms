@@ -1,5 +1,5 @@
 <?php
-namespace Ridibooks\Platform\Cms\Model;
+namespace Ridibooks\Cms\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,9 +12,9 @@ class AdminMenuAjax extends Model
 	protected $fillable = [
 		'menu_id',
 		'ajax_url'
-	];
+];
 
 	protected $casts = [
 		'menu_id' => 'integer',
-	];
+];
 }

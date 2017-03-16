@@ -1,12 +1,9 @@
-.PHONY: all clean
+.PHONY: all composer
 
-all: composer bower
+all: build composer
+
+build:
+	bower install
 
 composer:
 	composer update --no-dev --optimize-autoloader
-
-bower:
-	bower update -p && bower prune -p
-
-clean:
-	rm -rvf static/bower_components

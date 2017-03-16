@@ -1,5 +1,5 @@
 <?php
-namespace Ridibooks\Platform\Cms\Model;
+namespace Ridibooks\Cms\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,11 +16,11 @@ class AdminUser extends Model
 		'team',
 		'is_use',
 		'reg_date',
-	];
+];
 
 	protected $casts = [
 		'id' => 'string'
-	];
+];
 
 	public function tags()
 	{
