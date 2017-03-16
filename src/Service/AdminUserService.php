@@ -2,7 +2,6 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminUser;
-use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
 

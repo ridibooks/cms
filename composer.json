@@ -10,6 +10,10 @@
   ],
   "repositories": [
     {
+      "type": "path",
+      "url": "../cms-sdk"
+    },
+    {
       "type": "vcs",
       "url": "git@gitlab.ridi.io:common/php-core.git"
     }

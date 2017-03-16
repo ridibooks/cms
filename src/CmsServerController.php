@@ -3,10 +3,8 @@
 namespace Ridibooks\Cms;
 
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
-use Ridibooks\Cms\Thrift\ThriftResponse;
-use Ridibooks\Library\UrlHelper;
-use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\LoginService;
+use Ridibooks\Library\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -20,31 +18,14 @@ class CmsServerController implements ControllerProviderInterface
 	{
 		$controller_collection = $app['controllers_factory'];
 
-		//thrift
-		$controller_collection->post('/', [$this, 'processThrift']);
-
-		//login page
+		// login page
 		$controller_collection->get('/login/form', [$this, 'getLoginPage']);
 
-		//login process
+		// login process
 		$controller_collection->post('/login-cms', [$this, 'loginWithCms']);
 		$controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
 
-		//user info
-		$controller_collection->get('/me', [$this, 'getMyInfoPage']);
-
-		//document
-		$controller_collection->get('/', [$this, 'index']);
-		$controller_collection->get('/menu', [$this, 'menu']);
-		$controller_collection->get('/tag', [$this, 'tag']);
-		$controller_collection->get('/user', [$this, 'user']);
-
 		return $controller_collection;
-	}
-
-	public function processThrift(Request $request)
-	{
-		return ThriftResponse::create($request);
 	}
 
 	public function getLoginPage(Request $request, Application $app)
@@ -106,7 +87,7 @@ class CmsServerController implements ControllerProviderInterface
 			$error = $request->get('error');
 			$error_description = $request->get('error_description');
 
-			//Todo: send log to sentry
+			// TODO: send log to sentry
 			return Response::create('azure login fail', Response::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
@@ -131,25 +112,5 @@ class CmsServerController implements ControllerProviderInterface
 		} catch (\Exception $e) {
 			return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
 		}
-	}
-
-	public function index()
-	{
-		return RedirectResponse::create('/static/docs/index.html');
-	}
-
-	public function menu()
-	{
-		return RedirectResponse::create('/static/docs/AdminMenu.html');
-	}
-
-	public function tag()
-	{
-		return RedirectResponse::create('/static/docs/AdminTag.html');
-	}
-
-	public function user()
-	{
-		return RedirectResponse::create('/static/docs/AdminUser.html');
 	}
 }

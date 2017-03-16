@@ -2,9 +2,11 @@
 namespace Ridibooks\Cms;
 
 use Illuminate\Database\Capsule;
+use Ridibooks\Cms\Thrift\ThriftResponse;
 use Silex\Application;
 use Silex\Application\TwigTrait;
 use Silex\Provider\TwigServiceProvider;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -20,6 +22,12 @@ class CmsServerApplication extends Application
 		$this->setDefaultErrorHandler();
 		$this->registerTwigServiceProvider();
 
+		// thrift proxy
+		$this->post('/', function (Request $request) {
+			return ThriftResponse::create($request);
+		});
+
+		// web server
 		$this->mount('/', new CmsServerController());
 	}
 
@@ -93,10 +101,6 @@ class CmsServerApplication extends Application
 					$twig->addGlobal($k, $v);
 				}
 
-				foreach ($this->getTwigGlobalFilters() as $filter) {
-					$twig->addFilter($filter);
-				}
-
 				return $twig;
 			}
 		);
@@ -123,12 +127,4 @@ class CmsServerApplication extends Application
 
 		return $globals;
 	}
-
-	private function getTwigGlobalFilters()
-	{
-		return [
-			new \Twig_SimpleFilter('strtotime', 'strtotime')
-		];
-	}
-
 }
