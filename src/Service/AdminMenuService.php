@@ -3,8 +3,8 @@ namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminMenu;
 use Ridibooks\Cms\Model\AdminMenuAjax;
-use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuAjax as ThriftAdminMenuAjax;
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuAjax as ThriftAdminMenuAjax;
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 
 class AdminMenuService implements AdminMenuServiceIf

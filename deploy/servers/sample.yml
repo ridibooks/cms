@@ -1,5 +1,5 @@
 sample:
-  stage: dev
+  stage: sample
   repository: git@github.com:ridibooks/cms.git
   branch: master
   host: dev.host.com

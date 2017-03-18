@@ -2,7 +2,6 @@
 
 namespace Ridibooks\Cms\Service;
 
-use Ridibooks\Cms\Model\AdminUser;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
