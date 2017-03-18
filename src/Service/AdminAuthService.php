@@ -2,6 +2,8 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Model\AdminUser;
+use Ridibooks\Cms\Thrift\ThriftService;
 use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
@@ -29,9 +31,12 @@ class AdminAuthService
 	private function initAdminAuth()
 	{
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-		$menu_array = AdminMenuService::getMenuList();
+		$menu_service = new AdminMenuService();
+		$menu_array = $menu_service->getMenuList();
+		$menu_array = ThriftService::convertMenuCollectionToArray($menu_array);
 		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = AdminMenuService::getAllMenuAjax();
+		$menu_ajax_array = $menu_service->getAllMenuAjax();
+		$menu_ajax_array = ThriftService::convertMenuAjaxCollectionToArray($menu_ajax_array);
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -46,12 +51,13 @@ class AdminAuthService
 			$menu_id_array[] = $menuid;
 		}
 
-		if ($_ENV['debug']) {
+		if ($_ENV['DEBUG']) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
 			$menuids_owned = $menu_id_array;
 		} else {
 			//로그인 한 유저의 메뉴 id array 가져온다.
-			$menuids_owned = AdminUserService::getAllMenuIds(LoginService::GetAdminID());
+			$user_service = new AdminUserService();
+			$menuids_owned = $user_service->getAllMenuIds(LoginService::GetAdminID());
 		}
 
 		foreach ($menus_by_id as $menu) {
@@ -129,7 +135,8 @@ class AdminAuthService
 	 */
 	private function initAdminTag()
 	{
-		$this->adminTag = AdminUserService::getAdminUserTag(LoginService::GetAdminID());
+		$user_service = new AdminUserService();
+		$this->adminTag = $user_service->getAdminUserTag(LoginService::GetAdminID());
 	}
 
 	/**menu ajax array 만든다.

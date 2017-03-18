@@ -67,7 +67,7 @@ class AdminUserService implements AdminUserServiceIf
 			->all();
 
 		// 2: user.menus
-		$user_menus = self::getAdminUserMenu($user_id);
+		$user_menus = $this->getAdminUserMenu($user_id);
 
 		// uniq(1 + 2)
 		$menu_ids = array_unique(array_merge($tags_menus, $user_menus));
