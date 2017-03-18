@@ -28,7 +28,9 @@ class CmsServerApplication extends Application
 		});
 
 		// web server
-		$this->mount('/', new CmsServerController());
+		$this->mount('/', new LoginController());
+		$this->mount('/', new MyInfoController());
+		$this->mount('/', new CommonController());
 	}
 
 	private function bootstrap()

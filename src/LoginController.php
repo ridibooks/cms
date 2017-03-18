@@ -3,7 +3,6 @@
 namespace Ridibooks\Cms;
 
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
-use Ridibooks\Cms\CmsServerApplication;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Library\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
@@ -13,18 +12,21 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CmsServerController implements ControllerProviderInterface
+class LoginController implements ControllerProviderInterface
 {
 	public function connect(Application $app)
 	{
 		$controller_collection = $app['controllers_factory'];
 
 		// login page
-		$controller_collection->get('/login/form', [$this, 'getLoginPage']);
+		$controller_collection->get('/login', [$this, 'getLoginPage']);
 
 		// login process
 		$controller_collection->post('/login-cms', [$this, 'loginWithCms']);
 		$controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
+
+		// logout
+		$controller_collection->get('/logout', [$this, 'logout']);
 
 		return $controller_collection;
 	}
@@ -36,7 +38,7 @@ class CmsServerController implements ControllerProviderInterface
 		$return_url = $request->get('return_url');
 
 		if (!$return_url) {
-			return Response::create('Need a param: callback', Response::HTTP_BAD_REQUEST);
+			$return_url = '/welcome';
 		}
 
 		$response = Response::create();
@@ -57,13 +59,6 @@ class CmsServerController implements ControllerProviderInterface
 		$cookie_host = $parsed['host'];
 
 		try {
-			if (isset($app['couchbase']) && $app['couchbase'] !== '') {
-				$couchbase = $app['couchbase'];
-				LoginService::startCouchbaseSession($couchbase['host'], $cookie_host);
-			} else {
-				LoginService::startSession($cookie_host);
-			}
-
 			LoginService::doLoginAction($id, $passwd);
 
 			$response = RedirectResponse::create($return_url);
@@ -113,5 +108,11 @@ class CmsServerController implements ControllerProviderInterface
 		} catch (\Exception $e) {
 			return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
 		}
+	}
+
+	public function logout()
+	{
+		LoginService::resetSession();
+		return RedirectResponse::create('/login');
 	}
 }
