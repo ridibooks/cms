@@ -287,7 +287,7 @@ class AdminAuthService
 	 */
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
-		if (!$_ENV['debug'] && !self::hasHashAuth($method, $check_url)) {
+		if (!$_ENV['DEBUG'] && !self::hasHashAuth($method, $check_url)) {
 			throw new MsgException("해당 권한이 없습니다.");
 		}
 	}
@@ -381,8 +381,13 @@ class AdminAuthService
 	 */
 	public static function isValidUser()
 	{
-		$admin = AdminUserService::getUser(LoginService::GetAdminID());
-		return $admin && $admin['is_use'];
+		$user_service = new AdminUserService();
+		$admin = $user_service->getUser(LoginService::GetAdminID());
+		if (!$admin->id) {
+			return false;
+		}
+
+		return $admin && $admin->is_use;
 	}
 
 	/**
@@ -411,7 +416,7 @@ class AdminAuthService
 	 */
 	public static function authorize($request)
 	{
-		if (!$_ENV['debug'] && !self::isValidIp()) {
+		if (!$_ENV['DEBUG'] && !self::isValidIp()) {
 			return new Response(
 				UrlHelper::printAlertRedirect(
 					'http://' . $_SERVER['SERVER_NAME'],

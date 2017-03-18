@@ -55,9 +55,6 @@ class LoginController implements ControllerProviderInterface
 		$passwd = $request->get('passwd');
 		$return_url = $request->cookies->get('return_url');
 
-		$parsed = parse_url($return_url);
-		$cookie_host = $parsed['host'];
-
 		try {
 			LoginService::doLoginAction($id, $passwd);
 
@@ -76,9 +73,6 @@ class LoginController implements ControllerProviderInterface
 		$code = $request->get('code');
 		$return_url = $request->cookies->get('return_url');
 
-		$parsed = parse_url($return_url);
-		$cookie_host = $parsed['host'];
-
 		if (!$code) {
 			$error = $request->get('error');
 			$error_description = $request->get('error_description');
@@ -90,13 +84,6 @@ class LoginController implements ControllerProviderInterface
 		try {
 			$azure_config = $app['azure'];
 			$resource = AzureOAuth2Service::getResource($code, $azure_config);
-
-			if (isset($app['couchbase']) && $app['couchbase'] !== '') {
-				$couchbase = $app['couchbase'];
-				LoginService::startCouchbaseSession($couchbase['host'], $cookie_host);
-			} else {
-				LoginService::startSession($cookie_host);
-			}
 
 			LoginService::doLoginActionWithoutPasswd($resource->mailNickname);
 

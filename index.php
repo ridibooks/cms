@@ -1,18 +1,13 @@
 <?php
 use Ridibooks\Cms\CmsServerApplication;
+use Ridibooks\Cms\MiniRouter;
 use Ridibooks\Cms\Service\LoginService;
+use Symfony\Component\HttpFoundation\Request;
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
-
-if (isset($app['couchbase']) && $app['couchbase'] !== '') {
-	$couchbase = $app['couchbase'];
-	LoginService::startCouchbaseSession($couchbase['host'], 'admin.ridibooks.com');
-} else {
-	LoginService::startSession('admin.ridibooks.com');
-}
 
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
@@ -29,15 +24,22 @@ $app = new CmsServerApplication([
         'resource' => $_ENV['AZURE_RESOURCE'],
         'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'],
         'api_version' => $_ENV['AZURE_API_VERSION'],
-    ]
+    ],
+	'couchbase' => [
+		'host' => $_ENV['COUCHBASE_HOST'],
+	],
 ]);
 
-if (isset($_ENV['COUCHBASE_HOST']) && $_ENV['COUCHBASE_HOST']!=='') {
-    $app['couchbase'] = [
-        'host' => $_ENV['COUCHBASE_HOST'],
-    ];
+$session_domain = $_ENV['SESSION_DOMAIN'];
+$couchbase = $app['couchbase'];
+if (isset($couchbase['host']) && $couchbase['host'] !== '') {
+	LoginService::startCouchbaseSession($couchbase['host'], $session_domain);
+} else {
+	LoginService::startSession($session_domain);
 }
 
-//need auth service
+$app->before(function (Request $request) {
+	return MiniRouter::shouldRedirectForLogin($request);
+});
 
 $app->run();

@@ -99,22 +99,22 @@ class LoginService
 		return in_array(php_sapi_name(), ['apache2filter', 'apache2handler', 'cli-server']);
 	}
 
-	public static function startSession($cookie_domain = null)
+	public static function startSession($session_domain = null)
 	{
-		if (!isset($cookie_domain)) {
-			$cookie_domain = $_SERVER['SERVER_NAME'];
+		if (!isset($session_domain)) {
+			$session_domain = $_SERVER['SERVER_NAME'];
 		}
-		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $cookie_domain);
+		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
 		session_start();
 	}
 
-	public static function startCouchbaseSession($server_hosts, $cookie_domain = null)
+	public static function startCouchbaseSession($server_hosts, $session_domain = null)
 	{
 		session_set_save_handler(
 			new CouchbaseSessionHandler($server_hosts, 'session', self::SESSION_TIMEOUT_SEC),
 			true
 		);
 
-		self::startSession($cookie_domain);
+		self::startSession($session_domain);
 	}
 }

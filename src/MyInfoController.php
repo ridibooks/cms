@@ -20,8 +20,6 @@ class MyInfoController implements ControllerProviderInterface
         $controllers->get('/me', [$this, 'getMyInfo']);
         $controllers->post('/me', [$this, 'updateMyInfo']);
 
-        $controllers->get('/comm/user_list.ajax', [$this, 'userList']);
-
         return $controllers;
     }
 
@@ -30,7 +28,7 @@ class MyInfoController implements ControllerProviderInterface
     	$user_service = new AdminUserService();
         $user_info = $user_service->getUser(LoginService::GetAdminID());
         if (!$user_info->id) {
-        	return $app->redirect('/login');
+        	return $app->redirect('/login?return_url='.urlencode('/me'));
 		}
 
         $user_info = ThriftService::convertUserToArray($user_info);
@@ -63,23 +61,5 @@ class MyInfoController implements ControllerProviderInterface
         $sub_request = Request::create('/me');
 
         return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
-    }
-
-    public function userList(CmsServerApplication $app)
-    {
-        $result = [];
-
-        try {
-			$user_service = new AdminUserService();
-			$user_list = $user_service->getAllAdminUserArray();
-			$user_list = ThriftService::convertUserCollectionToArray($user_list);
-            $result['data'] = $user_list;
-            $result['success'] = true;
-        } catch (\Exception $e) {
-            $result['success'] = false;
-            $result['msg'] = [$e->getMessage()];
-        }
-
-        return $app->json((array)$result);
     }
 }
