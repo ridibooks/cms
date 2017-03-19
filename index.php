@@ -9,6 +9,13 @@ $autoloader = require __DIR__ . "/vendor/autoload.php";
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
 
+// register sentry service
+$sentry_key = $_ENV['SENTRY_KEY'];
+if (isset($sentry_key) && $sentry_key!=='') {
+	$client = new Raven_Client($_ENV['SENTRY_KEY']);
+	$client->install();
+}
+
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
     'mysql' => [
@@ -30,6 +37,7 @@ $app = new CmsServerApplication([
 	],
 ]);
 
+// start session
 $session_domain = $_ENV['SESSION_DOMAIN'];
 $couchbase = $app['couchbase'];
 if (isset($couchbase['host']) && $couchbase['host'] !== '') {
@@ -38,6 +46,7 @@ if (isset($couchbase['host']) && $couchbase['host'] !== '') {
 	LoginService::startSession($session_domain);
 }
 
+// check auth
 $app->before(function (Request $request) {
 	return MiniRouter::shouldRedirectForLogin($request);
 });
