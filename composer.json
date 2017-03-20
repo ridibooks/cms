@@ -24,7 +24,8 @@
     "silex/silex": "^2.0",
     "twig/twig": "^2.0.0",
     "ridibooks/cms-sdk": "dev-master",
-    "ridibooks/core": "dev-master"
+    "ridibooks/core": "dev-master",
+    "sentry/sentry": "^1.6"
   },
   "autoload": {
     "psr-4": {
