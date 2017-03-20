@@ -120,6 +120,7 @@ class CmsServerApplication extends Application
 	private function getTwigGlobalVariables()
 	{
 		$globals = [
+			'STATIC_URL' => '/static',
 			'BOWER_PATH' => '/static/bower_components',
 		];
 

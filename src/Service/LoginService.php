@@ -101,7 +101,7 @@ class LoginService
 
 	public static function startSession($session_domain = null)
 	{
-		if (!isset($session_domain)) {
+		if (!isset($session_domain) || $session_domain === '') {
 			$session_domain = $_SERVER['SERVER_NAME'];
 		}
 		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
