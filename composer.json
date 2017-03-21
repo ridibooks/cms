@@ -28,7 +28,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Cms\\": "src"
+      "Ridibooks\\Cms\\": "server",
+      "Ridibooks\\Platform\\Cms\\": "src/Cms"
     }
   }
 }
