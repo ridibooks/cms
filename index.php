@@ -9,15 +9,9 @@ $autoloader = require __DIR__ . "/vendor/autoload.php";
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
 
-// register sentry service
-$sentry_key = $_ENV['SENTRY_KEY'];
-if (isset($sentry_key) && $sentry_key!=='') {
-	$client = new Raven_Client($_ENV['SENTRY_KEY']);
-	$client->install();
-}
-
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
+	'sentry_key' => $_ENV['SENTRY_KEY'],
     'mysql' => [
         'host' => $_ENV['MYSQL_HOST'],
         'database' => $_ENV['MYSQL_DATABASE'],

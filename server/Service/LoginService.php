@@ -104,8 +104,11 @@ class LoginService
 		if (!isset($session_domain) || $session_domain === '') {
 			$session_domain = $_SERVER['SERVER_NAME'];
 		}
+
 		session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
-		session_start();
+		if(!isset($_SESSION)) {
+			session_start();
+		}
 	}
 
 	public static function startCouchbaseSession($server_hosts, $session_domain = null)

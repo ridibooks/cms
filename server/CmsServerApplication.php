@@ -2,6 +2,7 @@
 namespace Ridibooks\Cms;
 
 use Illuminate\Database\Capsule;
+use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Silex\Application;
 use Silex\Application\TwigTrait;
@@ -21,9 +22,10 @@ class CmsServerApplication extends Application
 		parent::__construct($values);
 
 		$this->bootstrap();
-		$this->setDefaultErrorHandler();
+		$this->registerSentryServiceProvider();
 		$this->registerSessionServiceProvider();
 		$this->registerTwigServiceProvider();
+		$this->setDefaultErrorHandler();
 
 		// thrift proxy
 		$this->post('/', function (Request $request) {
@@ -73,12 +75,32 @@ class CmsServerApplication extends Application
 				return null;
 			}
 
+			$client = $this[SentryServiceProvider::SENTRY];
+			if ($client) {
+				$client->captureException($e);
+			}
+
 			if ($e instanceof HttpException) {
 				return Response::create($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
 			}
 
 			throw $e;
 		});
+	}
+
+	private function registerSentryServiceProvider()
+	{
+		$sentry_dsn = $this['sentry_key'];
+		if (isset($sentry_dsn)) {
+			$this->register(new SentryServiceProvider, array(
+				SentryServiceProvider::SENTRY_OPTIONS => array(
+					SentryServiceProvider::OPT_DSN => $sentry_dsn,
+				)
+			));
+
+			$client = $this[SentryServiceProvider::SENTRY];
+			$client->install();
+		}
 	}
 
 	private function registerTwigServiceProvider()
