@@ -59,7 +59,6 @@ class MyInfoController implements ControllerProviderInterface
 		}
 
 		$sub_request = Request::create('/me');
-
 		return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 }
