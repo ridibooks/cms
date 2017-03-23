@@ -5,9 +5,11 @@ use Illuminate\Database\Capsule;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Silex\Application;
 use Silex\Application\TwigTrait;
+use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TwigServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CmsServerApplication extends Application
@@ -20,6 +22,7 @@ class CmsServerApplication extends Application
 
 		$this->bootstrap();
 		$this->setDefaultErrorHandler();
+		$this->registerSessionServiceProvider();
 		$this->registerTwigServiceProvider();
 
 		// thrift proxy
@@ -129,5 +132,42 @@ class CmsServerApplication extends Application
 		}
 
 		return $globals;
+	}
+
+	private function registerSessionServiceProvider()
+	{
+		$this->register(
+			new SessionServiceProvider(),
+			[
+				'session.storage.handler' => null
+			]
+		);
+
+		$this['flashes'] = $this->getFlashBag()->all();
+	}
+
+	public function addFlashInfo($message)
+	{
+		$this->getFlashBag()->add('info', $message);
+	}
+
+	public function addFlashSuccess($message)
+	{
+		$this->getFlashBag()->add('success', $message);
+	}
+
+	public function addFlashWarning($message)
+	{
+		$this->getFlashBag()->add('warning', $message);
+	}
+
+	public function addFlashError($message)
+	{
+		$this->getFlashBag()->add('danger', $message);
+	}
+
+	public function getFlashBag(): FlashBag
+	{
+		return $this['session']->getFlashBag();
 	}
 }
