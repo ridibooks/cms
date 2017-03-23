@@ -65,15 +65,13 @@ class CmsApplication extends Application
 			)
 		);
 
-		$this['twig.loader.filesystem'] = self::share(
-			$this->extend(
-				'twig.loader.filesystem',
-				function (\Twig_Loader_Filesystem $loader) {
-					$loader->addPath(__DIR__ . '/../../views/');
+		$this['twig.loader.filesystem'] = $this->extend(
+			'twig.loader.filesystem',
+			function (\Twig_Loader_Filesystem $loader) {
+				$loader->addPath(__DIR__ . '/../../views/');
 
-					return $loader;
-				}
-			)
+				return $loader;
+			}
 		);
 	}
 
@@ -121,9 +119,7 @@ class CmsApplication extends Application
 			]
 		);
 
-		$this['flashes'] = self::share(function () {
-			return $this->getFlashBag()->all();
-		});
+		$this['flashes'] = $this->getFlashBag()->all();
 	}
 
 	private function setDefaultErrorHandler()

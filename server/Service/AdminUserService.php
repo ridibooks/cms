@@ -75,10 +75,10 @@ class AdminUserService implements AdminUserServiceIf
 		return $menu_ids;
 	}
 
-	public function updateMyInfo($user_id, $name, $team, $is_use, $passwd = '')
+	public function updateMyInfo($name, $team, $is_use, $passwd = '')
 	{
 		/** @var AdminUser $admin */
-		$me = AdminUser::find($user_id);
+		$me = AdminUser::find(LoginService::GetAdminID());
 		if (!$me) {
 			return false;
 		}
