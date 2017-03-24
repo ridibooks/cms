@@ -35,9 +35,6 @@ $app = new CmsServerApplication([
         'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'],
         'api_version' => $_ENV['AZURE_API_VERSION'],
     ],
-	'couchbase' => [
-		'host' => $_ENV['COUCHBASE_HOST'],
-	],
 ]);
 
 // check auth
