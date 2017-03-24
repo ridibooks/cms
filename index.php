@@ -9,6 +9,15 @@ $autoloader = require __DIR__ . "/vendor/autoload.php";
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
 
+// start session
+$session_domain = $_ENV['SESSION_DOMAIN'];
+$couchbase_host = $_ENV['COUCHBASE_HOST'];
+if (isset($couchbase_host) && $couchbase_host !== '') {
+	LoginService::startCouchbaseSession($couchbase_host, $session_domain);
+} else {
+	LoginService::startSession($session_domain);
+}
+
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
 	'sentry_key' => $_ENV['SENTRY_KEY'],
@@ -30,15 +39,6 @@ $app = new CmsServerApplication([
 		'host' => $_ENV['COUCHBASE_HOST'],
 	],
 ]);
-
-// start session
-$session_domain = $_ENV['SESSION_DOMAIN'];
-$couchbase = $app['couchbase'];
-if (isset($couchbase['host']) && $couchbase['host'] !== '') {
-	LoginService::startCouchbaseSession($couchbase['host'], $session_domain);
-} else {
-	LoginService::startSession($session_domain);
-}
 
 // check auth
 $app->before(function (Request $request) {
