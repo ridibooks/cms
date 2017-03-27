@@ -7,7 +7,7 @@ RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTPS}:s on:(s)
 RewriteRule ^(.*) http%2://%1/$1 [R=301,L]
 
-RewriteCond %{REQUEST_URI} !index\.php
+RewriteCond %{REQUEST_URI} !.*\.(woff|ttf|svg|js|ico|bmp|gif|jpg|jpeg|png|css|htc|xml|txt|xls|csv|ppt|pdf|doc|docx)
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteRule (.*) index.php?$0 [QSA,L]
