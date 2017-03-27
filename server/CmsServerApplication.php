@@ -75,11 +75,6 @@ class CmsServerApplication extends Application
 				return null;
 			}
 
-			$client = $this[SentryServiceProvider::SENTRY];
-			if ($client) {
-				$client->captureException($e);
-			}
-
 			if ($e instanceof HttpException) {
 				return Response::create($e->getMessage(), $e->getStatusCode(), $e->getHeaders());
 			}
