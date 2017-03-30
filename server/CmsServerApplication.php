@@ -86,12 +86,12 @@ class CmsServerApplication extends Application
 	private function registerSentryServiceProvider()
 	{
 		$sentry_dsn = $this['sentry_key'];
-		if (isset($sentry_dsn) && $sentry_dsn!=='') {
-			$this->register(new SentryServiceProvider, array(
-				SentryServiceProvider::SENTRY_OPTIONS => array(
+		if (isset($sentry_dsn) && $sentry_dsn !== '') {
+			$this->register(new SentryServiceProvider(), [
+				SentryServiceProvider::SENTRY_OPTIONS => [
 					SentryServiceProvider::OPT_DSN => $sentry_dsn,
-				)
-			));
+				]
+			]);
 
 			$client = $this[SentryServiceProvider::SENTRY];
 			$client->install();

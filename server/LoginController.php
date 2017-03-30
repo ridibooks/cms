@@ -59,7 +59,6 @@ class LoginController implements ControllerProviderInterface
 			LoginService::doLoginAction($id, $passwd);
 
 			$response = RedirectResponse::create($return_url);
-			$response->headers->clearCookie('callback');
 			$response->headers->clearCookie('return_url');
 
 			return $response;
@@ -88,7 +87,6 @@ class LoginController implements ControllerProviderInterface
 			LoginService::doLoginActionWithoutPasswd($resource->mailNickname);
 
 			$response = RedirectResponse::create($return_url);
-			$response->headers->clearCookie('callback');
 			$response->headers->clearCookie('return_url');
 
 			return $response;
