@@ -4,6 +4,7 @@ namespace Ridibooks\Cms\Service;
 use Ridibooks\Cms\Model\AdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
+use Ridibooks\Platform\Cms\Auth\PasswordService;
 
 class AdminUserService implements AdminUserServiceIf
 {
