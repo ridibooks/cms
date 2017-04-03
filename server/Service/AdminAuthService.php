@@ -3,7 +3,6 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -286,8 +285,8 @@ class AdminAuthService
 	 */
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
-		if (!$_ENV['DEBUG'] && !self::hasHashAuth($method, $check_url)) {
-			throw new MsgException("해당 권한이 없습니다.");
+		if (!self::hasHashAuth($method, $check_url) && !$_ENV['DEBUG']) {
+			throw new \Exception("해당 권한이 없습니다.");
 		}
 	}
 

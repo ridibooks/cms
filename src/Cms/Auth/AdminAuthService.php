@@ -2,7 +2,6 @@
 
 namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Exception\MsgException;
 use Ridibooks\Library\UrlHelper;
 use Ridibooks\Library\Util;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -281,7 +280,7 @@ class AdminAuthService
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
 		if (!self::hasHashAuth($method, $check_url) && !\Config::$UNDER_DEV) {
-			throw new MsgException("해당 권한이 없습니다.");
+			throw new \Exception("해당 권한이 없습니다.");
 		}
 	}
 
