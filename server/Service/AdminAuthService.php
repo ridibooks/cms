@@ -307,7 +307,8 @@ class AdminAuthService
 			'/welcome',
 			'/logout',
 			'/login-azure',
-			'/'
+			'/index.php',
+			'/',
 		];
 
 		// welcome 페이지는 항상 허용
