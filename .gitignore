@@ -4,4 +4,4 @@ config.local.php
 composer.lock
 vendor
 static/bower_components
-deploy/servers/*
+docs/deploy/servers/*
