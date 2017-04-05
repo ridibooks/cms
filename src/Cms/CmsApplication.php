@@ -171,7 +171,7 @@ class CmsApplication extends Application
 			}
 		});
 
-		$this->get('/login.azure', function (Request $req, CmsApplication $app) {
+		$this->get('/login-azure', function (Request $req, CmsApplication $app) {
 			$code = $req->get('code');
 			$return_url = $req->get('return_url', 'welcome');
 
