@@ -2,6 +2,7 @@
 namespace Ridibooks\Cms;
 
 use Ridibooks\Cms\Service\AdminAuthService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,12 +28,17 @@ class MiniRouter
 	 * @param Request $request
 	 * @return null|Response
 	 */
-	public static function shouldRedirectForLogin(Request $request)
+	public static function shouldRedirectForLogin(Request $request, $enable_ssl)
 	{
 		// thrift request
 		if ($request->getMethod() === 'POST' && $request->getRequestUri() === '/') {
 			return null;
 		}
+
+        $response = self::conformAllowedProtocol($request, $enable_ssl);
+        if ($response) {
+            return $response;
+        }
 
 		if (self::onLoginPage($request)) {
 			return null;
@@ -45,6 +51,26 @@ class MiniRouter
 
 		return null;
 	}
+
+    /**
+     * @param Request $request
+     * @return bool
+     */
+    private static function onHttps($request)
+    {
+        return $request->isSecure() || $request->server->get('HTTP_X_FORWARDED_PROTO') == 'https';
+    }
+
+    private static function conformAllowedProtocol(Request $request, $enable_ssl)
+    {
+        if ($enable_ssl && !self::onHttps($request)) {
+            return RedirectResponse::create('https://' . $request->getHttpHost() . $request->getRequestUri());
+        } elseif (!$enable_ssl && self::onHttps($request)) {
+            return RedirectResponse::create('http://' . $request->getHttpHost() . $request->getRequestUri());
+        }
+
+        return null;
+    }
 
 	/**
 	 * @param Request $request
