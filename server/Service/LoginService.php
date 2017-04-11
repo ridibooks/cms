@@ -109,6 +109,16 @@ class LoginService
 		session_start();
 	}
 
+	public static function startMemcacheSession($server_hosts, $session_domain = null)
+    {
+        session_set_cookie_params(86400 * 15, '/', $session_domain);
+        ini_set('session.gc_maxlifetime', 86400 * 15);
+        ini_set('session.save_handler', 'memcache');
+        ini_set('session.save_path', $server_hosts);
+
+        self::startSession($session_domain);
+    }
+
 	public static function startCouchbaseSession($server_hosts, $session_domain = null)
 	{
 		session_set_save_handler(

@@ -12,7 +12,11 @@ $dotenv->load();
 // start session
 $session_domain = $_ENV['SESSION_DOMAIN'];
 $couchbase_host = $_ENV['COUCHBASE_HOST'];
-if (isset($couchbase_host) && $couchbase_host !== '') {
+$memcache_host = $_ENV['MEMCACHE_HOST'];
+
+if (isset($memcache_host) && $memcache_host !== '') {
+    LoginService::startMemcacheSession($memcache_host, $session_domain);
+} else if (isset($couchbase_host) && $couchbase_host !== '') {
 	LoginService::startCouchbaseSession($couchbase_host, $session_domain);
 } else {
 	LoginService::startSession($session_domain);
