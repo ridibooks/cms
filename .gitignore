@@ -1,7 +1,5 @@
 .idea
 .env
-config.local.php
-composer.lock
 vendor
 static/bower_components
 docs/deploy/servers/*
