@@ -15,9 +15,9 @@ class MiniRouter
 	public static function shouldRedirectForLogin(Request $request)
 	{
 		// thrift request
-		if ($request->getMethod() === 'POST' && $request->getRequestUri() === '/') {
-			return null;
-		}
+        if (in_array('application/x-thrift', $request->getAcceptableContentTypes())) {
+            return null;
+        }
 
 		if (self::onLoginPage($request)) {
 			return null;
