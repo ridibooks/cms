@@ -19,15 +19,14 @@
     "vlucas/phpdotenv": "^2.4",
     "silex/silex": "^2.0",
     "twig/twig": "^2.0.0",
-    "ridibooks/cms-sdk": "dev-master",
+    "ridibooks/cms-sdk": "^1.0.0",
     "ridibooks/core": "dev-master",
     "sentry/sentry": "^1.6",
     "moriony/silex-sentry-provider": "~2.0.0"
   },
   "autoload": {
     "psr-4": {
-      "Ridibooks\\Cms\\": "server",
-      "Ridibooks\\Platform\\Cms\\": "src/Cms"
+      "Ridibooks\\Cms\\": "server"
     }
   }
 }
