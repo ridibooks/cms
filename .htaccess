@@ -2,10 +2,11 @@
 
 RewriteEngine On
 
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTPS}:s on:(s)
-RewriteRule ^(.*) http%2://%1/$1 [R=301,L]
+RewriteRule ^(.*) https://%1/$1 [R=301,L]
 
 RewriteCond %{REQUEST_URI} !.*\.(woff|ttf|svg|js|ico|bmp|gif|jpg|jpeg|png|css|htc|xml|txt|xls|csv|ppt|pdf|doc|docx)
 RewriteCond %{SCRIPT_FILENAME} !-f

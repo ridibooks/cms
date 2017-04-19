@@ -43,7 +43,7 @@ $app = new CmsServerApplication([
 
 // check auth
 $app->before(function (Request $request) {
-	return MiniRouter::shouldRedirectForLogin($request, $_ENV['ENABLE_HTTPS']);
+	return MiniRouter::shouldRedirectForLogin($request);
 });
 
 $app->run();
