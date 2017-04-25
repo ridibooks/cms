@@ -1,9 +1,9 @@
 <?php
 
-namespace Ridibooks\Cms\Service;
+namespace Ridibooks\Platform\Cms\Auth;
 
-use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Platform\Cms\Util\UrlHelper;
+use Ridibooks\Library\UrlHelper;
+use Ridibooks\Library\Util;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,12 +28,9 @@ class AdminAuthService
 	private function initAdminAuth()
 	{
 		//전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-		$menu_service = new AdminMenuService();
-		$menu_array = $menu_service->getMenuList();
-		$menu_array = ThriftService::convertMenuCollectionToArray($menu_array);
+		$menu_array = AdminMenuService::getMenuList();
 		//전체 menu_ajax를 가지고 온다.
-		$menu_ajax_array = $menu_service->getAllMenuAjax();
-		$menu_ajax_array = ThriftService::convertMenuAjaxCollectionToArray($menu_ajax_array);
+		$menu_ajax_array = AdminMenuService::getAllMenuAjax();
 
 		$auth_list = [];
 		$menus_by_id = [];
@@ -48,13 +45,12 @@ class AdminAuthService
 			$menu_id_array[] = $menuid;
 		}
 
-		if ($_ENV['DEBUG']) {
+		if (\Config::$UNDER_DEV) {
 			//개발 모드일 경우 모든 메뉴 id array 가져온다.
 			$menuids_owned = $menu_id_array;
 		} else {
 			//로그인 한 유저의 메뉴 id array 가져온다.
-			$user_service = new AdminUserService();
-			$menuids_owned = $user_service->getAllMenuIds(LoginService::GetAdminID());
+			$menuids_owned = AdminUserService::getAllMenuIds(LoginService::GetAdminID());
 		}
 
 		foreach ($menus_by_id as $menu) {
@@ -132,8 +128,7 @@ class AdminAuthService
 	 */
 	private function initAdminTag()
 	{
-		$user_service = new AdminUserService();
-		$this->adminTag = $user_service->getAdminUserTag(LoginService::GetAdminID());
+		$this->adminTag = AdminUserService::getAdminUserTag(LoginService::GetAdminID());
 	}
 
 	/**menu ajax array 만든다.
@@ -284,7 +279,7 @@ class AdminAuthService
 	 */
 	public static function hasUrlAuth($method = null, $check_url = null)
 	{
-		if (!self::hasHashAuth($method, $check_url) && !$_ENV['DEBUG']) {
+		if (!self::hasHashAuth($method, $check_url) && !\Config::$UNDER_DEV) {
 			throw new \Exception("해당 권한이 없습니다.");
 		}
 	}
@@ -305,9 +300,7 @@ class AdminAuthService
 			'/me', // 본인 정보 수정
 			'/welcome',
 			'/logout',
-			'/login-azure',
-			'/index.php',
-			'/',
+			'/'
 		];
 
 		// welcome 페이지는 항상 허용
@@ -371,13 +364,8 @@ class AdminAuthService
 	 */
 	public static function isValidUser()
 	{
-		$user_service = new AdminUserService();
-		$admin = $user_service->getUser(LoginService::GetAdminID());
-		if (!$admin->id) {
-			return false;
-		}
-
-		return $admin && $admin->is_use;
+		$admin = AdminUserService::getUser(LoginService::GetAdminID());
+		return $admin && $admin['is_use'];
 	}
 
 	/**
@@ -393,7 +381,7 @@ class AdminAuthService
 	public static function initSession()
 	{
 		// 세션 변수 설정
-		$auth_service = new self();
+		$auth_service = new AdminAuthService();
 		$_SESSION['session_user_auth'] = $auth_service->getAdminAuth();
 		$_SESSION['session_user_menu'] = $auth_service->getAdminMenu();
 		$_SESSION['session_user_tag'] = $auth_service->getAdminTag();
@@ -406,8 +394,7 @@ class AdminAuthService
 	 */
 	public static function authorize($request)
 	{
-
-		if (!self::isValidLogin() || !self::isValidUser()) {
+		if (!AdminAuthService::isValidLogin() || !AdminAuthService::isValidUser()) {
 			$login_url = '/login';
 			$request_uri = $request->getRequestUri();
 			if (!empty($request_uri) && $request_uri != '/login') {
@@ -418,7 +405,7 @@ class AdminAuthService
 		}
 
 		try {
-			self::hasUrlAuth();
+			AdminAuthService::hasUrlAuth();
 		} catch (\Exception $e) {
 			// 이상하지만 기존과 호환성 맞추기 위해
 			if ($request->isXmlHttpRequest()) {
