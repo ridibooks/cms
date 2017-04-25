@@ -14,10 +14,8 @@
     "silex/silex": "^2.0",
     "twig/twig": "^2.0.0",
     "sentry/sentry": "^1.6",
-    "moriony/silex-sentry-provider": "~2.0.0"
-  },
-  "require-dev": {
-    "ridibooks/cms-sdk": "dev-fix/replace_ridibooks_library"
+    "moriony/silex-sentry-provider": "~2.0.0",
+    "ridibooks/cms-sdk": "^1.0.0"
   },
   "autoload": {
     "psr-4": {
