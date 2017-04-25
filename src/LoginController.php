@@ -4,7 +4,7 @@ namespace Ridibooks\Cms;
 
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
-use Ridibooks\Library\UrlHelper;
+use Ridibooks\Platform\Cms\Util\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
