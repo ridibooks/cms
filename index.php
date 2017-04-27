@@ -2,12 +2,18 @@
 use Ridibooks\Cms\CmsServerApplication;
 use Ridibooks\Cms\MiniRouter;
 use Ridibooks\Cms\Service\LoginService;
+use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Request;
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
 $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
 $dotenv->load();
+
+$cms_rpc_url = $_ENV['CMS_RPC_URL'];
+if (isset($cms_rpc_url) && $cms_rpc_url !== '') {
+    ThriftService::setEndPoint($cms_rpc_url);
+}
 
 // start session
 $session_domain = $_ENV['SESSION_DOMAIN'];

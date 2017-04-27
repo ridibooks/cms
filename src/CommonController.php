@@ -1,7 +1,7 @@
 <?php
 namespace Ridibooks\Cms;
 
-use Ridibooks\Platform\Cms\Auth\AdminUserService;
+use Ridibooks\Cms\Service\AdminUserService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Silex\ControllerCollection;
@@ -35,7 +35,8 @@ class CommonController implements ControllerProviderInterface
 		$result = [];
 
 		try {
-			$result['data'] = AdminUserService::getAllAdminUserArray();
+		    $user_service = new AdminUserService;
+			$result['data'] = $user_service->getAllAdminUserArray();
 			$result['success'] = true;
 		} catch (\Exception $e) {
 			$result['success'] = false;

@@ -2,8 +2,8 @@
 namespace Ridibooks\Cms;
 
 use Ridibooks\Cms\Service\AdminUserService;
+use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Platform\Cms\Auth\LoginService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Silex\ControllerCollection;
