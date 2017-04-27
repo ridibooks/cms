@@ -14,10 +14,7 @@ class AdminUserService implements AdminUserServiceIf
 	 */
 	public function getAllAdminUserArray()
 	{
-		$users = AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
-		return $users->map(function ($user) {
-			return new ThriftAdminUser($user->toArray());
-		})->all();
+        return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
 	}
 
 	public function getUser($id)
