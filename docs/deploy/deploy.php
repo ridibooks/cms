@@ -22,7 +22,7 @@ foreach (glob(__DIR__ . '/servers/*.yml') as $filename) {
 
 desc('Build client code');
 task('deploy:build', function () {
-	run('composer update -d {{release_path}} --optimize-autoloader');
+	run('composer install -d {{release_path}} --optimize-autoloader');
 	run('make -C {{release_path}}');
 });
 
