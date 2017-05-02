@@ -10,11 +10,13 @@ class AdminUserService implements AdminUserServiceIf
 {
 	/**
 	 * 사용 가능한 모든 Admin 계정정보 가져온다.
-	 * @return array
 	 */
 	public function getAllAdminUserArray()
 	{
-        return AdminUser::select(['id', 'name'])->where('is_use', 1)->get()->toArray();
+        $users =  AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
+        return $users->map(function ($user) {
+            return new ThriftAdminUser($user->toArray());
+        })->all();
 	}
 
 	public function getUser($id)
