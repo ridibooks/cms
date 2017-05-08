@@ -6,4 +6,4 @@ build:
 	bower install
 
 composer:
-	composer update --no-dev --optimize-autoloader
+    composer install --no-dev --optimize-autoloader
