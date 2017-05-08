@@ -4,7 +4,33 @@
   리디북스 CMS
 {% endblock %}
 
+{% block style %}
+  <style>
+    #cms-notification li {
+      text-indent: 5px;
+    }
+
+    #cms-notification li:before {
+      content: "►";
+      padding-right: 5px;
+    }
+  </style>
+{% endblock %}
+
 {% block body %}
+  <div class="row">
+    <div id="cms-notification" class="alert alert-warning col-xs-8">
+      <p>ID/PW 입력 로그인 방식은 곧 사라질 예정입니다.</p>
+      <p>그 전에 Azure 로그인을 이용해보시고 문제가 발견되면 아래 링크를 통해 알려주세요.</p>
+      <p>
+        <ul>
+          <li>asana: <a href="https://app.asana.com/0/235684600038401/235684600038401">퍼포먼스팀 건의함</a> </li>
+          <li>email: <a>kt.kang@ridi.com</a> </li>
+        </ul>
+      </p>
+    </div>
+  </div>
+
   <div class="col-xs-12">
     권한 신청하기: <a href="https://app.asana.com/0/215306209905636/215207316128603">개발 지원 요청</a>
   </div>
