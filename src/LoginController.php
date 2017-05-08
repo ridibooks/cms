@@ -58,10 +58,10 @@ class LoginController implements ControllerProviderInterface
 		try {
 			LoginService::doLoginAction($id, $passwd);
 
-			$response = RedirectResponse::create($return_url);
+			$response = Response::create(UrlHelper::printAlertRedirect($return_url, 'ID/PW 입력 로그인 방식은 곧 사라질 예정입니다. 그 전에 Azure 로그인을 이용해보시고 문제가 발견되면 kt.kang@ridi.com(퍼포먼스팀 강기태)으로 알려주세요.'));
 			$response->headers->clearCookie('return_url');
+            return $response;
 
-			return $response;
 		} catch (\Exception $e) {
 			return UrlHelper::printAlertHistoryBack($e->getMessage());
 		}
