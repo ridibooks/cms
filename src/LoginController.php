@@ -58,7 +58,7 @@ class LoginController implements ControllerProviderInterface
 		try {
 			LoginService::doLoginAction($id, $passwd);
 
-			$response = Response::create(UrlHelper::printAlertRedirect($return_url, 'ID/PW 입력 로그인 방식은 곧 사라질 예정입니다. 그 전에 Azure 로그인을 이용해보시고 문제가 발견되면 kt.kang@ridi.com(퍼포먼스팀 강기태)으로 알려주세요.'));
+			$response = Response::create(UrlHelper::printAlertRedirect($return_url, "로그인 시 ID/PW 입력 방식은 곧 사라지고 메일 인증 방식만 남을 예정입니다.\n메일 인증 방식을 이용해보지 않은 분들은 그전까지 한번 테스트 부탁드립니다.\n(로그인 화면에서 Sign in with Azure 버튼 클릭)"));
 			$response->headers->clearCookie('return_url');
             return $response;
 
