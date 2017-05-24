@@ -2,12 +2,6 @@
   "name": "ridibooks/cms",
   "description": "Ridibooks CMS Server Aplication",
   "license": "MIT",
-  "authors": [
-    {
-      "name": "강기태",
-      "email": "kt.kang@ridi.com"
-    }
-  ],
   "require": {
     "illuminate/database": "^5.2",
     "vlucas/phpdotenv": "^2.4",
