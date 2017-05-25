@@ -4,46 +4,7 @@
   리디북스 CMS
 {% endblock %}
 
-{% block style %}
-  <style>
-    #cms-notification li {
-      text-indent: 5px;
-    }
-
-    #cms-notification li:before {
-      content: "►";
-      padding-right: 5px;
-    }
-
-    #cms-notification p {
-      padding: 5px;
-    }
-  </style>
-{% endblock %}
-
 {% block body %}
-  <div class="row">
-    <div id="cms-notification" class="alert alert-warning col-xs-8">
-      <p><h4>[ 공지사항 ]</h4></p>
-      <p>안녕하세요.
-        <br/> 이번달 말까지 CMS에서 아이디/비번 로그인 방식이 제거될 예정입니다.</p>
-      <p>CMS 로그인 방식은 아이디/비번을 직접 입력하는 방식과 이메일계정으로 인증하는 방식 두가지가 있습니다.
-        <br/> 계정 생성에 대한 관리자 분들의 수고를 덜어들이기 위해, 리디 이메일 계정만 있으면 인증이 가능하도록 변경하려고 합니다.</p>
-      <p>제거 전까지 메일 계정 로그인을 테스트해보시고 문제가 발견되면 아래 링크를 통해 알려주세요.
-        <br/> (이메일 계정 인증 방식은 로그인 화면에서 [Sign in with Azure] 버튼을 누르시면 됩니다)</p>
-      <p>
-      <p>
-        <ul>
-          <li>asana: <a href="https://app.asana.com/0/235684600038401/235684600038401">퍼포먼스팀 건의함</a> </li>
-          <li>email: <a>kt.kang@ridi.com</a> </li>
-        </ul>
-      </p>
-      <p>
-        <a href='/login'>>> 로그인 화면 가기</a>
-      </p>
-    </div>
-  </div>
-
   <div class="col-xs-12">
     권한 신청하기: <a href="https://app.asana.com/0/215306209905636/215207316128603">개발 지원 요청</a>
   </div>

@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms;
 
+use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Platform\Cms\Util\UrlHelper;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Exception\InvalidResourceException;
 
 class LoginController implements ControllerProviderInterface
 {
@@ -22,7 +24,6 @@ class LoginController implements ControllerProviderInterface
         $controller_collection->get('/login', [$this, 'getLoginPage']);
 
         // login process
-        $controller_collection->post('/login-cms', [$this, 'loginWithCms']);
         $controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
 
         // logout
@@ -49,24 +50,6 @@ class LoginController implements ControllerProviderInterface
         ], $response);
     }
 
-    public function loginWithCms(Request $request, Application $app)
-    {
-        $id = $request->get('id');
-        $passwd = $request->get('passwd');
-        $return_url = $request->cookies->get('return_url');
-
-        try {
-            LoginService::doLoginAction($id, $passwd);
-
-            $response = Response::create(UrlHelper::printAlertRedirect($return_url,
-                "로그인 시 ID/PW 입력 방식은 곧 사라지고 메일 인증 방식만 남을 예정입니다.\n메일 인증 방식을 이용해보지 않은 분들은 그전까지 한번 테스트 부탁드립니다.\n(로그인 화면에서 Sign in with Azure 버튼 클릭)"));
-            $response->headers->clearCookie('return_url');
-            return $response;
-        } catch (\Exception $e) {
-            return UrlHelper::printAlertHistoryBack($e->getMessage());
-        }
-    }
-
     public function loginWithAzure(Request $request, Application $app)
     {
         $code = $request->get('code');
@@ -76,23 +59,26 @@ class LoginController implements ControllerProviderInterface
             $error = $request->get('error');
             $error_description = $request->get('error_description');
 
-            // TODO: send log to sentry
+            $sentry_client = $app[SentryServiceProvider::SENTRY];
+            if ($sentry_client) {
+                $sentry_client->captureMessage($error_description, [
+                    'extra' => [ 'error_code' => $error ]
+                ]);
+            }
+
             return Response::create('azure login fail', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         try {
-            $azure_config = $app['azure'];
-            $resource = AzureOAuth2Service::getResource($code, $azure_config);
-
-            LoginService::doLoginActionWithoutPasswd($resource->mailNickname);
-
-            $response = RedirectResponse::create($return_url);
-            $response->headers->clearCookie('return_url');
-
-            return $response;
+            $resource = AzureOAuth2Service::getResource($code, $app['azure']);
+            LoginService::doLoginWithAzure($resource);
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
         }
+
+        $response = RedirectResponse::create($return_url);
+        $response->headers->clearCookie('return_url');
+        return $response;
     }
 
     public function logout()

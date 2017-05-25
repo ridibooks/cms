@@ -3,49 +3,25 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Platform\Cms\Auth\PasswordService;
 use Ridibooks\Platform\Cms\Session\CouchbaseSessionHandler;
 
 class LoginService
 {
     const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 14; // 2주
 
-    /**
-     * @param string $id
-     * @param string $passwd
-     * @throws \Exception
-     */
-    public static function doLoginAction($id, $passwd)
+    public static function doLoginWithAzure($azure_resource)
     {
         $user_service = new AdminUserService();
-        $user = $user_service->getUser($id);
+        $user = $user_service->getUser($azure_resource->mailNickname);
         $user = ThriftService::convertUserToArray($user);
-        if (!$user || $user['is_use'] != '1') {
-            throw new \Exception('잘못된 계정정보입니다.');
+        if (!$user || !$user['id']) {
+            $user_service->addNewUser($azure_resource->mailNickname, $azure_resource->displayName, '');
+
+        } else if ($user['is_use'] != '1') {
+            throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }
 
-        $passwd_service = new PasswordService();
-        if (!$passwd_service->isPasswordMatchToHashed($passwd, $user['passwd'])) {
-            throw new \Exception('비밀번호가 맞지 않습니다.');
-        }
-
-        if ($passwd_service->needsRehash($user['passwd'])) {
-            $user_service->updatePassword($id, $passwd);
-        }
-
-        self::setSessions($id);
-    }
-
-    public static function doLoginActionWithoutPasswd($id)
-    {
-        $user_service = new AdminUserService();
-        $user = $user_service->getUser($id);
-        $user = ThriftService::convertUserToArray($user);
-        if (!$user || $user['is_use'] != '1') {
-            throw new \Exception('잘못된 계정정보입니다.');
-        }
-
-        self::setSessions($id);
+        self::setSessions($azure_resource->mailNickname);
     }
 
     public static function getLoginPageUrl($login_endpoint, $callback_path, $return_path)
