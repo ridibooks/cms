@@ -2,6 +2,7 @@
 namespace Deployer;
 
 require 'recipe/common.php';
+require 'vendor/deployer/recipes/slack.php';
 
 // Configuration
 
@@ -19,6 +20,28 @@ set('http_user', 'www-data');
 foreach (glob(__DIR__ . '/servers/*.yml') as $filename) {
 	serverList($filename);
 }
+
+task('deploy:set_slack', function () {
+    if (!has('host')) {
+        set('host', 'host');
+    }
+    if (!has('stages')) {
+        set('stages', ['stage']);
+    }
+    if (!has('release_path')) {
+        set('release_path', 'release_path');
+    }
+
+    $git_last_log = run("cd {{current_path}} && {{bin/git}} log --oneline -1")->toString();
+    $server_name = get('server')['name'];
+    if (has('slack')) {
+        $slack = get('slack');
+    } else {
+        $slack = [];
+    }
+    $slack['message'] = "${server_name}에 {{stage}} 배포가 완료되었습니다.\n>*Release path*\n>  _{{release_path}}_\n>*Latest commit*\n>  `" . $git_last_log . "`";
+    set('slack', $slack);
+});
 
 desc('Build client code');
 task('deploy:build', function () {
@@ -38,7 +61,9 @@ task('deploy', [
 	'deploy:build', //client code 빌드
 	'deploy:clear_paths', //clear_paths에 지정된 path들을 삭제한다.
 	'deploy:symlink', //release된 디렉토리에 current로 symlink를 설정한다.
+    'deploy:set_slack',
 	'deploy:unlock', //deploy:lock을 해제한다. 이것이 실행되기 전에 도중 종료된 경우 직접 "dep deploy:unlock"으로 해제해주어야 다시 lock을 얻을 수 있다.
 	'cleanup' //keep_releases 옵션을 넘는 release를 오래된 순으로 삭제한다. (default = 5)
 ]);
 after('deploy', 'success');
+after('deploy', 'deploy:slack');
