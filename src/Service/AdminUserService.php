@@ -111,4 +111,15 @@ class AdminUserService implements AdminUserServiceIf
 
         return true;
     }
+
+    public function addNewUser($user_id, $name, $team)
+    {
+        AdminUser::create([
+            'id' => $user_id,
+            'passwd' => '',
+            'name' => $name,
+            'team' => $team,
+            'is_use' => 1,
+        ]);
+    }
 }

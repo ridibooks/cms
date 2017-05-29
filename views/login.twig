@@ -29,30 +29,6 @@
     <div class="col-md-offset-4 col-md-4">
       <h3 class="text-center">Ridibooks CMS</h3>
       <hr/>
-
-      <form class="form-horizontal" role="form" action="/login-cms" method="post">
-        <div class="form-group">
-          <label for="inputId" class="col-sm-3 control-label">ID</label>
-          <div class="col-sm-9">
-            <input type="text" class="form-control" id="inputId" name="id" placeholder="ID" required autofocus>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="inputPassword" class="col-sm-3 control-label">Password</label>
-          <div class="col-sm-9">
-            <input type="password" class="form-control" id="inputPassword" name="passwd" placeholder="Password" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-3 col-sm-9">
-            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-          </div>
-        </div>
-      </form>
-
-      <hr/>
-
-      <p class="comment">Or you can login with Azure</p>
       <a role="button" class="btn btn-info btn-block" href='{{ azure_login }}'>
         Sign in with Azure
       </a>
