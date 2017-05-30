@@ -36,11 +36,7 @@ class LoginController implements ControllerProviderInterface
     {
         $azure_config = $app['azure'];
         $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
-        $return_url = $request->get('return_url');
-
-        if (!$return_url) {
-            $return_url = '/welcome';
-        }
+        $return_url = $request->get('return_url', '/welcome');
 
         $response = Response::create();
         $response->headers->setCookie(new Cookie('return_url', $return_url));
@@ -53,7 +49,7 @@ class LoginController implements ControllerProviderInterface
     public function loginWithAzure(Request $request, Application $app)
     {
         $code = $request->get('code');
-        $return_url = $request->cookies->get('return_url');
+        $return_url = $request->cookies->get('return_url', '/welcome');
 
         if (!$code) {
             $error = $request->get('error');
