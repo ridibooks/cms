@@ -3,3 +3,4 @@
 vendor
 static/bower_components
 docs/deploy/servers/*
+!docs/deploy/servers/sample.yml
