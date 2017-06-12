@@ -7,31 +7,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 $autoloader = require __DIR__ . "/vendor/autoload.php";
 
-if (is_readable('.env')) {
+if (is_readable(__DIR__ . '/.env')) {
     $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
     $dotenv->load();
 }
 
-$cms_rpc_url = $_ENV['CMS_RPC_URL'];
-if (!empty($cms_rpc_url)) {
-    ThriftService::setEndPoint($cms_rpc_url);
-}
-
-// start session
-$session_domain = $_ENV['SESSION_DOMAIN'];
-$couchbase_host = $_ENV['COUCHBASE_HOST'];
-$memcache_host = $_ENV['MEMCACHE_HOST'];
-
-if (!empty($memcache_host)) {
-    LoginService::startMemcacheSession($memcache_host, $session_domain);
-} elseif (isset($couchbase_host) && $couchbase_host !== '') {
-    LoginService::startCouchbaseSession($couchbase_host, $session_domain);
-} else {
-    LoginService::startSession($session_domain);
-}
-
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
+    'test_id' => $_ENV['TEST_ID'],
     'sentry_key' => $_ENV['SENTRY_KEY'],
     'mysql' => [
         'host' => $_ENV['MYSQL_HOST'],
@@ -53,5 +36,23 @@ $app = new CmsServerApplication([
 $app->before(function (Request $request) {
     return MiniRouter::shouldRedirectForLogin($request);
 });
+
+$cms_rpc_url = $_ENV['CMS_RPC_URL'];
+if (!empty($cms_rpc_url)) {
+    ThriftService::setEndPoint($cms_rpc_url);
+}
+
+// start session
+$session_domain = $_ENV['SESSION_DOMAIN'];
+$couchbase_host = $_ENV['COUCHBASE_HOST'];
+$memcache_host = $_ENV['MEMCACHE_HOST'];
+
+if (!empty($memcache_host)) {
+    LoginService::startMemcacheSession($memcache_host, $session_domain);
+} elseif (isset($couchbase_host) && $couchbase_host !== '') {
+    LoginService::startCouchbaseSession($couchbase_host, $session_domain);
+} else {
+    LoginService::startSession($session_domain);
+}
 
 $app->run();

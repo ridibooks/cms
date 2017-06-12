@@ -34,8 +34,12 @@ class LoginController implements ControllerProviderInterface
 
     public function getLoginPage(Request $request, CmsServerApplication $app)
     {
-        $azure_config = $app['azure'];
-        $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
+        if (!empty($app['test_id'])) {
+            $end_point = '/login-azure?code=test';
+        } else {
+            $azure_config = $app['azure'];
+            $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
+        }
         $return_url = $request->get('return_url', '/welcome');
 
         $response = Response::create();
@@ -66,8 +70,12 @@ class LoginController implements ControllerProviderInterface
         }
 
         try {
-            $resource = AzureOAuth2Service::getResource($code, $app['azure']);
-            LoginService::doLoginWithAzure($resource);
+            if (!empty($app['test_id'])) {
+                LoginService::setSessions($app['test_id']);
+            } else {
+                $resource = AzureOAuth2Service::getResource($code, $app['azure']);
+                LoginService::doLoginWithAzure($resource);
+            }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
         }
