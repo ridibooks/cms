@@ -16,8 +16,7 @@ class LoginService
         $user = ThriftService::convertUserToArray($user);
         if (!$user || !$user['id']) {
             $user_service->addNewUser($azure_resource->mailNickname, $azure_resource->displayName, '');
-
-        } else if ($user['is_use'] != '1') {
+        } elseif ($user['is_use'] != '1') {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }
 

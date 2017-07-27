@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Translation\Exception\InvalidResourceException;
 
 class LoginController implements ControllerProviderInterface
 {
@@ -62,7 +61,7 @@ class LoginController implements ControllerProviderInterface
             $sentry_client = $app[SentryServiceProvider::SENTRY];
             if ($sentry_client) {
                 $sentry_client->captureMessage($error_description, [
-                    'extra' => [ 'error_code' => $error ]
+                    'extra' => ['error_code' => $error]
                 ]);
             }
 

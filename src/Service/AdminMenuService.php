@@ -81,5 +81,4 @@ class AdminMenuService implements AdminMenuServiceIf
         $user_ids = array_unique(array_merge($tags_users, $menu_users));
         return $user_ids;
     }
-
 }
