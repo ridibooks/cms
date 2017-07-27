@@ -49,10 +49,10 @@ $memcache_host = $_ENV['MEMCACHE_HOST'];
 
 if (!empty($memcache_host)) {
     LoginService::startMemcacheSession($memcache_host, $session_domain);
-} elseif (isset($couchbase_host) && $couchbase_host !== '') {
+} elseif (!empty($couchbase_host)) {
     LoginService::startCouchbaseSession($couchbase_host, $session_domain);
 } else {
     LoginService::startSession($session_domain);
 }
-
+$service = new \Ridibooks\Cms\Service\AdminUserService();
 $app->run();
