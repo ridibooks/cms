@@ -36,6 +36,16 @@ class AdminMenu extends Model
         );
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(
+            AdminTag::class,
+            'tb_admin2_tag_menu',
+            'menu_id',
+            'tag_id'
+        );
+    }
+
     public function ajaxMenus()
     {
         return $this->hasMany(AdminMenuAjax::class, 'menu_id');
