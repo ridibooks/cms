@@ -58,4 +58,28 @@ class AdminMenuService implements AdminMenuServiceIf
 
         return $menu->users->pluck('id')->all();
     }
+
+    public function getAllUserIds($menu_id)
+    {
+        /** @var AdminMenu $menu */
+        $menu = AdminMenu::find($menu_id);
+        if (!$menu) {
+            return [];
+        }
+
+        // 1: menu.tags.users
+        $tags_users = $menu->tags
+            ->map(function ($tag) {
+                return $tag->users->pluck('id');
+            })
+            ->collapse()
+            ->all();
+
+        // 2: menu:users
+        $menu_users = $menu->users->pluck('id')->all();
+
+        $user_ids = array_unique(array_merge($tags_users, $menu_users));
+        return $user_ids;
+    }
+
 }
