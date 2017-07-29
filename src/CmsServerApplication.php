@@ -1,7 +1,7 @@
 <?php
 namespace Ridibooks\Cms;
 
-use Illuminate\Database\Capsule;
+use JG\Silex\Provider\CapsuleServiceProvider;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Thrift\ThriftResponse;
 use Ridibooks\Platform\Cms\CmsApplication;
@@ -17,7 +17,7 @@ class CmsServerApplication extends CmsApplication
         parent::__construct($values);
         $this['twig.path'] = __DIR__ . '/../views/';
 
-        $this->bootstrap();
+        $this->registerCapsuleService();
         $this->registerSentryServiceProvider();
 
         // thrift proxy
@@ -31,28 +31,35 @@ class CmsServerApplication extends CmsApplication
         $this->mount('/', new CommonController());
     }
 
-    private function bootstrap()
+    private function registerCapsuleService()
     {
         $mysql = $this['mysql'];
 
-        $capsule = new Capsule\Manager();
-        $capsule->addConnection([
-            'driver' => 'mysql',
-            'host' => $mysql['host'],
-            'database' => $mysql['database'],
-            'username' => $mysql['user'],
-            'password' => $mysql['password'],
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => '',
-            'options' => [
-                // mysqlnd 5.0.12-dev - 20150407 에서 PDO->prepare 가 매우 느린 현상
-                \PDO::ATTR_EMULATE_PREPARES => true
+        $this->register(
+            new CapsuleServiceProvider(),
+            [
+                'capsule.connections' => [
+                    'default' => [
+                        'driver' => 'mysql',
+                        'host' => $mysql['host'],
+                        'database' => $mysql['database'],
+                        'username' => $mysql['user'],
+                        'password' => $mysql['password'],
+                        'charset' => 'utf8',
+                        'collation' => 'utf8_unicode_ci',
+                        'prefix' => '',
+                        'options' => [
+                            // mysqlnd 5.0.12-dev - 20150407 에서 PDO->prepare 가 매우 느린 현상
+                            \PDO::ATTR_EMULATE_PREPARES => true
+                        ]
+                    ]
+                ],
+                'capsule.options' => [
+                    'setAsGlobal' => true,
+                    'bootEloquent' => true,
+                ],
             ]
-        ]);
-
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
+        );
     }
 
     private function registerSentryServiceProvider()
