@@ -4,13 +4,13 @@
   "license": "MIT",
   "require": {
     "illuminate/database": "^5.2",
-    "vlucas/phpdotenv": "^2.4",
-    "silex/silex": "^2.0",
-    "twig/twig": "^2.0.0",
-    "sentry/sentry": "^1.6",
+    "jguyomard/silex-capsule-eloquent": "^2.0",
     "moriony/silex-sentry-provider": "~2.0.0",
     "ridibooks/cms-sdk": "^1.0.0",
-    "jguyomard/silex-capsule-eloquent": "^2.0"
+    "sentry/sentry": "^1.6",
+    "silex/silex": "^2.0",
+    "twig/twig": "^2.0.0",
+    "vlucas/phpdotenv": "^2.4"
   },
   "autoload": {
     "psr-4": {
