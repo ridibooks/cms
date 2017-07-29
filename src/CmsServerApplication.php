@@ -53,12 +53,6 @@ class CmsServerApplication extends CmsApplication
 
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
-
-        ini_set('max_execution_time', 300);
-        ini_set('max_input_time', 60);
-
-        mb_internal_encoding('UTF-8');
-        mb_regex_encoding("UTF-8");
     }
 
     private function registerSentryServiceProvider()
