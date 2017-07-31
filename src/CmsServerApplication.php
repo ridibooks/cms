@@ -39,10 +39,10 @@ class CmsServerApplication extends CmsApplication
                 'capsule.connections' => [
                     'default' => [
                         'driver' => 'mysql',
-                        'host' => $this['mysql']['host'],
-                        'database' => $this['mysql']['database'],
-                        'username' => $this['mysql']['user'],
-                        'password' => $this['mysql']['password'],
+                        'host' => $_ENV['MYSQL_HOST'],
+                        'database' => $_ENV['MYSQL_DATABASE'],
+                        'username' => $_ENV['MYSQL_USER'],
+                        'password' => $_ENV['MYSQL_PASSWORD'],
                         'charset' => 'utf8',
                         'collation' => 'utf8_unicode_ci'
                     ]
@@ -57,16 +57,17 @@ class CmsServerApplication extends CmsApplication
 
     private function registerSentryServiceProvider()
     {
-        $sentry_dsn = $this['sentry_key'];
-        if (isset($sentry_dsn) && $sentry_dsn !== '') {
-            $this->register(new SentryServiceProvider(), [
-                SentryServiceProvider::SENTRY_OPTIONS => [
-                    SentryServiceProvider::OPT_DSN => $sentry_dsn,
-                ]
-            ]);
-
-            $client = $this[SentryServiceProvider::SENTRY];
-            $client->install();
+        if (empty($_ENV['SENTRY_KEY'])) {
+            return;
         }
+
+        $this->register(new SentryServiceProvider(), [
+            SentryServiceProvider::SENTRY_OPTIONS => [
+                SentryServiceProvider::OPT_DSN => $_ENV['SENTRY_KEY'],
+            ]
+        ]);
+
+        $client = $this[SentryServiceProvider::SENTRY];
+        $client->install();
     }
 }

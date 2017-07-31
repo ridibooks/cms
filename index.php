@@ -28,13 +28,6 @@ if (!empty($memcache_host)) {
 $app = new CmsServerApplication([
     'debug' => $_ENV['DEBUG'],
     'test_id' => $_ENV['TEST_ID'],
-    'sentry_key' => $_ENV['SENTRY_KEY'],
-    'mysql' => [
-        'host' => $_ENV['MYSQL_HOST'],
-        'database' => $_ENV['MYSQL_DATABASE'],
-        'user' => $_ENV['MYSQL_USER'],
-        'password' => $_ENV['MYSQL_PASSWORD'],
-    ],
     'azure' => [
         'tenent' => $_ENV['AZURE_TENENT'],
         'client_id' => $_ENV['AZURE_CLIENT_ID'],
