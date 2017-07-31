@@ -33,25 +33,18 @@ class CmsServerApplication extends CmsApplication
 
     private function registerCapsuleService()
     {
-        $mysql = $this['mysql'];
-
         $this->register(
             new CapsuleServiceProvider(),
             [
                 'capsule.connections' => [
                     'default' => [
                         'driver' => 'mysql',
-                        'host' => $mysql['host'],
-                        'database' => $mysql['database'],
-                        'username' => $mysql['user'],
-                        'password' => $mysql['password'],
+                        'host' => $this['mysql']['host'],
+                        'database' => $this['mysql']['database'],
+                        'username' => $this['mysql']['user'],
+                        'password' => $this['mysql']['password'],
                         'charset' => 'utf8',
-                        'collation' => 'utf8_unicode_ci',
-                        'prefix' => '',
-                        'options' => [
-                            // mysqlnd 5.0.12-dev - 20150407 에서 PDO->prepare 가 매우 느린 현상
-                            \PDO::ATTR_EMULATE_PREPARES => true
-                        ]
+                        'collation' => 'utf8_unicode_ci'
                     ]
                 ],
                 'capsule.options' => [
