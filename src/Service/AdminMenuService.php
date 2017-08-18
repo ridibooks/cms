@@ -70,13 +70,13 @@ class AdminMenuService implements AdminMenuServiceIf
         // 1: menu.tags.users
         $tags_users = $menu->tags
             ->map(function ($tag) {
-                return $tag->users->pluck('id');
+                return $tag->users->where('is_use', 1)->pluck('id');
             })
             ->collapse()
             ->all();
 
         // 2: menu:users
-        $menu_users = $menu->users->pluck('id')->all();
+        $menu_users = $menu->users->where('is_use', 1)->pluck('id')->all();
 
         $user_ids = array_unique(array_merge($tags_users, $menu_users));
         return $user_ids;

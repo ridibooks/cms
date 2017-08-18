@@ -3,7 +3,7 @@
 all: build composer
 
 build:
-	bower install
+	bower install --allow-root
 
 composer:
 	composer install --no-dev --optimize-autoloader
