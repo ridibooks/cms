@@ -650,7 +650,7 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v1.0.9",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridibooks/cms-sdk.git",
