@@ -7,7 +7,7 @@ use Ridibooks\Platform\Cms\Session\CouchbaseSessionHandler;
 
 class LoginService
 {
-    const SESSION_TIMEOUT_SEC = 60 * 60 * 24 * 14; // 2주
+    const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
 
     public static function doLoginWithAzure($azure_resource)
     {
@@ -86,8 +86,8 @@ class LoginService
 
     public static function startMemcacheSession($server_hosts, $session_domain = null)
     {
-        session_set_cookie_params(86400 * 15, '/', $session_domain);
-        ini_set('session.gc_maxlifetime', 86400 * 15);
+        session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
+        ini_set('session.gc_maxlifetime', self::SESSION_TIMEOUT_SEC);
         ini_set('session.save_handler', 'memcache');
         ini_set('session.save_path', $server_hosts);
 
