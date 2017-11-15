@@ -5,7 +5,7 @@ namespace Ridibooks\Cms;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
-use Ridibooks\Cms\Util\UrlHelper;
+use Ridibooks\Platform\Cms\Util\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
