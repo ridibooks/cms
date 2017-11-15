@@ -3,7 +3,7 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Platform\Cms\Util\UrlHelper;
+use Ridibooks\Cms\Util\UrlHelper;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

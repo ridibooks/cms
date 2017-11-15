@@ -2,8 +2,8 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Session\CouchbaseSessionHandler;
 use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Platform\Cms\Session\CouchbaseSessionHandler;
 
 class LoginService
 {
