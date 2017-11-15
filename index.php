@@ -13,9 +13,9 @@ if (is_readable(__DIR__ . '/.env')) {
 }
 
 // start session
-$session_domain = $_ENV['SESSION_DOMAIN'];
-$couchbase_host = $_ENV['COUCHBASE_HOST'];
-$memcache_host = $_ENV['MEMCACHE_HOST'];
+$session_domain = $_ENV['SESSION_DOMAIN'] ?? '';
+$couchbase_host = $_ENV['COUCHBASE_HOST'] ?? '';
+$memcache_host = $_ENV['MEMCACHE_HOST'] ?? '';
 
 if (!empty($memcache_host)) {
     LoginService::startMemcacheSession($memcache_host, $session_domain);
@@ -26,19 +26,19 @@ if (!empty($memcache_host)) {
 }
 
 $app = new CmsServerApplication([
-    'debug' => $_ENV['DEBUG'],
-    'test_id' => $_ENV['TEST_ID'],
+    'debug' => $_ENV['DEBUG'] ?? false,
+    'test_id' => $_ENV['TEST_ID'] ?? '',
     'azure' => [
-        'tenent' => $_ENV['AZURE_TENENT'],
-        'client_id' => $_ENV['AZURE_CLIENT_ID'],
-        'client_secret' => $_ENV['AZURE_CLIENT_SECRET'],
-        'resource' => $_ENV['AZURE_RESOURCE'],
-        'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'],
-        'api_version' => $_ENV['AZURE_API_VERSION'],
+        'tenent' => $_ENV['AZURE_TENENT'] ?? '',
+        'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
+        'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
+        'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
+        'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+        'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
     ],
 ]);
 
-$cms_rpc_url = $_ENV['CMS_RPC_URL'];
+$cms_rpc_url = $_ENV['CMS_RPC_URL'] ?? '';
 if (!empty($cms_rpc_url)) {
     ThriftService::setEndPoint($cms_rpc_url);
 }
