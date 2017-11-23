@@ -1,6 +1,7 @@
 {
   "name": "ridibooks/cms",
   "description": "Ridibooks CMS Server Aplication",
+  "type": "project",
   "license": "MIT",
   "require": {
     "illuminate/database": "^5.2",
