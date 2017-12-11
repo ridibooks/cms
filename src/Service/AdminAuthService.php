@@ -369,10 +369,10 @@ class AdminAuthService
     /**적합한 유저인지 검사한다.
      * @return bool
      */
-    public static function isValidUser()
+    public static function isValidUser(?string $user_id)
     {
         $user_service = new AdminUserService();
-        $admin = $user_service->getUser(LoginService::GetAdminID());
+        $admin = $user_service->getUser($user_id ?? LoginService::GetAdminID());
         if (!$admin->id) {
             return false;
         }
@@ -406,9 +406,18 @@ class AdminAuthService
      */
     public static function authorize($request)
     {
-        if (!self::isValidLogin() || !self::isValidUser()) {
+        return self::authorizeRequest(LoginService::GetAdminID(), $request->getRequestUri());
+    }
+
+    /**
+     * @param string $user_id
+     * @param string $request_uri
+     * @return bool
+     */
+    public static function authorizeRequest($user_id, $request_uri)
+    {
+        if (!self::isValidLogin() || !self::isValidUser($user_id)) {
             $login_url = '/login';
-            $request_uri = $request->getRequestUri();
             if (!empty($request_uri) && $request_uri != '/login') {
                 $login_url .= '?return_url=' . urlencode($request_uri);
             }
@@ -419,12 +428,7 @@ class AdminAuthService
         try {
             self::hasUrlAuth();
         } catch (\Exception $e) {
-            // 이상하지만 기존과 호환성 맞추기 위해
-            if ($request->isXmlHttpRequest()) {
-                return new Response($e->getMessage());
-            } else { //일반 페이지
-                return new Response(UrlHelper::printAlertHistoryBack($e->getMessage()));
-            }
+            return new Response(UrlHelper::printAlertHistoryBack($e->getMessage()));
         }
 
         return null;
