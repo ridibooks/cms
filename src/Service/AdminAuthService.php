@@ -278,6 +278,7 @@ class AdminAuthService
      * - 각 menu 밑에 sub url 검사를 한번 더 하는데 의존관계를 알기 힘들다.
      * - 현재는 여러 페이지에서 사용하는 ajax_url의 권한을 확실하게 하지 못한다.
      * - 나중에 권한을 좀 더 세분화 시킬때는 sub url을 unique키로 하여 각 sub url의 진입점을 구분하도록 메뉴주소를 따로 구분하는게 좋을것 같다.
+     * @deprecated
      * @param null $method
      * @param null $check_url
      * @throws
@@ -294,28 +295,21 @@ class AdminAuthService
      * @param null $check_url
      * @return bool
      */
-    public static function hasHashAuth($hash = null, $check_url = null)
+    public static function hasHashAuth($hash = null, $check_url = null, $auth_list = null)
     {
         if (!isset($check_url) || trim($check_url) === '') {
             $check_url = $_SERVER['REQUEST_URI'];
         }
 
-        $allowed_urls = [
-            '/admin/book/pa',
-            '/me', // 본인 정보 수정
-            '/welcome',
-            '/logout',
-            '/login-azure',
-            '/index.php',
-            '/',
-        ];
+        if (!isset($auth_list)) {
+            $auth_list = $_SESSION['session_user_auth'];
+        }
 
-        // welcome 페이지는 항상 허용
-        if (in_array($check_url, $allowed_urls)) {
+        if (self::isWhiteListUrl($check_url)) {
             return true;
         }
 
-        foreach ($_SESSION['session_user_auth'] as $auth) {
+        foreach ($auth_list as $auth) {
             if (self::isAuthUrl($check_url, $auth['menu_url'])) {
                 if (self::isAuthCorrect($hash, (isset($auth['auth']) ? $auth['auth'] : []))) {
                     return true;
@@ -337,6 +331,21 @@ class AdminAuthService
             }
         }
         return false;
+    }
+
+    public static function isPublicUrl($check_url)
+    {
+        $public_urls = [
+            '/admin/book/pa',
+            '/me', // 본인 정보 수정
+            '/welcome',
+            '/logout',
+            '/login-azure',
+            '/index.php',
+            '/',
+        ];
+
+        return in_array($check_url, $public_urls);
     }
 
     /**해당 URL의 Hash 권한 Array를 반환한다.
@@ -369,7 +378,7 @@ class AdminAuthService
     /**적합한 유저인지 검사한다.
      * @return bool
      */
-    public static function isValidUser(?string $user_id)
+    public static function isValidUser(string $user_id)
     {
         $user_service = new AdminUserService();
         $admin = $user_service->getUser($user_id ?? LoginService::GetAdminID());
@@ -406,17 +415,7 @@ class AdminAuthService
      */
     public static function authorize($request)
     {
-        return self::authorizeRequest(LoginService::GetAdminID(), $request->getRequestUri());
-    }
-
-    /**
-     * @param string $user_id
-     * @param string $request_uri
-     * @return bool
-     */
-    public static function authorizeRequest($user_id, $request_uri)
-    {
-        if (!self::isValidLogin() || !self::isValidUser($user_id)) {
+        if (!self::isValidLogin()) {
             $login_url = '/login';
             if (!empty($request_uri) && $request_uri != '/login') {
                 $login_url .= '?return_url=' . urlencode($request_uri);
@@ -426,11 +425,40 @@ class AdminAuthService
         }
 
         try {
-            self::hasUrlAuth();
+            if (!self::authorizeRequest(LoginService::GetAdminID(), $request->getRequestUri())) {
+                throw new \Exception("해당 권한이 없습니다.");
+            }
         } catch (\Exception $e) {
             return new Response(UrlHelper::printAlertHistoryBack($e->getMessage()));
         }
+    }
 
-        return null;
+    /**
+     * @param string $user_id
+     * @param string $request_uri
+     * @return bool
+     */
+    public static function authorizeRequest($user_id, $request_uri)
+    {
+        if (!self::isValidUser($user_id)) {
+            return false;
+        }
+
+        if (self::isPublicUrl($request_uri)) {
+            return true;
+        }
+
+        $user_service = new AdminUserService();
+        $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
+        $ajax_urls = $user_service->getAllMenuAjaxList($user_id, 'ajax_url');
+        $urls = array_merge($menu_urls, $ajax_urls);
+
+        foreach ($urls as $url) {
+            if (self::isAuthUrl($request_uri, $url)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

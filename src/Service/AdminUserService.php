@@ -40,7 +40,7 @@ class AdminUserService implements AdminUserServiceIf
         return $user->tags->pluck('id')->all();
     }
 
-    public function getAdminUserMenu($user_id)
+    public function getAdminUserMenu($user_id, $column = 'id')
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($user_id);
@@ -48,10 +48,28 @@ class AdminUserService implements AdminUserServiceIf
             return [];
         }
 
-        return $user->menus->pluck('id')->all();
+        return $user->menus->pluck($column)->all();
+    }
+
+    public function getAdminUserMenuAjax($user_id, $column = 'id')
+    {
+        /** @var AdminUser $user */
+        $user = AdminUser::with('menus.ajaxMenus')->find($user_id);
+        if (!$user) {
+            return [];
+        }
+
+        return $user->menus->map(function ($menu) use ($column) {
+            return $menu->ajaxMenus->pluck($column);
+        })->collapse()->all();
     }
 
     public function getAllMenuIds($user_id)
+    {
+        return $this->getAllMenus($user_id, 'id');
+    }
+
+    public function getAllMenus($user_id, $column = null)
     {
         $user = AdminUser::with('tags.menus')->find($user_id);
         if (!$user) {
@@ -60,19 +78,45 @@ class AdminUserService implements AdminUserServiceIf
 
         // 1: user.tags.menus
         $tags_menus = $user->tags
-            ->map(function ($tag) {
-                return $tag->menus->pluck('id');
+            ->map(function ($tag) use ($column) {
+                return $tag->menus->pluck($column);
             })
             ->collapse()
             ->all();
 
         // 2: user.menus
-        $user_menus = $this->getAdminUserMenu($user_id);
+        $user_menus = $this->getAdminUserMenu($user_id, $column);
 
         // uniq(1 + 2)
-        $menu_ids = array_unique(array_merge($tags_menus, $user_menus));
+        $menus = array_unique(array_merge($tags_menus, $user_menus));
 
-        return $menu_ids;
+        return $menus;
+    }
+
+    public function getAllMenuAjaxList($user_id, $column = null)
+    {
+        $user = AdminUser::with('tags.menus.ajaxMenus')->find($user_id);
+        if (!$user) {
+            return [];
+        }
+
+        // 1: user.tags.menus.ajax
+        $tags_ajax_list = $user->tags
+            ->map(function ($tag) use ($column) {
+                return $tag->menus->map(function ($menu) use ($column) {
+                    return $menu->ajaxMenus->pluck($column);
+                })->collapse();
+            })
+            ->collapse()
+            ->all();
+
+        // 2: user.menus.ajax
+        $user_ajax_list = $this->getAdminUserMenuAjax($user_id, $column);
+
+        // uniq(1 + 2)
+        $ajax_list = array_unique(array_merge($tags_ajax_list, $user_ajax_list));
+
+        return $ajax_list;
     }
 
     public function updateMyInfo($name, $team, $is_use, $passwd = '')

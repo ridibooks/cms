@@ -48,6 +48,14 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
+    public function getMenuAjaxList(array $menu_ids)
+    {
+        $menus = AdminMenu::findMany($menu_ids);
+        return $menus->map(function ($menu) {
+            return $menu->ajaxMenus->toArray();
+        })->collapse()->all();
+    }
+
     public function getAdminIdsByMenuId($menu_id)
     {
         /** @var AdminMenu $menu */
