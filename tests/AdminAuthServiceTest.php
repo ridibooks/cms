@@ -27,4 +27,35 @@ class AdminAuthServiceTest extends TestCase
             AdminAuthService::authorizeRequest('devgrapher', '/super/false.ajax')
         );
     }
+
+    public function testHasHashAuth()
+    {
+        $auth_list = ['/admin/book/productList'];
+
+        $this->assertTrue(
+            AdminAuthService::hasHashAuth(null, '/admin/book/productList', $auth_list)
+        );
+    }
+
+    public function testHasHashAuth_withHash()
+    {
+        $auth_list = ['/admin/book/productList#EDIT_세트도서'];
+
+        $this->assertTrue(
+            AdminAuthService::hasHashAuth('EDIT_세트도서', '/admin/book/productList', $auth_list)
+        );
+        $this->assertFalse(
+            AdminAuthService::hasHashAuth('', '/admin/book/productList', $auth_list)
+        );
+        $this->assertFalse(
+            AdminAuthService::hasHashAuth('DELETE_세트도서', '/admin/book/productList', $auth_list)
+        );
+    }
+
+    public function testGetHashesFromMenus()
+    {
+        $auth_list = ['/admin/book/productList#EDIT_세트도서'];
+        $hashs = AdminAuthService::getHashesFromMenus('/admin/book/productList', $auth_list);
+        $this->assertEquals(['EDIT_세트도서'], $hashs);
+    }
 }
