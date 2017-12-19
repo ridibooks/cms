@@ -9,46 +9,30 @@ use Ridibooks\Cms\Service\AdminUserService;
 
 class AdminAuthServiceTest extends TestCase
 {
-    public function testAuthorizeRequest()
-    {
-        $this->assertTrue(
-            AdminAuthService::authorizeRequest('devgrapher', '/super/logs')
-        );
-
-        $this->assertFalse(
-            AdminAuthService::authorizeRequest('devgrapher', '/super/false')
-        );
-
-        // ajax test
-        $this->assertTrue(
-            AdminAuthService::authorizeRequest('devgrapher', '/super/tag_action.ajax')
-        );
-        $this->assertFalse(
-            AdminAuthService::authorizeRequest('devgrapher', '/super/false.ajax')
-        );
-    }
-
-    public function testHasHashAuth()
+    public function testCheckAuth()
     {
         $auth_list = ['/admin/book/productList'];
 
         $this->assertTrue(
-            AdminAuthService::hasHashAuth(null, '/admin/book/productList', $auth_list)
+            AdminAuthService::checkAuth(null, '/admin/book/productList', $auth_list)
+        );
+        $this->assertFalse(
+            AdminAuthService::checkAuth(null, '/admin/book/product', $auth_list)
         );
     }
 
-    public function testHasHashAuth_withHash()
+    public function testCheckAuth_withHash()
     {
         $auth_list = ['/admin/book/productList#EDIT_세트도서'];
 
         $this->assertTrue(
-            AdminAuthService::hasHashAuth('EDIT_세트도서', '/admin/book/productList', $auth_list)
+            AdminAuthService::checkAuth('EDIT_세트도서', '/admin/book/productList', $auth_list)
         );
         $this->assertFalse(
-            AdminAuthService::hasHashAuth('', '/admin/book/productList', $auth_list)
+            AdminAuthService::checkAuth('', '/admin/book/productList', $auth_list)
         );
         $this->assertFalse(
-            AdminAuthService::hasHashAuth('DELETE_세트도서', '/admin/book/productList', $auth_list)
+            AdminAuthService::checkAuth('DELETE_세트도서', '/admin/book/productList', $auth_list)
         );
     }
 

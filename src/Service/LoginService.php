@@ -44,7 +44,6 @@ class LoginService
     {
         //GetAdminID에 사용할 id를미리 set 한다.
         $_SESSION['session_admin_id'] = $id;
-        AdminAuthService::initSession();
     }
 
     public static function resetSession()
