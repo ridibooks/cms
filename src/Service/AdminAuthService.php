@@ -22,7 +22,7 @@ class AdminAuthService
         $user_service = new AdminUserService();
         $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
         
-        $this->hideRootOrEmptyMenus($menus);
+        $menus = $this->hideEmptyRootMenus($menus);
 
         $admin_menus = [];
         foreach ($menus as $menu) {
@@ -285,7 +285,7 @@ class AdminAuthService
     }
 
     //비어있는 최상위 메뉴는 안보이게
-    private function hideRootOrEmptyMenus($menus)
+    private function hideEmptyRootMenus($menus)
     {
         foreach ($menus as $key => $menu) {
             $current_url = $this->getUrlFromMenuUrl($menu);
@@ -311,5 +311,6 @@ class AdminAuthService
                 $menus[$key]['is_show'] = false;
             }
         }
+        return $menus;
     }
 }
