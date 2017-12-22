@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AdminAuthService
 {
-    // 해당 유저가 볼 수 있는 메뉴를 가져온다.
     public function getAdminMenu(?string $user_id = null) : array
     {
         $user_service = new AdminUserService();
@@ -34,13 +33,11 @@ class AdminAuthService
         }, $admin_menus);
     }
 
-    // 적합한 로그인 상태인지 검사한다.
     public static function isValidLogin() : bool
     {
         return !empty(LoginService::GetAdminID());
     }
 
-    // 적합한 유저인지 검사한다.
     public static function isValidUser(string $user_id) : bool
     {
         $user_service = new AdminUserService();
@@ -52,7 +49,6 @@ class AdminAuthService
         return $admin && $admin->is_use;
     }
 
-    // 해당 유저의 모든 권한을 가져온다.
     public function getAdminAuth(?string $user_id = null) : array
     {
         if (empty($user_id)) {
@@ -77,7 +73,8 @@ class AdminAuthService
     }
 
     // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
-    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
+    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. 
+    // (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
     private static function isAuthUrl(string $check_url, string $menu_url) : bool
     {
         $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
@@ -90,7 +87,6 @@ class AdminAuthService
         return false;
     }
 
-    // 권한이 정확한지 확인
     private static function isAuthCorrect($hash, $auth) : bool
     {
         if (is_null($hash)) { //hash가 없는 경우 (보기 권한)
@@ -150,12 +146,8 @@ class AdminAuthService
         return false;
     }
 
-    /**해당 URL의 Hash 권한이 있는지 검사한다.<br/>
-     * @param $hash
-     * @param $check_url
-     * @return bool
-     */
-    public static function hasHashAuth($hash, $check_url, $admin_id = null) : bool
+    // 해당 URL의 Hash 권한이 있는지 검사한다.
+    public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
     {
         if (empty($admin_id)) {
             $admin_id = LoginService::GetAdminID();
@@ -224,7 +216,6 @@ class AdminAuthService
         return $hash_array;
     }
 
-    //비어있는 최상위 메뉴는 안보이게
     public function hideEmptyRootMenus(array $menus) : array
     {
         $topMenuFlags = array_map(function ($menu) {
