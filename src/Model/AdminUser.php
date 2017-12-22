@@ -43,7 +43,7 @@ class AdminUser extends Model
         );
     }
 
-    static public function selectUserMenus($user, $column)
+    public static function selectUserMenus($user, $column)
     {
         // menu -> tag -> user
         $user_tag_menus = DB::select('select *
@@ -65,7 +65,7 @@ class AdminUser extends Model
         }, $menus);
     }
 
-    static public function selectUserAjaxList($user, $column)
+    public static function selectUserAjaxList($user, $column)
     {
         // ajax -> menu -> tag -> user
         $user_tag_ajax_list = DB::select('select *

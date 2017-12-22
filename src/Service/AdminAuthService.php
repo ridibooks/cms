@@ -86,7 +86,7 @@ class AdminAuthService
     {
         if (empty($user_id)) {
             $user_id = LoginService::GetAdminID();
-        } 
+        }
 
         $user_service = new AdminUserService();
         $menu_auths = $user_service->getAllMenus($user_id);
@@ -267,7 +267,7 @@ class AdminAuthService
             return self::isAuthUrl($check_url, $url);
         });
 
-        $hash_array = array_map(function($url) {
+        $hash_array = array_map(function ($url) {
             return self::parseUrlAuth($url)['hash'];
         }, $auth_urls);
 
@@ -277,7 +277,7 @@ class AdminAuthService
     //비어있는 최상위 메뉴는 안보이게
     public function hideEmptyRootMenus($menus)
     {
-        $topMenuFlags = array_map(function($menu) {
+        $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];
             return $menu['menu_deep'] == 0 && strlen($url) == 0;
         }, $menus);
