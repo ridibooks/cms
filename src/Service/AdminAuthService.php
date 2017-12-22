@@ -21,7 +21,7 @@ class AdminAuthService
     {
         $user_service = new AdminUserService();
         $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
-        
+
         $menus = $this->hideEmptyRootMenus($menus);
 
         $admin_menus = [];
