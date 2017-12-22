@@ -79,16 +79,6 @@ class AdminAuthService
         return $admin && $admin->is_use;
     }
 
-    /**
-     * @param $menu_raw
-     * @return mixed
-     */
-    private function getUrlFromMenuUrl($menu_raw)
-    {
-        $url = preg_replace('/#.*/', '', $menu_raw['menu_url']);
-        return $url;
-    }
-
     /**해당 유저의 모든 권한을 가져온다.
      * @return array
      */
@@ -285,32 +275,20 @@ class AdminAuthService
     }
 
     //비어있는 최상위 메뉴는 안보이게
-    private function hideEmptyRootMenus($menus)
+    public function hideEmptyRootMenus($menus)
     {
-        foreach ($menus as $key => $menu) {
-            $current_url = $this->getUrlFromMenuUrl($menu);
-            $current_depth = $menu['menu_deep'];
-            $currrent_menu_is_top = ($current_depth == 0 && strlen($current_url) == 0);
+        $topMenuFlags = array_map(function($menu) {
+            $url = self::parseUrlAuth($menu['menu_url'])['url'];
+            return $menu['menu_deep'] == 0 && strlen($url) == 0;
+        }, $menus);
 
-            //이전 메뉴와 비교
-            if ($key != 0) {
-                $last_key = $key - 1;
-                $last_menu = $menus[$last_key];
-
-                $prev_url = $this->getUrlFromMenuUrl($last_menu);
-                $prev_depth = $last_menu['menu_deep'];
-                $prev_menu_is_top = ($prev_depth == 0 && strlen($prev_url) == 0);
-
-                if ($prev_menu_is_top && $currrent_menu_is_top) {
-                    $menus[$last_key]['is_show'] = false;
-                }
-            }
-
-            //tail 체크
-            if ($key == count($menus) - 1 && $currrent_menu_is_top) {
-                $menus[$key]['is_show'] = false;
+        $topMenuFlags[] = true; // For tail check
+        for ($i = 0; $i < count($menus); ++$i) {
+            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
+                $menus[$i]['is_show'] = false;
             }
         }
+
         return $menus;
     }
 }

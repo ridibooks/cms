@@ -42,4 +42,23 @@ class AdminAuthServiceTest extends TestCase
         $hashs = AdminAuthService::getHashesFromMenus('/admin/book/productList', $auth_list);
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
+
+    public function testHideEmptyRootMenus()
+    {
+        $menus = [
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
+            [ 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true ],
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
+        ];
+
+        $authService = new AdminAuthService();
+        $result = $authService->hideEmptyRootMenus($menus);
+        $this->assertEquals([
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
+            [ 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
+            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
+        ], $result);
+    }
 }

@@ -77,7 +77,6 @@ class AdminUserService implements AdminUserServiceIf
         $userMenus = AdminUser::selectUserMenus($user_id, $column);
 
         $menus = array_merge($rootMenus, $userMenus);
-
         usort($menus, function ($left, $right) {
             return ($left['menu_order'] < $right['menu_order']) ? -1 : 1;
         });
