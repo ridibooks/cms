@@ -60,10 +60,6 @@ class AdminUser extends Model
 
         $menus = array_merge($user_tag_menus, $user_menus);
 
-        usort($menus, function ($left, $right) {
-            return ($left->menu_order < $right->menu_order) ? -1 : 1;
-        });
-
         return array_map(function ($menu) use ($column) {
             return isset($column) ? $menu->{$column} : (array) $menu;
         }, $menus);

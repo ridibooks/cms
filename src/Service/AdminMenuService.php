@@ -22,6 +22,18 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
+    public function getRootMenus($column = null)
+    {
+        $menus = AdminMenu::query()
+            ->where('menu_deep', 0)
+            ->orderBy('menu_order')
+            ->get();
+
+        return $menus->map(function ($menu) use ($column) {
+            return isset($column) ? $menu->{$column} : $menu->toArray();
+        })->all();
+    }
+
     public function getAllMenuList()
     {
         $menus = AdminMenu::query()

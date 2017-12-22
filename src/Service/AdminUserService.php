@@ -3,6 +3,7 @@ namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
+use Ridibooks\Cms\Service\AdminMenuService;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
 
@@ -71,7 +72,17 @@ class AdminUserService implements AdminUserServiceIf
 
     public function getAllMenus($user_id, $column = null)
     {
-        return AdminUser::selectUserMenus($user_id, $column);
+        $menuService = new AdminMenuService();
+        $rootMenus = $menuService->getRootMenus($column);
+        $userMenus = AdminUser::selectUserMenus($user_id, $column);
+
+        $menus = array_merge($rootMenus, $userMenus);
+
+        usort($menus, function ($left, $right) {
+            return ($left['menu_order'] < $right['menu_order']) ? -1 : 1;
+        });
+
+        return $menus;
     }
 
     public function getAllMenuAjaxList($user_id, $column = null)
