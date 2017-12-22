@@ -14,10 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AdminAuthService
 {
-    /**해당 유저가 볼 수 있는 메뉴를 가져온다.
-     * @return array
-     */
-    public function getAdminMenu($user_id = null)
+    // 해당 유저가 볼 수 있는 메뉴를 가져온다.
+    public function getAdminMenu(?string $user_id = null) : array
     {
         $user_service = new AdminUserService();
         $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
@@ -36,39 +34,14 @@ class AdminAuthService
         }, $admin_menus);
     }
 
-    /**해당 유저의 모든 태그를 가져온다.
-     * @return array
-     */
-    public function getAdminTag($user_id = null)
-    {
-        $user_service = new AdminUserService();
-        return $user_service->getAdminUserTag($user_id ?? LoginService::GetAdminID());
-    }
-
-    /**해당 유저의 태그 ID 가져온다.
-     * @return array
-     */
-    public function getAdminTagId()
-    {
-        $session_user_tagid = [];
-        foreach ($this->getAdminTag() as $tag) {
-            $session_user_tagid[] = $tag;
-        }
-        return $session_user_tagid;
-    }
-
-    /**적합한 로그인 상태인지 검사한다.
-     * @return bool
-     */
-    public static function isValidLogin()
+    // 적합한 로그인 상태인지 검사한다.
+    public static function isValidLogin() : bool
     {
         return !empty(LoginService::GetAdminID());
     }
 
-    /**적합한 유저인지 검사한다.
-     * @return bool
-     */
-    public static function isValidUser(string $user_id)
+    // 적합한 유저인지 검사한다.
+    public static function isValidUser(string $user_id) : bool
     {
         $user_service = new AdminUserService();
         $admin = $user_service->getUser($user_id ?? LoginService::GetAdminID());
@@ -79,10 +52,8 @@ class AdminAuthService
         return $admin && $admin->is_use;
     }
 
-    /**해당 유저의 모든 권한을 가져온다.
-     * @return array
-     */
-    public function getAdminAuth($user_id = null)
+    // 해당 유저의 모든 권한을 가져온다.
+    public function getAdminAuth(?string $user_id = null) : array
     {
         if (empty($user_id)) {
             $user_id = LoginService::GetAdminID();
@@ -96,7 +67,7 @@ class AdminAuthService
         return $auths;
     }
 
-    private static function parseUrlAuth($url)
+    private static function parseUrlAuth(string $url) : array
     {
         $tokens = preg_split('/#/', $url);
         return [
@@ -105,13 +76,9 @@ class AdminAuthService
         ];
     }
 
-    /**입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
-     * '/comm/'으로 시작하는 url은 권한을 타지 않는다. (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
-     * @param $check_url
-     * @param $menu_url
-     * @return bool
-     */
-    private static function isAuthUrl($check_url, $menu_url)
+    // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
+    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
+    private static function isAuthUrl(string $check_url, string $menu_url) : bool
     {
         $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
         if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
@@ -123,12 +90,8 @@ class AdminAuthService
         return false;
     }
 
-    /**권한이 정확한지 확인
-     * @param null $hash
-     * @param $auth
-     * @return bool
-     */
-    private static function isAuthCorrect($hash, $auth)
+    // 권한이 정확한지 확인
+    private static function isAuthCorrect($hash, $auth) : bool
     {
         if (is_null($hash)) { //hash가 없는 경우 (보기 권한)
             return true;
@@ -146,7 +109,7 @@ class AdminAuthService
         return false;
     }
 
-    public static function isWhiteListUrl($check_url)
+    public static function isWhiteListUrl(string $check_url) : bool
     {
         $public_urls = [
             '/admin/book/pa',
@@ -161,7 +124,7 @@ class AdminAuthService
         return in_array($check_url, $public_urls);
     }
 
-    public static function readUserAuth($user_id)
+    public static function readUserAuth(string $user_id) : array
     {
         $user_service = new AdminUserService();
         $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
@@ -171,7 +134,7 @@ class AdminAuthService
         return $urls;
     }
 
-    public static function checkAuth($hash, $check_url, $auth_list)
+    public static function checkAuth(?string $hash, string $check_url, array $auth_list) : bool
     {
         if (self::isWhiteListUrl($check_url)) {
             return true;
@@ -187,12 +150,12 @@ class AdminAuthService
         return false;
     }
 
-        /**해당 URL의 Hash 권한이 있는지 검사한다.<br/>
+    /**해당 URL의 Hash 권한이 있는지 검사한다.<br/>
      * @param $hash
      * @param $check_url
      * @return bool
      */
-    public static function hasHashAuth($hash, $check_url, $admin_id = null)
+    public static function hasHashAuth($hash, $check_url, $admin_id = null) : bool
     {
         if (empty($admin_id)) {
             $admin_id = LoginService::GetAdminID();
@@ -202,11 +165,7 @@ class AdminAuthService
         return self::checkAuth($hash, $check_url, $auth_list);
     }
 
-    /**
-     * @param Request $request
-     * @return null|Response
-     */
-    public static function authorize($request)
+    public static function authorize(Request $request) : ?Response
     {
         $user_id = LoginService::GetAdminID();
         $request_uri = $request->getRequestUri();
@@ -239,12 +198,8 @@ class AdminAuthService
         return null;
     }
 
-    /**해당 URL의 Hash 권한 Array를 반환한다.
-     * @param null $check_url
-     * @param null $admin_id
-     * @return array $hash_array
-     */
-    public static function getCurrentHashArray($check_url = null, $admin_id = null)
+    // 해당 URL의 Hash 권한 Array를 반환한다.
+    public static function getCurrentHashArray(string $check_url = null, string $admin_id = null) : array
     {
         if (!isset($check_url) || trim($check_url) === '') {
             $check_url = $_SERVER['REQUEST_URI'];
@@ -256,12 +211,7 @@ class AdminAuthService
         return $hash_array;
     }
 
-    /**
-     * @param $check_url
-     * @param $auths
-     * @return array
-     */
-    public static function getHashesFromMenus($check_url, $auth_urls)
+    public static function getHashesFromMenus(string $check_url, array $auth_urls) : array
     {
         $auth_urls = array_filter($auth_urls, function ($url) use ($check_url) {
             return self::isAuthUrl($check_url, $url);
@@ -275,7 +225,7 @@ class AdminAuthService
     }
 
     //비어있는 최상위 메뉴는 안보이게
-    public function hideEmptyRootMenus($menus)
+    public function hideEmptyRootMenus(array $menus) : array
     {
         $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];
