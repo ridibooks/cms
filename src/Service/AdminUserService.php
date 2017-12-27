@@ -1,9 +1,9 @@
 <?php
 namespace Ridibooks\Cms\Service;
 
+use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
-use Ridibooks\Cms\Service\AdminMenuService;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
 
@@ -12,7 +12,7 @@ class AdminUserService implements AdminUserServiceIf
     /**
      * 사용 가능한 모든 Admin 계정정보 가져온다.
      */
-    public function getAllAdminUserArray()
+    public function getAllAdminUserArray() : array
     {
         $users = AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
         return $users->map(function ($user) {
@@ -20,7 +20,7 @@ class AdminUserService implements AdminUserServiceIf
         })->all();
     }
 
-    public function getUser($id)
+    public function getUser($id) : ThriftAdminUser
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($id);
@@ -30,7 +30,7 @@ class AdminUserService implements AdminUserServiceIf
         return new ThriftAdminUser($user->toArray());
     }
 
-    public function getAdminUserTag($user_id)
+    public function getAdminUserTag($user_id) : array
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($user_id);
@@ -41,7 +41,7 @@ class AdminUserService implements AdminUserServiceIf
         return $user->tags->pluck('id')->all();
     }
 
-    public function getAdminUserMenu($user_id, $column = 'id')
+    public function getAdminUserMenu($user_id, $column = 'id') : array
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($user_id);
@@ -52,7 +52,7 @@ class AdminUserService implements AdminUserServiceIf
         return $user->menus->pluck($column)->all();
     }
 
-    public function getAdminUserMenuAjax($user_id, $column = 'id')
+    public function getAdminUserMenuAjax($user_id, $column = 'id') : array
     {
         /** @var AdminUser $user */
         $user = AdminUser::with('menus.ajaxMenus')->find($user_id);
@@ -65,31 +65,33 @@ class AdminUserService implements AdminUserServiceIf
         })->collapse()->all();
     }
 
-    public function getAllMenuIds($user_id)
+    public function getAllMenuIds($user_id) : array
     {
         return $this->getAllMenus($user_id, 'id');
     }
 
-    public function getAllMenus($user_id, $column = null)
+    public function getAllMenus($user_id, $column = null) : array
     {
         $menuService = new AdminMenuService();
         $rootMenus = $menuService->getRootMenus($column);
-        $userMenus = AdminUser::selectUserMenus($user_id, $column);
+        $userMenus = $this->selectUserMenus($user_id, $column);
 
         $menus = array_merge($rootMenus, $userMenus);
         usort($menus, function ($left, $right) {
-            return ($left['menu_order'] < $right['menu_order']) ? -1 : 1;
+            $left_order = $left['menu_order'] ?? 0;
+            $right_order = $right['menu_order'] ?? 0;
+            return $left_order - $right_order;
         });
 
         return $menus;
     }
 
-    public function getAllMenuAjaxList($user_id, $column = null)
+    public function getAllMenuAjaxList($user_id, $column = null) : array
     {
-        return AdminUser::selectUserAjaxList($user_id, $column);
+        return $this->selectUserAjaxList($user_id, $column);
     }
 
-    public function updateMyInfo($name, $team, $is_use, $passwd = '')
+    public function updateMyInfo($name, $team, $is_use, $passwd = '') : bool
     {
         /** @var AdminUser $admin */
         $me = AdminUser::find(LoginService::GetAdminID());
@@ -113,7 +115,7 @@ class AdminUserService implements AdminUserServiceIf
         return true;
     }
 
-    public function updatePassword($user_id, $plain_password)
+    public function updatePassword($user_id, $plain_password) : bool
     {
         $me = AdminUser::find($user_id);
         if (!$me) {
@@ -135,5 +137,51 @@ class AdminUserService implements AdminUserServiceIf
             'team' => $team,
             'is_use' => 1,
         ]);
+    }
+
+    private function selectUserMenus(string $user, ?string $column = null) : array
+    {
+        // menu -> tag -> user
+        $user_tag_menus = DB::select('select *
+            from tb_admin2_menu
+            join tb_admin2_tag_menu on tb_admin2_tag_menu.menu_id = tb_admin2_menu.id
+            join tb_admin2_user_tag on tb_admin2_user_tag.tag_id = tb_admin2_tag_menu.tag_id
+            where tb_admin2_user_tag.user_id = :user', ['user' => $user]);
+
+        // menu -> user
+        $user_menus = DB::select('select *
+            from tb_admin2_menu
+            join tb_admin2_user_menu on tb_admin2_user_menu.menu_id = tb_admin2_menu.id
+            where tb_admin2_user_menu.user_id = :user', ['user' => $user]);
+
+        $menus = array_merge($user_tag_menus, $user_menus);
+
+        return array_map(function ($menu) use ($column) {
+            return isset($column) ? $menu->{$column} : (array) $menu;
+        }, $menus);
+    }
+
+    private function selectUserAjaxList(string $user, ?string $column = null) : array
+    {
+        // ajax -> menu -> tag -> user
+        $user_tag_ajax_list = DB::select('select *
+            from tb_admin2_menu_ajax
+            join tb_admin2_menu on tb_admin2_menu_ajax.menu_id = tb_admin2_menu.id
+            join tb_admin2_tag_menu on tb_admin2_tag_menu.menu_id = tb_admin2_menu.id
+            join tb_admin2_user_tag on tb_admin2_user_tag.tag_id = tb_admin2_tag_menu.tag_id
+            where tb_admin2_user_tag.user_id = :user', ['user' => $user]);
+
+        // ajax -> menu -> user
+        $user_menu_ajax_list = DB::select('select *
+            from tb_admin2_menu_ajax
+            join tb_admin2_menu on tb_admin2_menu_ajax.menu_id = tb_admin2_menu.id
+            join tb_admin2_user_menu on tb_admin2_user_menu.menu_id = tb_admin2_menu.id
+            where tb_admin2_user_menu.user_id = :user', ['user' => $user]);
+
+        $ajax_list = array_merge($user_tag_ajax_list, $user_menu_ajax_list);
+
+        return array_map(function ($ajax) use ($column) {
+            return isset($column) ? $ajax->{$column} : (array) $ajax;
+        }, $ajax_list);
     }
 }

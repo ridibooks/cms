@@ -9,7 +9,7 @@ use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 
 class AdminMenuService implements AdminMenuServiceIf
 {
-    public function getMenuList($is_use = null)
+    public function getMenuList($is_use = null) : array
     {
         $menus_query = AdminMenu::query()->orderBy('menu_order');
         if (!is_null($is_use)) {
@@ -22,7 +22,7 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getRootMenus($column = null)
+    public function getRootMenus($column = null) : array
     {
         $menus = AdminMenu::query()
             ->where('menu_deep', 0)
@@ -34,7 +34,7 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getAllMenuList()
+    public function getAllMenuList() : array
     {
         $menus = AdminMenu::query()
             ->orderBy('menu_order')->get();
@@ -44,7 +44,7 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getAllMenuAjax()
+    public function getAllMenuAjax() : array
     {
         $menus = AdminMenuAjax::all();
         return $menus->map(function ($menu) {
@@ -52,7 +52,7 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getMenus(array $menu_ids)
+    public function getMenus(array $menu_ids) : array
     {
         $menus = AdminMenu::findMany($menu_ids);
         return $menus->map(function ($menu) {
@@ -60,15 +60,17 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getMenuAjaxList(array $menu_ids)
+    public function getMenuAjaxList(array $menu_ids) : array
     {
-        $menus = AdminMenu::findMany($menu_ids);
-        return $menus->map(function ($menu) {
-            return $menu->ajaxMenus->toArray();
-        })->collapse()->all();
+        return AdminMenu::findMany($menu_ids)
+            ->map(function ($menu) {
+                return $menu->ajaxMenus->toArray();
+            })
+            ->collapse()
+            ->all();
     }
 
-    public function getAdminIdsByMenuId($menu_id)
+    public function getAdminIdsByMenuId($menu_id) : array
     {
         /** @var AdminMenu $menu */
         $menu = AdminMenu::find($menu_id);
@@ -79,7 +81,7 @@ class AdminMenuService implements AdminMenuServiceIf
         return $menu->users->pluck('id')->all();
     }
 
-    public function getAllUserIds($menu_id)
+    public function getAllUserIds($menu_id) : array
     {
         /** @var AdminMenu $menu */
         $menu = AdminMenu::find($menu_id);
