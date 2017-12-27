@@ -7,7 +7,7 @@
 ## Overview
 This is a main server of RIDI CMS service.
 
-## Getting stared
+## Getting started
 ```
 git clone https://github.com/ridi/cms.git
 cd cms
