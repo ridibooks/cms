@@ -1,6 +1,7 @@
 <?php
-namespace Ridibooks\Cms;
+namespace Ridibooks\Cms\Controller;
 
+use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Thrift\ThriftService;
@@ -23,7 +24,7 @@ class MyInfoController implements ControllerProviderInterface
         return $controllers;
     }
 
-    public function getMyInfo(CmsServerApplication $app)
+    public function getMyInfo(CmsApplication $app)
     {
         $user_service = new AdminUserService();
         $user_info = $user_service->getUser(LoginService::GetAdminID());
@@ -35,7 +36,7 @@ class MyInfoController implements ControllerProviderInterface
         return $app->render('me.twig', ['user_info' => $user_info]);
     }
 
-    public function updateMyInfo(CmsServerApplication $app, Request $request)
+    public function updateMyInfo(CmsApplication $app, Request $request)
     {
         $name = $request->get('name');
         $team = $request->get('team');

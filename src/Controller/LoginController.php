@@ -1,8 +1,9 @@
 <?php
 
-namespace Ridibooks\Cms;
+namespace Ridibooks\Cms\Controller;
 
 use Moriony\Silex\Provider\SentryServiceProvider;
+use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Util\UrlHelper;
@@ -31,7 +32,7 @@ class LoginController implements ControllerProviderInterface
         return $controller_collection;
     }
 
-    public function getLoginPage(Request $request, CmsServerApplication $app)
+    public function getLoginPage(Request $request, CmsApplication $app)
     {
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';

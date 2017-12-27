@@ -17,5 +17,8 @@
     "psr-4": {
       "Ridibooks\\Cms\\": "src"
     }
+  },
+  "require-dev": {
+    "robmorgan/phinx": "^0.9.2"
   }
 }

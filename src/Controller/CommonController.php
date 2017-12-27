@@ -1,6 +1,7 @@
 <?php
-namespace Ridibooks\Cms;
+namespace Ridibooks\Cms\Controller;
 
+use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Service\AdminUserService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
@@ -20,17 +21,17 @@ class CommonController implements ControllerProviderInterface
         return $controllers;
     }
 
-    public function index(CmsServerApplication $app)
+    public function index(CmsApplication $app)
     {
         return $app->redirect('/welcome');
     }
 
-    public function getWelcomePage(CmsServerApplication $app)
+    public function getWelcomePage(CmsApplication $app)
     {
         return $app->render('welcome.twig');
     }
 
-    public function userList(CmsServerApplication $app)
+    public function userList(CmsApplication $app)
     {
         $result = [];
 
