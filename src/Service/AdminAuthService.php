@@ -41,7 +41,7 @@ class AdminAuthService
     public static function isValidUser(string $user_id) : bool
     {
         $user_service = new AdminUserService();
-        $admin = $user_service->getUser($user_id ?? LoginService::GetAdminID());
+        $admin = $user_service->getUser($user_id);
         if (!$admin->id) {
             return false;
         }
@@ -149,9 +149,11 @@ class AdminAuthService
     // 해당 URL의 Hash 권한이 있는지 검사한다.
     public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
     {
-        if (empty($admin_id)) {
-            $admin_id = LoginService::GetAdminID();
+        $admin_id = $admin_id ?? LoginService::GetAdminID();
+        if (!self::isValidUser($admin_id)) {
+            return false;
         }
+
         $auth_list = self::readUserAuth($admin_id);
 
         return self::checkAuth($hash, $check_url, $auth_list);
