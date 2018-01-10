@@ -159,39 +159,6 @@ class AdminAuthService
         return self::checkAuth($hash, $check_url, $auth_list);
     }
 
-    public static function authorize(Request $request) : ?Response
-    {
-        $user_id = LoginService::GetAdminID();
-        $request_uri = $request->getRequestUri();
-
-        if (!self::isValidLogin() || !self::isValidUser($user_id)) {
-            $login_url = '/login';
-            if (!empty($request_uri) && $request_uri != '/login') {
-                $login_url .= '?return_url=' . urlencode($request_uri);
-            }
-
-            return RedirectResponse::create($login_url);
-        }
-
-        $user_auth = self::readUserAuth($user_id);
-
-        try {
-            if (!self::checkAuth($hash, $request_uri, $user_auth)
-                && !$_ENV['DEBUG']) {
-                throw new \Exception("해당 권한이 없습니다.");
-            }
-        } catch (\Exception $e) {
-            // 이상하지만 기존과 호환성 맞추기 위해
-            if ($request->isXmlHttpRequest()) {
-                return new Response($e->getMessage());
-            } else { //일반 페이지
-                return new Response(UrlHelper::printAlertHistoryBack($e->getMessage()));
-            }
-        }
-
-        return null;
-    }
-
     // 해당 URL의 Hash 권한 Array를 반환한다.
     public static function getCurrentHashArray(string $check_url = null, string $admin_id = null) : array
     {
