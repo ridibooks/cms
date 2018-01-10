@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Ridibooks\Cms\Util\UrlHelper;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -13,163 +14,80 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AdminAuthService
 {
-    private $adminAuth; //권한이 있는 메뉴 array
-    private $adminMenu; //권한이 없는 순수 메뉴 array
-    private $adminTag; //로그인 한 유저의 Tag Array
-
-    public function __construct()
-    {
-        $this->initAdminAuth();
-        $this->initAdminMenu();
-        $this->initAdminTag();
-    }
-
-    /**해당 유저의 모든 권한을 셋팅한다.*/
-    private function initAdminAuth()
-    {
-        //전체 menu를 가져온다. (권한을 위해서 사용여부 상관없이 모두 가져온다.)
-        $menu_service = new AdminMenuService();
-        $menu_array = $menu_service->getMenuList();
-        $menu_array = ThriftService::convertMenuCollectionToArray($menu_array);
-        //전체 menu_ajax를 가지고 온다.
-        $menu_ajax_array = $menu_service->getAllMenuAjax();
-        $menu_ajax_array = ThriftService::convertMenuAjaxCollectionToArray($menu_ajax_array);
-
-        $auth_list = [];
-        $menus_by_id = [];
-        $menuids_by_url = [];
-        $menu_id_array = [];
-
-        foreach ($menu_array as $menu) {
-            $menuid = $menu['id'];
-            $url = $this->getUrlFromMenuUrl($menu);
-            $menus_by_id[$menuid] = $menu;
-            $menuids_by_url[$url][] = $menuid;
-            $menu_id_array[] = $menuid;
-        }
-
-        if ($_ENV['DEBUG']) {
-            //개발 모드일 경우 모든 메뉴 id array 가져온다.
-            $menuids_owned = $menu_id_array;
-        } else {
-            //로그인 한 유저의 메뉴 id array 가져온다.
-            $user_service = new AdminUserService();
-            $menuids_owned = $user_service->getAllMenuIds(LoginService::GetAdminID());
-        }
-
-        foreach ($menus_by_id as $menu) {
-            $menuid = $menu['id'];
-            $url = $this->getUrlFromMenuUrl($menu);
-            $depth = $menu['menu_deep'];
-
-            if ($depth == 0 && strlen($url) == 0) {
-            } elseif (in_array($menuid, $menuids_owned)) {
-                //get ajaxs
-                $menu['ajax_array'] = $this->makeAjaxMenuArray($menuid, $menu_ajax_array);
-
-                //get auths(hashes)
-                $auths = [];
-                if ($menuids_by_url[$url]) {
-                    $menuids_of_owned_auth = array_intersect($menuids_by_url[$url], $menuids_owned);
-
-                    foreach ($menuids_of_owned_auth as $menuid_by_owned_auth) {
-                        $auths[] = self::makeMenuAuth($menus_by_id[$menuid_by_owned_auth]['menu_url']);
-                    }
-                    $auths = array_unique(array_filter($auths));
-                }
-                $menu['auth'] = $auths;
-            } else {
-                continue;
-            }
-
-            //insert
-            $auth_list[] = $menu;
-        }
-
-        //비어있는 최상위 메뉴는 안보이게
-        foreach ($auth_list as $key => $menu) {
-            $current_url = $this->getUrlFromMenuUrl($menu);
-            $current_depth = $menu['menu_deep'];
-            $currrent_menu_is_top = ($current_depth == 0 && strlen($current_url) == 0);
-
-            //이전 메뉴와 비교
-            if ($key != 0) {
-                $last_key = $key - 1;
-                $last_menu = $auth_list[$last_key];
-
-                $prev_url = $this->getUrlFromMenuUrl($last_menu);
-                $prev_depth = $last_menu['menu_deep'];
-                $prev_menu_is_top = ($prev_depth == 0 && strlen($prev_url) == 0);
-
-                if ($prev_menu_is_top && $currrent_menu_is_top) {
-                    $auth_list[$last_key]['is_show'] = false;
-                }
-            }
-
-            //tail 체크
-            if ($key == count($auth_list) - 1 && $currrent_menu_is_top) {
-                $auth_list[$key]['is_show'] = false;
-            }
-        }
-
-        $this->adminAuth = $auth_list;
-    }
-
-    /**해당 유저의 메뉴를 셋팅한다.
-     */
-    private function initAdminMenu()
-    {
-        $admin_menu = [];
-        foreach ($this->adminAuth as $menu) {
-            if ($menu['is_use'] == 1 && $menu['is_show'] == 1) {
-                $admin_menu[$menu['id']] = $menu;
-            }
-        }
-        $this->adminMenu = $admin_menu;
-    }
-
-    /**해당 유저의 태그를 셋팅한다.
-     */
-    private function initAdminTag()
+    public function getAdminMenu(?string $user_id = null) : array
     {
         $user_service = new AdminUserService();
-        $this->adminTag = $user_service->getAdminUserTag(LoginService::GetAdminID());
-    }
+        $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
 
-    /**menu ajax array 만든다.
-     * @param $menu_id
-     * @param $menu_ajax_array
-     * @return array menu ajax array
-     */
-    private function makeAjaxMenuArray($menu_id, $menu_ajax_array)
-    {
-        $ajax_array = [];
-        //해당 menu 내의 ajax 리스트가 있는지 확인한다.
-        foreach ($menu_ajax_array as $menu_ajax) {
-            if ($menu_ajax['menu_id'] == $menu_id) { //매핑되어 있는 menu가 ajax를 가지고 있을 경우
-                $menu_ajax['ajax_auth'] = self::makeMenuAuth($menu_ajax['ajax_url']);
-                array_push($ajax_array, $menu_ajax);
+        $menus = $this->hideEmptyRootMenus($menus);
+
+        $admin_menus = [];
+        foreach ($menus as $menu) {
+            if ($menu['is_use'] == 1 && $menu['is_show'] == 1) {
+                $admin_menus[$menu['id']] = $menu;
             }
         }
-        return $ajax_array;
+
+        return array_map(function ($menu) {
+            return new ThriftAdminMenu($menu);
+        }, $admin_menus);
     }
 
-    /**url에 #태그 확인하여 권한을 반환한다.
-     * @param $menu_url
-     * @return null
-     */
-    private static function makeMenuAuth($menu_url)
+    public static function isValidLogin() : bool
     {
-        $menuUrl = preg_split('/#/', $menu_url);
-        return (isset($menuUrl[1]) && !is_null($menuUrl[1])) ? $menuUrl[1] : null;
+        return !empty(LoginService::GetAdminID());
     }
 
-    /**권한이 정확한지 확인
-     * @param null $hash
-     * @param $auth
-     * @return bool
-     */
-    private static function isAuthCorrect($hash, $auth)
+    public static function isValidUser(string $user_id) : bool
+    {
+        $user_service = new AdminUserService();
+        $admin = $user_service->getUser($user_id);
+        if (!$admin->id) {
+            return false;
+        }
+
+        return $admin && $admin->is_use;
+    }
+
+    public function getAdminAuth(?string $user_id = null) : array
+    {
+        if (empty($user_id)) {
+            $user_id = LoginService::GetAdminID();
+        }
+
+        $user_service = new AdminUserService();
+        $menu_auths = $user_service->getAllMenus($user_id);
+        $ajax_auths = $user_service->getAllMenuAjaxList($user_id);
+        $auths = array_merge($menu_auths, $ajax_auths);
+
+        return $auths;
+    }
+
+    private static function parseUrlAuth(string $url) : array
+    {
+        $tokens = preg_split('/#/', $url);
+        return [
+            'url' => $tokens[0] ?? null,
+            'hash' => $tokens[1] ?? null,
+        ];
+    }
+
+    // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
+    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. 
+    // (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
+    private static function isAuthUrl(string $check_url, string $menu_url) : bool
+    {
+        $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
+        if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
+            return true;
+        }
+        if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
+            return true;
+        }
+        return false;
+    }
+
+    private static function isAuthCorrect($hash, $auth) : bool
     {
         if (is_null($hash)) { //hash가 없는 경우 (보기 권한)
             return true;
@@ -187,120 +105,9 @@ class AdminAuthService
         return false;
     }
 
-    /**입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
-     * '/comm/'으로 시작하는 url은 권한을 타지 않는다. (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
-     * @param $check_url
-     * @param $menu_url
-     * @return bool
-     */
-    private static function isAuthUrl($check_url, $menu_url)
+    public static function isWhiteListUrl(string $check_url) : bool
     {
-        $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
-        if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
-            return true;
-        }
-        if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $check_url
-     * @param $auths
-     * @return array
-     */
-    public static function getHashesFromMenus($check_url, $auths)
-    {
-        $hash_array = [];
-        foreach ($auths as $auth) {
-            if (self::isAuthUrl($check_url, $auth['menu_url'])) {
-                if (is_array($auth['auth'])) {
-                    $hash_array = array_merge($hash_array, $auth['auth']);
-                } else {
-                    $hash_array[] = self::makeMenuAuth($auth['menu_url']);
-                }
-            }
-
-            if (isset($auth['ajax_array'])) { //해당 session_user_auth row에 ajax_array가 있는지 확인
-                foreach ($auth['ajax_array'] as $ajax) { // ajax_array 내의 key(ajax_url, ajax_auth)
-                    if (self::isAuthUrl($check_url, $auth['menu_url']) && is_array($auth['auth'])) {
-                        $hash_array = array_merge($hash_array, $auth['auth']);
-                    }
-                    if (self::isAuthUrl($check_url, $ajax['ajax_url']) && is_array($auth['ajax_auth'])) {
-                        $hash_array = array_merge($hash_array, $ajax['ajax_auth']);
-                    }
-                }
-            }
-        }
-        $hash_array = array_filter(array_unique($hash_array));
-        return $hash_array;
-    }
-
-    /**해당 유저의 모든 권한을 가져온다.
-     * @return array
-     */
-    public function getAdminAuth()
-    {
-        return $this->adminAuth;
-    }
-
-    /**해당 유저가 볼 수 있는 메뉴를 가져온다.
-     * @return array
-     */
-    public function getAdminMenu()
-    {
-        return $this->adminMenu;
-    }
-
-    /**해당 유저의 모든 태그를 가져온다.
-     * @return array
-     */
-    public function getAdminTag()
-    {
-        return $this->adminTag;
-    }
-
-    /**해당 유저의 태그 ID 가져온다.
-     * @return array
-     */
-    public function getAdminTagId()
-    {
-        $session_user_tagid = [];
-        foreach ($_SESSION['session_user_tag'] as $tag) {
-            $session_user_tagid[] = $tag;
-        }
-        return $session_user_tagid;
-    }
-
-    /**해당 URL에 접근할 권한이 있는지 검사한다.<br/>
-     * 문제점
-     * - 각 menu 밑에 sub url 검사를 한번 더 하는데 의존관계를 알기 힘들다.
-     * - 현재는 여러 페이지에서 사용하는 ajax_url의 권한을 확실하게 하지 못한다.
-     * - 나중에 권한을 좀 더 세분화 시킬때는 sub url을 unique키로 하여 각 sub url의 진입점을 구분하도록 메뉴주소를 따로 구분하는게 좋을것 같다.
-     * @param null $method
-     * @param null $check_url
-     * @throws
-     */
-    public static function hasUrlAuth($method = null, $check_url = null)
-    {
-        if (!self::hasHashAuth($method, $check_url) && !$_ENV['DEBUG']) {
-            throw new \Exception("해당 권한이 없습니다.");
-        }
-    }
-
-    /**해당 URL의 Hash 권한이 있는지 검사한다.<br/>
-     * @param null $hash
-     * @param null $check_url
-     * @return bool
-     */
-    public static function hasHashAuth($hash = null, $check_url = null)
-    {
-        if (!isset($check_url) || trim($check_url) === '') {
-            $check_url = $_SERVER['REQUEST_URI'];
-        }
-
-        $allowed_urls = [
+        $public_urls = [
             '/admin/book/pa',
             '/me', // 본인 정보 수정
             '/welcome',
@@ -310,123 +117,88 @@ class AdminAuthService
             '/',
         ];
 
-        // welcome 페이지는 항상 허용
-        if (in_array($check_url, $allowed_urls)) {
+        return in_array($check_url, $public_urls);
+    }
+
+    public static function readUserAuth(string $user_id) : array
+    {
+        $user_service = new AdminUserService();
+        $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
+        $ajax_urls = $user_service->getAllMenuAjaxList($user_id, 'ajax_url');
+        $urls = array_merge($menu_urls, $ajax_urls);
+
+        return $urls;
+    }
+
+    public static function checkAuth(?string $hash, string $check_url, array $auth_list) : bool
+    {
+        if (self::isWhiteListUrl($check_url)) {
             return true;
         }
 
-        foreach ($_SESSION['session_user_auth'] as $auth) {
-            if (self::isAuthUrl($check_url, $auth['menu_url'])) {
-                if (self::isAuthCorrect($hash, (isset($auth['auth']) ? $auth['auth'] : []))) {
-                    return true;
-                }
-            }
-            if (isset($auth['ajax_array'])
-                && !is_null($auth['ajax_array'])
-            ) { //해당 session_user_auth row에 ajax_array가 있는지 확인
-                foreach ($auth['ajax_array'] as $ajax) { // ajax_array 내의 key(ajax_url, ajax_auth)
-                    if (self::isAuthUrl($check_url, $ajax['ajax_url'])) {
-                        if (self::isAuthCorrect($hash, $auth['auth'])) {
-                            return true;
-                        }
-                        if (self::isAuthCorrect($hash, $ajax['ajax_auth'])) {
-                            return true;
-                        }
-                    }
-                }
+        foreach ($auth_list as $auth) {
+            $auth = self::parseUrlAuth($auth);
+            if (self::isAuthUrl($check_url, $auth['url'])
+                && self::isAuthCorrect($hash, $auth['hash'] ?? [])) {
+                return true;
             }
         }
         return false;
     }
 
-    /**해당 URL의 Hash 권한 Array를 반환한다.
-     * @param null $check_url
-     * @return array $hash_array
-     */
-    public static function getCurrentHashArray($check_url = null)
+    // 해당 URL의 Hash 권한이 있는지 검사한다.
+    public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
+    {
+        $admin_id = $admin_id ?? LoginService::GetAdminID();
+        if (!self::isValidUser($admin_id)) {
+            return false;
+        }
+
+        $auth_list = self::readUserAuth($admin_id);
+
+        return self::checkAuth($hash, $check_url, $auth_list);
+    }
+
+    // 해당 URL의 Hash 권한 Array를 반환한다.
+    public static function getCurrentHashArray(string $check_url = null, string $admin_id = null) : array
     {
         if (!isset($check_url) || trim($check_url) === '') {
             $check_url = $_SERVER['REQUEST_URI'];
         }
 
-        $auths = $_SESSION['session_user_auth'];
-        if (!is_array($auths)) {
-            $auths = [];
-        }
+        $auths = self::readUserAuth($admin_id ?? LoginService::GetAdminID());
         $hash_array = self::getHashesFromMenus($check_url, $auths);
+
         return $hash_array;
     }
 
-    /**적합한 로그인 상태인지 검사한다.
-     * @return bool
-     */
-    public static function isValidLogin()
+    public static function getHashesFromMenus(string $check_url, array $auth_urls) : array
     {
-        return LoginService::GetAdminID()
-            && isset($_SESSION['session_user_auth']) && isset($_SESSION['session_user_menu']);
+        $auth_urls = array_filter($auth_urls, function ($url) use ($check_url) {
+            return self::isAuthUrl($check_url, $url);
+        });
+
+        $hash_array = array_map(function ($url) {
+            return self::parseUrlAuth($url)['hash'];
+        }, $auth_urls);
+
+        return $hash_array;
     }
 
-    /**적합한 유저인지 검사한다.
-     * @return bool
-     */
-    public static function isValidUser()
+    public function hideEmptyRootMenus(array $menus) : array
     {
-        $user_service = new AdminUserService();
-        $admin = $user_service->getUser(LoginService::GetAdminID());
-        if (!$admin->id) {
-            return false;
-        }
+        $topMenuFlags = array_map(function ($menu) {
+            $url = self::parseUrlAuth($menu['menu_url'])['url'];
+            return $menu['menu_deep'] == 0 && strlen($url) == 0;
+        }, $menus);
 
-        return $admin && $admin->is_use;
-    }
-
-    /**
-     * @param $menu_raw
-     * @return mixed
-     */
-    private function getUrlFromMenuUrl($menu_raw)
-    {
-        $url = preg_replace('/#.*/', '', $menu_raw['menu_url']);
-        return $url;
-    }
-
-    public static function initSession()
-    {
-        // 세션 변수 설정
-        $auth_service = new self();
-        $_SESSION['session_user_auth'] = $auth_service->getAdminAuth();
-        $_SESSION['session_user_menu'] = $auth_service->getAdminMenu();
-        $_SESSION['session_user_tag'] = $auth_service->getAdminTag();
-        $_SESSION['session_user_tagid'] = $auth_service->getAdminTagId();
-    }
-
-    /**
-     * @param Request $request
-     * @return null|Response
-     */
-    public static function authorize($request)
-    {
-        if (!self::isValidLogin() || !self::isValidUser()) {
-            $login_url = '/login';
-            $request_uri = $request->getRequestUri();
-            if (!empty($request_uri) && $request_uri != '/login') {
-                $login_url .= '?return_url=' . urlencode($request_uri);
-            }
-
-            return RedirectResponse::create($login_url);
-        }
-
-        try {
-            self::hasUrlAuth();
-        } catch (\Exception $e) {
-            // 이상하지만 기존과 호환성 맞추기 위해
-            if ($request->isXmlHttpRequest()) {
-                return new Response($e->getMessage());
-            } else { //일반 페이지
-                return new Response(UrlHelper::printAlertHistoryBack($e->getMessage()));
+        $topMenuFlags[] = true; // For tail check
+        for ($i = 0; $i < count($menus); ++$i) {
+            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
+                $menus[$i]['is_show'] = false;
             }
         }
 
-        return null;
+        return $menus;
     }
 }

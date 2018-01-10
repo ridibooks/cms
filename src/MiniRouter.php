@@ -1,7 +1,7 @@
 <?php
 namespace Ridibooks\Cms;
 
-use Ridibooks\Cms\Service\AdminAuthService;
+use Ridibooks\Cms\Auth\AdminAuthService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
