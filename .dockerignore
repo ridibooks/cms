@@ -1,0 +1,3 @@
+*.log
+.env
+.php_cs.cache
