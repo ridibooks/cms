@@ -8,19 +8,20 @@ use Ridibooks\Cms\Thrift\ThriftService;
 class LoginService
 {
     const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
+    const TOKEN_COOKIE_NAME = 'cms-token';
 
     public static function doLoginWithAzure($azure_resource)
     {
         $user_service = new AdminUserService();
-        $user = $user_service->getUser($azure_resource->mailNickname);
+        $user = $user_service->getUser($azure_resource['user_id']);
         $user = ThriftService::convertUserToArray($user);
         if (!$user || !$user['id']) {
-            $user_service->addNewUser($azure_resource->mailNickname, $azure_resource->displayName, '');
+            $user_service->addNewUser($azure_resource['user_id'], $azure_resource['user_name'], '');
         } elseif ($user['is_use'] != '1') {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }
 
-        self::setSessions($azure_resource->mailNickname);
+        self::setSessions($azure_resource['user_id']);
     }
 
     public static function getLoginPageUrl($login_endpoint, $callback_path, $return_path)

@@ -10,6 +10,7 @@ use Ridibooks\Cms\Util\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +29,8 @@ class LoginController implements ControllerProviderInterface
 
         // logout
         $controller_collection->get('/logout', [$this, 'logout']);
+
+        $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
 
         return $controller_collection;
     }
@@ -72,8 +75,10 @@ class LoginController implements ControllerProviderInterface
         try {
             if (!empty($app['test_id'])) {
                 LoginService::setSessions($app['test_id']);
+                $token = 'test';
             } else {
-                $resource = AzureOAuth2Service::getResource($code, $app['azure']);
+                $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
+                $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
                 LoginService::doLoginWithAzure($resource);
             }
         } catch (\Exception $e) {
@@ -82,12 +87,35 @@ class LoginController implements ControllerProviderInterface
 
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
+        $response->headers->setCookie(new Cookie(
+            LoginService::TOKEN_COOKIE_NAME, $token, time() + ( 30 * 24 * 60 * 60), '/', null, true
+        ));
         return $response;
     }
 
     public function logout()
     {
         LoginService::resetSession();
-        return RedirectResponse::create('/login');
+        $response = RedirectResponse::create('/login');
+        $response->headers->clearCookie(LoginService::TOKEN_COOKIE_NAME);
+        return $response;
+    }
+
+    public function tokenIntrospect(Request $request, Application $app)
+    {
+        $token = $request->get('token');
+        if (empty($token)) {
+            return Response::create('Bad parameters', Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!empty($app['test_id'])) {
+            $token_resource = [
+                'user_id' => $app['test_id'],
+                'user_name' => 'test' ,
+            ];
+        } else {
+            $token_resource = AzureOAuth2Service::inspectTokenResource($token, $app['azure']);
+        }
+        return JsonResponse::create($token_resource);
     }
 }

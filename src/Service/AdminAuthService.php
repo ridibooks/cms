@@ -33,11 +33,6 @@ class AdminAuthService
         }, $admin_menus);
     }
 
-    public static function isValidLogin() : bool
-    {
-        return !empty(LoginService::GetAdminID());
-    }
-
     public static function isValidUser(string $user_id) : bool
     {
         $user_service = new AdminUserService();
@@ -113,6 +108,7 @@ class AdminAuthService
             '/welcome',
             '/logout',
             '/login-azure',
+            '/token-introspect',
             '/index.php',
             '/',
         ];
