@@ -100,7 +100,7 @@ class AzureOAuth2Service
         }
 
         return [
-            'user_id' => $azure_resource->mailNickName,
+            'user_id' => $azure_resource->mailNickname,
             'user_name' => $azure_resource->displayName,
         ];
     }
