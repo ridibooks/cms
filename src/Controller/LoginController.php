@@ -87,9 +87,7 @@ class LoginController implements ControllerProviderInterface
 
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
-        $response->headers->setCookie(new Cookie(
-            LoginService::TOKEN_COOKIE_NAME, $token, time() + ( 30 * 24 * 60 * 60), '/', null, true
-        ));
+        $response->headers->setCookie(LoginService::createTokenCookie($token, !$app['debug']));
         return $response;
     }
 

@@ -4,11 +4,13 @@ namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Session\CouchbaseSessionHandler;
 use Ridibooks\Cms\Thrift\ThriftService;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class LoginService
 {
     const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
     const TOKEN_COOKIE_NAME = 'cms-token';
+    const TOKEN_EXPIRES_SEC = self::SESSION_TIMEOUT_SEC;
 
     public static function doLoginWithAzure($azure_resource)
     {
@@ -38,6 +40,11 @@ class LoginService
         return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
     }
 
+    public static function createTokenCookie($token, $secure_cookie)
+    {
+        return new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure_cookie);
+    }
+
     /**
      * @param string $id
      */
@@ -54,20 +61,9 @@ class LoginService
         @session_destroy();
     }
 
-    /**
-     * Cron에서 사용이 예상되면 isSessionableEnviroment() 호출하여 체크 후, 다른 이름을 사용해야한다.
-     */
     public static function GetAdminID()
     {
-        if (!self::isSessionableEnviroment()) {
-            trigger_error('LoginService::GetAdminID() called in not sessionable enviroment, please fix it');
-        }
         return isset($_SESSION['session_admin_id']) ? $_SESSION['session_admin_id'] : null;
-    }
-
-    public static function isSessionableEnviroment()
-    {
-        return in_array(php_sapi_name(), ['apache2filter', 'apache2handler', 'cli-server']);
     }
 
     public static function startSession($session_domain = null)
