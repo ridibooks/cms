@@ -3,17 +3,15 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
-use Ridibooks\Cms\Session\CouchbaseSessionHandler;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 class LoginService
 {
-    const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
     const TOKEN_COOKIE_NAME = 'cms-token';
     const ADMIN_ID_COOKIE_NAME = 'admin-id';
-    const TOKEN_EXPIRES_SEC = self::SESSION_TIMEOUT_SEC;
+    const TOKEN_EXPIRES_SEC = 60 * 60 * 12; // 12hours
 
     public static function login($user_id, $user_name)
     {
@@ -79,54 +77,15 @@ class LoginService
         );
     }
 
-    /**
-     * @param string $id
-     */
-    public static function setSession($id)
+    public static function clearLoginCookies(Response $response)
     {
-        //GetAdminID에 사용할 id를미리 set 한다.
-        $_SESSION['session_admin_id'] = $id;
-    }
-
-    public static function resetSession()
-    {
-        $_SESSION['session_admin_id'] = null;
-
-        @session_destroy();
+        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
+        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
+        return $response;
     }
 
     public static function GetAdminID()
     {
-        return isset($_SESSION['session_admin_id']) ? $_SESSION['session_admin_id'] : null;
-    }
-
-    public static function startSession($session_domain = null)
-    {
-        if (!isset($session_domain) || $session_domain === '') {
-            $session_domain = $_SERVER['SERVER_NAME'];
-        }
-
-        session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
-        session_start();
-    }
-
-    public static function startMemcacheSession($server_hosts, $session_domain = null)
-    {
-        session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
-        ini_set('session.gc_maxlifetime', self::SESSION_TIMEOUT_SEC);
-        ini_set('session.save_handler', 'memcache');
-        ini_set('session.save_path', $server_hosts);
-
-        self::startSession($session_domain);
-    }
-
-    public static function startCouchbaseSession($server_hosts, $session_domain = null)
-    {
-        session_set_save_handler(
-            new CouchbaseSessionHandler($server_hosts, 'session', self::SESSION_TIMEOUT_SEC),
-            true
-        );
-
-        self::startSession($session_domain);
+        return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
 }

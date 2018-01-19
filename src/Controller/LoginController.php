@@ -89,9 +89,8 @@ class LoginController implements ControllerProviderInterface
 
     public function logout()
     {
-        LoginService::resetSession();
         $response = RedirectResponse::create('/login');
-        $response->headers->clearCookie(LoginService::TOKEN_COOKIE_NAME);
+        $response = LoginService::clearLoginCookies($response);
         return $response;
     }
 
