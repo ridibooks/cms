@@ -128,10 +128,6 @@ class AdminAuthService
 
     public static function checkAuth(?string $hash, string $check_url, array $auth_list) : bool
     {
-        if (self::isWhiteListUrl($check_url)) {
-            return true;
-        }
-
         foreach ($auth_list as $auth) {
             $auth = self::parseUrlAuth($auth);
             if (self::isAuthUrl($check_url, $auth['url'])
@@ -145,8 +141,12 @@ class AdminAuthService
     // 해당 URL의 Hash 권한이 있는지 검사한다.
     public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
     {
+        if (self::isWhiteListUrl($check_url)) {
+            return true;
+        }
+
         $admin_id = $admin_id ?? LoginService::GetAdminID();
-        if (!self::isValidUser($admin_id)) {
+        if (empty($admin_id) || !self::isValidUser($admin_id)) {
             return false;
         }
 
