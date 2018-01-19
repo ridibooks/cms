@@ -6,6 +6,7 @@ use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginService
 {
@@ -25,15 +26,16 @@ class LoginService
         }
     }
 
-    public static function handleTestLogin(Response $response, $test_id)
+    public static function handleTestLogin($return_url, $test_id): Response
     {
+        $response = RedirectResponse::create($return_url);
         self::setLoginIdCookie($response, $test_id, false);
         self::setTokenCookie($response, 'test', false);
 
         return $response;
     }
 
-    public static function handleAzureLogin(Response $response, $code, $azure_config)
+    public static function handleAzureLogin($return_url, $code, $azure_config): Response
     {
         $token = AzureOAuth2Service::getAccessToken($code, $azure_config);
         $resource = AzureOAuth2Service::introspectToken($token, $azure_config);
@@ -43,6 +45,7 @@ class LoginService
 
         LoginService::login($resource['user_id'], $resource['user_name']);
 
+        $response = RedirectResponse::create($return_url);
         self::setLoginIdCookie($response, $resource['user_id'], true);
         self::setTokenCookie($response, $token, true);
 

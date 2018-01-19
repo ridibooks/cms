@@ -72,18 +72,16 @@ class LoginController implements ControllerProviderInterface
             return Response::create('azure login fail', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $response = RedirectResponse::create($return_url);
-        $response->headers->clearCookie('return_url');
-
         try {
             if (!empty($app['test_id'])) {
-                $response = LoginService::handleTestLogin($response, $app['test_id']);
+                $response = LoginService::handleTestLogin($return_url, $app['test_id']);
             } else {
-                $response = LoginService::handleAzureLogin($response, $code, $app['azure']);
+                $response = LoginService::handleAzureLogin($return_url, $code, $app['azure']);
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
         }
+        $response->headers->clearCookie('return_url');
         return $response;
     }
 
