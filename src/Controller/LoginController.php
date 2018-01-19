@@ -25,7 +25,7 @@ class LoginController implements ControllerProviderInterface
         $controller_collection->get('/login', [$this, 'getLoginPage']);
 
         // login process
-        $controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
+        $controller_collection->get('/login-azure', [$this, 'azureLogin']);
 
         // logout
         $controller_collection->get('/logout', [$this, 'logout']);
@@ -53,7 +53,7 @@ class LoginController implements ControllerProviderInterface
         ], $response);
     }
 
-    public function loginWithAzure(Request $request, Application $app)
+    public function azureLogin(Request $request, Application $app)
     {
         $code = $request->get('code');
         $return_url = $request->cookies->get('return_url', '/welcome');
@@ -74,20 +74,22 @@ class LoginController implements ControllerProviderInterface
 
         try {
             if (!empty($app['test_id'])) {
-                LoginService::setSessions($app['test_id']);
-                $token = 'test';
+                $token = LoginService::handleTestLogin($app['test_id']);
             } else {
-                $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
-                $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
-                LoginService::doLoginWithAzure($resource);
+                $token = LoginService::handleAzureLogin($code, $app['azure']);
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
         }
 
+        return $this->createAzureLoginResponse($token, $return_url, !$app['debug']);
+    }
+
+    private function createAzureLoginResponse($token, $return_url, $secure_cookie)
+    {
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
-        $response->headers->setCookie(LoginService::createTokenCookie($token, !$app['debug']));
+        $response->headers->setCookie(LoginService::createTokenCookie($token, $secure_cookie));
         return $response;
     }
 
@@ -112,7 +114,7 @@ class LoginController implements ControllerProviderInterface
                 'user_name' => 'test' ,
             ];
         } else {
-            $token_resource = AzureOAuth2Service::inspectTokenResource($token, $app['azure']);
+            $token_resource = AzureOAuth2Service::introspectToken($token, $app['azure']);
         }
         return JsonResponse::create($token_resource);
     }

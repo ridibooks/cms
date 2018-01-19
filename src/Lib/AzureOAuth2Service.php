@@ -80,16 +80,7 @@ class AzureOAuth2Service
         return $tokenOutput->access_token;
     }
 
-    public static function getTokenResource(string $access_token, array $azure_config) : array
-    {
-        $resource = AzureOAuth2Service::inspectTokenResource($access_token, $azure_config);
-        if (isset($resource['error']) || isset($resource['message'])) {
-            throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
-        }
-        return $resource;
-    }
-
-    public static function inspectTokenResource(string $access_token, array $azure_config) : array
+    public static function introspectToken(string $access_token, array $azure_config) : array
     {
         $azure_resource = self::requestResource('bearer', $access_token, $azure_config);
         if ($error = $azure_resource->{'odata.error'}) {
