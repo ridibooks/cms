@@ -6,11 +6,13 @@ use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Session\CouchbaseSessionHandler;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginService
 {
     const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
     const TOKEN_COOKIE_NAME = 'cms-token';
+    const ADMIN_ID_COOKIE_NAME = 'admin-id';
     const TOKEN_EXPIRES_SEC = self::SESSION_TIMEOUT_SEC;
 
     public static function login($user_id, $user_name)
@@ -23,18 +25,17 @@ class LoginService
         } elseif ($user['is_use'] != '1') {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }
-
-        self::setSession($user_id);
     }
 
-    public static function handleTestLogin($test_id): string
+    public static function handleTestLogin(Response $response, $test_id)
     {
-        self::setSession($test_id);
-        $token = 'test';
-        return $token;
+        self::setLoginIdCookie($response, $test_id, false);
+        self::setTokenCookie($response, 'test', false);
+
+        return $response;
     }
 
-    public static function handleAzureLogin($code, $azure_config): string
+    public static function handleAzureLogin(Response $response, $code, $azure_config)
     {
         $token = AzureOAuth2Service::getAccessToken($code, $azure_config);
         $resource = AzureOAuth2Service::introspectToken($token, $azure_config);
@@ -43,7 +44,11 @@ class LoginService
         }
 
         LoginService::login($resource['user_id'], $resource['user_name']);
-        return $token;
+
+        self::setLoginIdCookie($response, $resource['user_id'], true);
+        self::setTokenCookie($response, $token, true);
+
+        return $response;
     }
 
     public static function getLoginPageUrl($login_endpoint, $callback_path, $return_path)
@@ -60,9 +65,18 @@ class LoginService
         return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
     }
 
-    public static function createTokenCookie($token, $secure_cookie)
+    private static function setTokenCookie(Response $response, $token, $secure)
     {
-        return new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure_cookie);
+        $response->headers->setCookie(
+            new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
+        );
+    }
+
+    private static function setLoginIdCookie(Response $response, $login_id, $secure)
+    {
+        $response->headers->setCookie(
+            new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
+        );
     }
 
     /**
