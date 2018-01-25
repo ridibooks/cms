@@ -95,5 +95,4 @@ class AzureOAuth2Service
             'user_name' => $azure_resource->displayName,
         ];
     }
-
 }

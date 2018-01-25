@@ -68,7 +68,7 @@ class AdminAuthService
     }
 
     // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
-    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. 
+    // '/comm/'으로 시작하는 url은 권한을 타지 않는다.
     // (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
     private static function isAuthUrl(string $check_url, string $menu_url) : bool
     {
