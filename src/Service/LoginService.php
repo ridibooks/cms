@@ -2,25 +2,54 @@
 
 namespace Ridibooks\Cms\Service;
 
-use Ridibooks\Cms\Session\CouchbaseSessionHandler;
+use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftService;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginService
 {
-    const SESSION_TIMEOUT_SEC = 60 * 60 * 12; // 12hours
+    const TOKEN_COOKIE_NAME = 'cms-token';
+    const ADMIN_ID_COOKIE_NAME = 'admin-id';
+    const TOKEN_EXPIRES_SEC = 60 * 60 * 12; // 12hours
 
-    public static function doLoginWithAzure($azure_resource)
+    public static function login($user_id, $user_name)
     {
         $user_service = new AdminUserService();
-        $user = $user_service->getUser($azure_resource->mailNickname);
+        $user = $user_service->getUser($user_id);
         $user = ThriftService::convertUserToArray($user);
         if (!$user || !$user['id']) {
-            $user_service->addNewUser($azure_resource->mailNickname, $azure_resource->displayName, '');
+            $user_service->addNewUser($user_id, $user_name, '');
         } elseif ($user['is_use'] != '1') {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }
+    }
 
-        self::setSessions($azure_resource->mailNickname);
+    public static function handleTestLogin($return_url, $test_id): Response
+    {
+        $response = RedirectResponse::create($return_url);
+        self::setLoginIdCookie($response, $test_id, false);
+        self::setTokenCookie($response, 'test', false);
+
+        return $response;
+    }
+
+    public static function handleAzureLogin($return_url, $code, $azure_config): Response
+    {
+        $token = AzureOAuth2Service::getAccessToken($code, $azure_config);
+        $resource = AzureOAuth2Service::introspectToken($token, $azure_config);
+        if (isset($resource['error']) || isset($resource['message'])) {
+            throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
+        }
+
+        LoginService::login($resource['user_id'], $resource['user_name']);
+
+        $response = RedirectResponse::create($return_url);
+        self::setLoginIdCookie($response, $resource['user_id'], true);
+        self::setTokenCookie($response, $token, true);
+
+        return $response;
     }
 
     public static function getLoginPageUrl($login_endpoint, $callback_path, $return_path)
@@ -37,65 +66,29 @@ class LoginService
         return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
     }
 
-    /**
-     * @param string $id
-     */
-    public static function setSessions($id)
+    private static function setTokenCookie(Response $response, $token, $secure)
     {
-        //GetAdminID에 사용할 id를미리 set 한다.
-        $_SESSION['session_admin_id'] = $id;
+        $response->headers->setCookie(
+            new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
+        );
     }
 
-    public static function resetSession()
+    private static function setLoginIdCookie(Response $response, $login_id, $secure)
     {
-        $_SESSION['session_admin_id'] = null;
-
-        @session_destroy();
+        $response->headers->setCookie(
+            new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
+        );
     }
 
-    /**
-     * Cron에서 사용이 예상되면 isSessionableEnviroment() 호출하여 체크 후, 다른 이름을 사용해야한다.
-     */
+    public static function clearLoginCookies(Response $response)
+    {
+        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
+        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
+        return $response;
+    }
+
     public static function GetAdminID()
     {
-        if (!self::isSessionableEnviroment()) {
-            trigger_error('LoginService::GetAdminID() called in not sessionable enviroment, please fix it');
-        }
-        return isset($_SESSION['session_admin_id']) ? $_SESSION['session_admin_id'] : null;
-    }
-
-    public static function isSessionableEnviroment()
-    {
-        return in_array(php_sapi_name(), ['apache2filter', 'apache2handler', 'cli-server']);
-    }
-
-    public static function startSession($session_domain = null)
-    {
-        if (!isset($session_domain) || $session_domain === '') {
-            $session_domain = $_SERVER['SERVER_NAME'];
-        }
-
-        session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
-        session_start();
-    }
-
-    public static function startMemcacheSession($server_hosts, $session_domain = null)
-    {
-        session_set_cookie_params(self::SESSION_TIMEOUT_SEC, '/', $session_domain);
-        ini_set('session.gc_maxlifetime', self::SESSION_TIMEOUT_SEC);
-        ini_set('session.save_handler', 'memcache');
-        ini_set('session.save_path', $server_hosts);
-
-        self::startSession($session_domain);
-    }
-
-    public static function startCouchbaseSession($server_hosts, $session_domain = null)
-    {
-        session_set_save_handler(
-            new CouchbaseSessionHandler($server_hosts, 'session', self::SESSION_TIMEOUT_SEC),
-            true
-        );
-
-        self::startSession($session_domain);
+        return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
 }

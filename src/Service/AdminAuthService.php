@@ -33,11 +33,6 @@ class AdminAuthService
         }, $admin_menus);
     }
 
-    public static function isValidLogin() : bool
-    {
-        return !empty(LoginService::GetAdminID());
-    }
-
     public static function isValidUser(string $user_id) : bool
     {
         $user_service = new AdminUserService();
@@ -73,7 +68,7 @@ class AdminAuthService
     }
 
     // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
-    // '/comm/'으로 시작하는 url은 권한을 타지 않는다. 
+    // '/comm/'으로 시작하는 url은 권한을 타지 않는다.
     // (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
     private static function isAuthUrl(string $check_url, string $menu_url) : bool
     {
@@ -113,6 +108,7 @@ class AdminAuthService
             '/welcome',
             '/logout',
             '/login-azure',
+            '/token-introspect',
             '/index.php',
             '/',
         ];
@@ -132,10 +128,6 @@ class AdminAuthService
 
     public static function checkAuth(?string $hash, string $check_url, array $auth_list) : bool
     {
-        if (self::isWhiteListUrl($check_url)) {
-            return true;
-        }
-
         foreach ($auth_list as $auth) {
             $auth = self::parseUrlAuth($auth);
             if (self::isAuthUrl($check_url, $auth['url'])
@@ -149,8 +141,12 @@ class AdminAuthService
     // 해당 URL의 Hash 권한이 있는지 검사한다.
     public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
     {
+        if (self::isWhiteListUrl($check_url)) {
+            return true;
+        }
+
         $admin_id = $admin_id ?? LoginService::GetAdminID();
-        if (!self::isValidUser($admin_id)) {
+        if (empty($admin_id) || !self::isValidUser($admin_id)) {
             return false;
         }
 
