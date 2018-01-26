@@ -4,6 +4,7 @@ namespace Ridibooks\Cms;
 use JG\Silex\Provider\CapsuleServiceProvider;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Thrift\ThriftResponse;
+use Ridibooks\Platform\Cms\CmsApplication;
 use Silex\Application\TwigTrait;
 use Symfony\Component\HttpFoundation\Request;
 

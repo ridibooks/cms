@@ -69,7 +69,7 @@ class AzureOAuth2Service
         return json_decode($output);
     }
 
-    public static function getResource($code, $azure_config)
+    public static function getAccessToken(string $code, array $azure_config) : string
     {
         $tokenOutput = self::requestAccessToken($code, $azure_config);
         $token_type = $tokenOutput->token_type;
@@ -78,11 +78,33 @@ class AzureOAuth2Service
             throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
         }
 
-        $resourceOutput = self::requestResource($token_type, $access_token, $azure_config);
-        if ($error = $resourceOutput->{'odata.error'}) {
-            throw new \Exception("[requestResource]\n $error->code: {$error->message->value}");
+        return $tokenOutput->access_token;
+    }
+
+    public static function getTokenResource(string $access_token, array $azure_config) : array
+    {
+        $resource = AzureOAuth2Service::inspectTokenResource($access_token, $azure_config);
+        if (isset($resource['error']) || isset($resource['message'])) {
+            throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
+        }
+        return $resource;
+    }
+
+    public static function inspectTokenResource(string $access_token, array $azure_config) : array
+    {
+        $azure_resource = self::requestResource('bearer', $access_token, $azure_config);
+        if ($error = $azure_resource->{'odata.error'}) {
+            return [
+                'error' => $error->code,
+                'message' => $error->message->value,
+            ];
+
         }
 
-        return $resourceOutput;
+        return [
+            'user_id' => $azure_resource->mailNickname,
+            'user_name' => $azure_resource->displayName,
+        ];
     }
+
 }

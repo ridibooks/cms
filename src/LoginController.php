@@ -5,7 +5,7 @@ namespace Ridibooks\Cms;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
-use Ridibooks\Cms\Util\UrlHelper;
+use Ridibooks\Platform\Cms\Util\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -71,8 +71,10 @@ class LoginController implements ControllerProviderInterface
         try {
             if (!empty($app['test_id'])) {
                 LoginService::setSessions($app['test_id']);
+                $token = 'test';
             } else {
-                $resource = AzureOAuth2Service::getResource($code, $app['azure']);
+                $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
+                $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
                 LoginService::doLoginWithAzure($resource);
             }
         } catch (\Exception $e) {
@@ -81,12 +83,17 @@ class LoginController implements ControllerProviderInterface
 
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
+        $response->headers->setCookie(new Cookie(
+            'cms-token', $token, time() + ( 30 * 24 * 60 * 60), '/', null, !$app['debug']
+        ));
         return $response;
     }
 
     public function logout()
     {
         LoginService::resetSession();
-        return RedirectResponse::create('/login');
+        $response = RedirectResponse::create('/login');
+        $response->headers->clearCookie('cms-token');
+        return $response;
     }
 }
