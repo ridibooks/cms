@@ -85,9 +85,12 @@ class LoginController implements ControllerProviderInterface
         return $response;
     }
 
-    public function logout()
+    public function logout(Request $request, Application $app)
     {
-        return LoginService::handleLogout('/login');
+        $redirect_url = $request->getUriForPath('/login');
+        $endpoint = AzureOAuth2Service::getLogoutEndpoint($app['azure'], $redirect_url);
+
+        return LoginService::handleLogout($endpoint);
     }
 
     public function tokenIntrospect(Request $request, Application $app)

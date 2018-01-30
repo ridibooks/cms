@@ -44,9 +44,9 @@ class LoginService
         return self::createLoginResponse($return_url, $resource['user_id'], $token);
     }
 
-    public static function handleLogout(string $login_url): Response
+    public static function handleLogout(string $redirect_url): Response
     {
-        return self::createLogoutResponse($login_url);
+        return self::createLogoutResponse($redirect_url);
     }
 
     public static function getLoginPageUrl(string $login_endpoint, string $callback_path, string $return_path): string
@@ -76,9 +76,9 @@ class LoginService
         return $response;
     }
 
-    private static function createLogoutResponse(string $login_url): Response
+    private static function createLogoutResponse(string $redirect_url): Response
     {
-        $response = RedirectResponse::create($login_url);
+        $response = RedirectResponse::create($redirect_url);
         $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
         $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
         return $response;
