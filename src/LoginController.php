@@ -72,10 +72,12 @@ class LoginController implements ControllerProviderInterface
             if (!empty($app['test_id'])) {
                 LoginService::setSessions($app['test_id']);
                 $token = 'test';
+                $admin_id = $app['test_id'];
             } else {
                 $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
                 $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
                 LoginService::doLoginWithAzure($resource);
+                $admin_id = $resource['user-id'];
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
@@ -85,6 +87,9 @@ class LoginController implements ControllerProviderInterface
         $response->headers->clearCookie('return_url');
         $response->headers->setCookie(new Cookie(
             'cms-token', $token, time() + ( 30 * 24 * 60 * 60), '/', null, !$app['debug']
+        ));
+        $response->headers->setCookie(new Cookie(
+            'admin-id', $admin_id, time() + ( 30 * 24 * 60 * 60), '/', null
         ));
         return $response;
     }
