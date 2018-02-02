@@ -99,6 +99,7 @@ class LoginController implements ControllerProviderInterface
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
         $response->headers->clearCookie('cms-token');
+        $response->headers->clearCookie('admin-id');
         return $response;
     }
 }
