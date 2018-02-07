@@ -21,6 +21,25 @@ class AdminAuthServiceTest extends TestCase
         );
     }
 
+    public function testCheckAuthWithSubpath()
+    {
+        $auth_list = ['/admin/book/productList'];
+        $this->assertTrue(
+            AdminAuthService::checkAuth(null, '/admin/book/productList/', $auth_list)
+        );
+        $this->assertTrue(
+            AdminAuthService::checkAuth(null, '/admin/book/productList/subpath', $auth_list)
+        );
+        $this->assertTrue(
+            AdminAuthService::checkAuth(null, '/admin/book/productList/subpath/subsub', $auth_list)
+        );
+
+        // As-is state, but somewhat problematic.
+        $this->assertTrue(
+            AdminAuthService::checkAuth(null, '/weired/admin/book/productList/subpath/subsub', $auth_list)
+        );
+    }
+
     public function testCheckAuth_withHash()
     {
         $auth_list = ['/admin/book/productList#EDIT_세트도서'];
