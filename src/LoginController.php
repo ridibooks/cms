@@ -77,7 +77,7 @@ class LoginController implements ControllerProviderInterface
                 $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
                 $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
                 LoginService::doLoginWithAzure($resource);
-                $admin_id = $resource['user-id'];
+                $admin_id = $resource['user_id'];
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
