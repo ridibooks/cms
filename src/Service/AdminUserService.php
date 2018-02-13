@@ -190,11 +190,11 @@ class AdminUserService implements AdminUserServiceIf
     {
         $ids = [];
         $unique = [];
-        foreach ($menus as $key => $value)
+        foreach ($menus as $menu)
         {
-            $id = $value->menu_id;
+            $id = $menu->menu_id;
             if (!isset($ids[$id])) {
-                $unique[$id] = $value;
+                $unique[$id] = $menu;
                 $ids[$id] = true;
             }
         }
