@@ -155,6 +155,7 @@ class AdminUserService implements AdminUserServiceIf
             where tb_admin2_user_menu.user_id = :user', ['user' => $user]);
 
         $menus = array_merge($user_tag_menus, $user_menus);
+        $menus = self::uniquifyMenus($menus);
 
         return array_map(function ($menu) use ($column) {
             return isset($column) ? $menu->{$column} : (array) $menu;
@@ -183,5 +184,20 @@ class AdminUserService implements AdminUserServiceIf
         return array_map(function ($ajax) use ($column) {
             return isset($column) ? $ajax->{$column} : (array) $ajax;
         }, $ajax_list);
+    }
+
+    public function uniquifyMenus(array $menus)
+    {
+        $ids = [];
+        $unique = [];
+        foreach ($menus as $menu)
+        {
+            $id = $menu->menu_id;
+            if (!isset($ids[$id])) {
+                $unique[$id] = $menu;
+                $ids[$id] = true;
+            }
+        }
+        return $unique;
     }
 }
