@@ -102,7 +102,7 @@ class LoginController implements ControllerProviderInterface
         if (!empty($app['test_id'])) {
             $token_resource = [
                 'user_id' => $app['test_id'],
-                'user_name' => 'test' ,
+                'user_name' => 'test',
             ];
         } else {
             $token_resource = AzureOAuth2Service::introspectToken($token, $app['azure']);

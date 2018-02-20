@@ -5,8 +5,8 @@ namespace Ridibooks\Cms\Service;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\ThriftService;
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginService
 {
@@ -43,7 +43,7 @@ class LoginService
             throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
         }
 
-        LoginService::login($resource['user_id'], $resource['user_name']);
+        self::login($resource['user_id'], $resource['user_name']);
 
         $response = RedirectResponse::create($return_url);
         self::setLoginIdCookie($response, $resource['user_id'], true);

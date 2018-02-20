@@ -12,7 +12,7 @@ class AdminUserService implements AdminUserServiceIf
     /**
      * 사용 가능한 모든 Admin 계정정보 가져온다.
      */
-    public function getAllAdminUserArray() : array
+    public function getAllAdminUserArray(): array
     {
         $users = AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
         return $users->map(function ($user) {
@@ -20,7 +20,7 @@ class AdminUserService implements AdminUserServiceIf
         })->all();
     }
 
-    public function getUser($id) : ThriftAdminUser
+    public function getUser($id): ThriftAdminUser
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($id);
@@ -30,7 +30,7 @@ class AdminUserService implements AdminUserServiceIf
         return new ThriftAdminUser($user->toArray());
     }
 
-    public function getAdminUserTag($user_id) : array
+    public function getAdminUserTag($user_id): array
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($user_id);
@@ -41,7 +41,7 @@ class AdminUserService implements AdminUserServiceIf
         return $user->tags->pluck('id')->all();
     }
 
-    public function getAdminUserMenu($user_id, $column = 'id') : array
+    public function getAdminUserMenu($user_id, $column = 'id'): array
     {
         /** @var AdminUser $user */
         $user = AdminUser::find($user_id);
@@ -52,7 +52,7 @@ class AdminUserService implements AdminUserServiceIf
         return $user->menus->pluck($column)->all();
     }
 
-    public function getAdminUserMenuAjax($user_id, $column = 'id') : array
+    public function getAdminUserMenuAjax($user_id, $column = 'id'): array
     {
         /** @var AdminUser $user */
         $user = AdminUser::with('menus.ajaxMenus')->find($user_id);
@@ -65,12 +65,12 @@ class AdminUserService implements AdminUserServiceIf
         })->collapse()->all();
     }
 
-    public function getAllMenuIds($user_id) : array
+    public function getAllMenuIds($user_id): array
     {
         return $this->getAllMenus($user_id, 'id');
     }
 
-    public function getAllMenus($user_id, $column = null) : array
+    public function getAllMenus($user_id, $column = null): array
     {
         $menuService = new AdminMenuService();
         $rootMenus = $menuService->getRootMenus($column);
@@ -86,12 +86,12 @@ class AdminUserService implements AdminUserServiceIf
         return $menus;
     }
 
-    public function getAllMenuAjaxList($user_id, $column = null) : array
+    public function getAllMenuAjaxList($user_id, $column = null): array
     {
         return $this->selectUserAjaxList($user_id, $column);
     }
 
-    public function updateMyInfo($name, $team, $is_use, $passwd = '') : bool
+    public function updateMyInfo($name, $team, $is_use, $passwd = ''): bool
     {
         /** @var AdminUser $admin */
         $me = AdminUser::find(LoginService::GetAdminID());
@@ -115,7 +115,7 @@ class AdminUserService implements AdminUserServiceIf
         return true;
     }
 
-    public function updatePassword($user_id, $plain_password) : bool
+    public function updatePassword($user_id, $plain_password): bool
     {
         $me = AdminUser::find($user_id);
         if (!$me) {
@@ -139,7 +139,7 @@ class AdminUserService implements AdminUserServiceIf
         ]);
     }
 
-    private function selectUserMenus(string $user, ?string $column = null) : array
+    private function selectUserMenus(string $user, ?string $column = null): array
     {
         // menu -> tag -> user
         $user_tag_menus = DB::select('select *
@@ -162,7 +162,7 @@ class AdminUserService implements AdminUserServiceIf
         }, $menus);
     }
 
-    private function selectUserAjaxList(string $user, ?string $column = null) : array
+    private function selectUserAjaxList(string $user, ?string $column = null): array
     {
         // ajax -> menu -> tag -> user
         $user_tag_ajax_list = DB::select('select *
@@ -190,8 +190,7 @@ class AdminUserService implements AdminUserServiceIf
     {
         $ids = [];
         $unique = [];
-        foreach ($menus as $menu)
-        {
+        foreach ($menus as $menu) {
             $id = $menu->menu_id;
             if (!isset($ids[$id])) {
                 $unique[$id] = $menu;

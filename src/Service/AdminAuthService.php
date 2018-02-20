@@ -3,18 +3,13 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
-use Ridibooks\Cms\Thrift\ThriftService;
-use Ridibooks\Cms\Util\UrlHelper;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**권한 설정 Service
  * @deprecated
  */
 class AdminAuthService
 {
-    public function getAdminMenu(?string $user_id = null) : array
+    public function getAdminMenu(?string $user_id = null): array
     {
         $user_service = new AdminUserService();
         $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
@@ -33,7 +28,7 @@ class AdminAuthService
         }, $admin_menus);
     }
 
-    public static function isValidUser(string $user_id) : bool
+    public static function isValidUser(string $user_id): bool
     {
         $user_service = new AdminUserService();
         $admin = $user_service->getUser($user_id);
@@ -44,7 +39,7 @@ class AdminAuthService
         return $admin && $admin->is_use;
     }
 
-    public function getAdminAuth(?string $user_id = null) : array
+    public function getAdminAuth(?string $user_id = null): array
     {
         if (empty($user_id)) {
             $user_id = LoginService::GetAdminID();
@@ -58,7 +53,7 @@ class AdminAuthService
         return $auths;
     }
 
-    private static function parseUrlAuth(string $url) : array
+    private static function parseUrlAuth(string $url): array
     {
         $tokens = preg_split('/#/', $url);
         return [
@@ -70,7 +65,7 @@ class AdminAuthService
     // 입력받은 url이 권한을 가지고 있는 url인지 검사<br/>
     // '/comm/'으로 시작하는 url은 권한을 타지 않는다.
     // (개인정보 수정 등 로그인 한 유저가 공통적으로 사용할 수 있는 기능을 /comm/에 넣을 예정)
-    private static function isAuthUrl(string $check_url, string $menu_url) : bool
+    private static function isAuthUrl(string $check_url, string $menu_url): bool
     {
         $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
         if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
@@ -82,7 +77,7 @@ class AdminAuthService
         return false;
     }
 
-    private static function isAuthCorrect($hash, $auth) : bool
+    private static function isAuthCorrect($hash, $auth): bool
     {
         if (is_null($hash)) { //hash가 없는 경우 (보기 권한)
             return true;
@@ -100,7 +95,7 @@ class AdminAuthService
         return false;
     }
 
-    public static function isWhiteListUrl(string $check_url) : bool
+    public static function isWhiteListUrl(string $check_url): bool
     {
         $public_urls = [
             '/admin/book/pa',
@@ -116,7 +111,7 @@ class AdminAuthService
         return in_array($check_url, $public_urls);
     }
 
-    public static function readUserAuth(string $user_id) : array
+    public static function readUserAuth(string $user_id): array
     {
         $user_service = new AdminUserService();
         $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
@@ -126,7 +121,7 @@ class AdminAuthService
         return $urls;
     }
 
-    public static function checkAuth(?string $hash, string $check_url, array $auth_list) : bool
+    public static function checkAuth(?string $hash, string $check_url, array $auth_list): bool
     {
         foreach ($auth_list as $auth) {
             $auth = self::parseUrlAuth($auth);
@@ -139,7 +134,7 @@ class AdminAuthService
     }
 
     // 해당 URL의 Hash 권한이 있는지 검사한다.
-    public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null) : bool
+    public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null): bool
     {
         if (self::isWhiteListUrl($check_url)) {
             return true;
@@ -156,7 +151,7 @@ class AdminAuthService
     }
 
     // 해당 URL의 Hash 권한 Array를 반환한다.
-    public static function getCurrentHashArray(string $check_url = null, string $admin_id = null) : array
+    public static function getCurrentHashArray(string $check_url = null, string $admin_id = null): array
     {
         if (!isset($check_url) || trim($check_url) === '') {
             $check_url = $_SERVER['REQUEST_URI'];
@@ -168,7 +163,7 @@ class AdminAuthService
         return $hash_array;
     }
 
-    public static function getHashesFromMenus(string $check_url, array $auth_urls) : array
+    public static function getHashesFromMenus(string $check_url, array $auth_urls): array
     {
         $auth_urls = array_filter($auth_urls, function ($url) use ($check_url) {
             return self::isAuthUrl($check_url, $url);
@@ -181,7 +176,7 @@ class AdminAuthService
         return $hash_array;
     }
 
-    public function hideEmptyRootMenus(array $menus) : array
+    public function hideEmptyRootMenus(array $menus): array
     {
         $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];

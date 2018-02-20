@@ -69,7 +69,7 @@ class AzureOAuth2Service
         return json_decode($output);
     }
 
-    public static function getAccessToken(string $code, array $azure_config) : string
+    public static function getAccessToken(string $code, array $azure_config): string
     {
         $tokenOutput = self::requestAccessToken($code, $azure_config);
         $token_type = $tokenOutput->token_type;
@@ -80,7 +80,7 @@ class AzureOAuth2Service
         return $tokenOutput->access_token;
     }
 
-    public static function introspectToken(string $access_token, array $azure_config) : array
+    public static function introspectToken(string $access_token, array $azure_config): array
     {
         $azure_resource = self::requestResource('bearer', $access_token, $azure_config);
         if ($error = $azure_resource->{'odata.error'}) {
