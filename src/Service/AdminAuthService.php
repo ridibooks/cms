@@ -173,7 +173,7 @@ class AdminAuthService
             return self::parseUrlAuth($url)['hash'];
         }, $auth_urls);
 
-        return $hash_array;
+        return array_filter($hash_array);
     }
 
     public function hideEmptyRootMenus(array $menus): array
