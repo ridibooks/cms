@@ -11,14 +11,21 @@ class AdminMenuService implements AdminMenuServiceIf
 {
     public function getMenuList($is_use = null): array
     {
+        $menus = $this->queryMenus($is_use);
+        return $menus->map(function ($menu) {
+            return new ThriftAdminMenu($menu);
+        })->all();
+    }
+
+    public function queryMenus($is_use = null): array
+    {
         $menus_query = AdminMenu::query()->orderBy('menu_order');
         if (!is_null($is_use)) {
             $menus_query = $menus_query->where('is_use', $is_use);
         }
 
-        $menus = $menus_query->get();
-        return $menus->map(function ($menu) {
-            return new ThriftAdminMenu($menu->toArray());
+        return $menus_query->get()->map(function ($menu) {
+            return $menu->toArray();
         })->all();
     }
 

@@ -11,8 +11,13 @@ class AdminAuthService
 {
     public function getAdminMenu(?string $user_id = null): array
     {
-        $user_service = new AdminUserService();
-        $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
+        if (isset($_ENV['DEBUG'])) {
+            $menu_service = new AdminMenuService();
+            $menus = $menu_service->queryMenus(true);
+        } else {
+            $user_service = new AdminUserService();
+            $menus = $user_service->getAllMenus($user_id ?? LoginService::GetAdminID());
+        }
 
         $menus = $this->hideEmptyRootMenus($menus);
 
