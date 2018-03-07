@@ -7,7 +7,7 @@
     "illuminate/database": "^5.2",
     "jguyomard/silex-capsule-eloquent": "^2.0",
     "moriony/silex-sentry-provider": "~2.0.0",
-    "ridibooks/cms-sdk": "^2.0.0",
+    "ridibooks/cms-sdk": "2.x-dev",
     "sentry/sentry": "^1.6",
     "silex/silex": "^2.0",
     "twig/twig": "^2.0.0",
