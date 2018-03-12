@@ -638,16 +638,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.24.1",
+            "version": "1.24.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "ef12cbd8ba5ce624f0a6a95e0850c4cc13e71e41"
+                "reference": "bba6c6e410c6b4317e37a9474aeaa753808c3875"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/ef12cbd8ba5ce624f0a6a95e0850c4cc13e71e41",
-                "reference": "ef12cbd8ba5ce624f0a6a95e0850c4cc13e71e41",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bba6c6e410c6b4317e37a9474aeaa753808c3875",
+                "reference": "bba6c6e410c6b4317e37a9474aeaa753808c3875",
                 "shasum": ""
             },
             "require": {
@@ -687,7 +687,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-03-09T15:49:34+00:00"
+            "time": "2018-03-10T10:10:14+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -983,16 +983,16 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "73f518d86c082c352200fb0576e5f77aef803228"
+                "reference": "3115d238473578b446562ab61083552739999940"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/73f518d86c082c352200fb0576e5f77aef803228",
-                "reference": "73f518d86c082c352200fb0576e5f77aef803228",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/3115d238473578b446562ab61083552739999940",
+                "reference": "3115d238473578b446562ab61083552739999940",
                 "shasum": ""
             },
             "require": {
@@ -1015,7 +1015,7 @@
                 "MIT"
             ],
             "description": "Ridibooks CMS SDK",
-            "time": "2018-03-12T02:42:21+00:00"
+            "time": "2018-03-12T09:33:51+00:00"
         },
         {
             "name": "sentry/sentry",
