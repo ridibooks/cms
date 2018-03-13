@@ -15,8 +15,8 @@ if (!empty($cms_rpc_url)) {
     ThriftService::setEndPoint($cms_rpc_url);
 }
 
+$config = require __DIR__ . '/../config/config.php';
 $app = require __DIR__ . '/../src/app.php';
-require __DIR__ . '/../config/config.php';
 require __DIR__ . '/../src/controllers.php';
 
 $app->run();
