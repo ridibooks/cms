@@ -11,7 +11,7 @@ class AdminAuthService
 {
     public function getAdminMenu(?string $user_id = null): array
     {
-        if (isset($_ENV['DEBUG'])) {
+        if ($_ENV['DEBUG'] ?? false) {
             $menu_service = new AdminMenuService();
             $menus = $menu_service->queryMenus(true);
         } else {
