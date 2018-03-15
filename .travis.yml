@@ -1,0 +1,61 @@
+os: linux
+sudo: false
+dist: trusty
+language: php
+php:
+- '7.1'
+
+cache:
+  directories:
+  - "${HOME}/.cache/composer/files"
+  - "${HOME}/.composer/cache/files"
+
+stages:
+- name: test
+- name: push
+  if: type = push
+- name: deploy
+  if: type = push
+
+jobs:
+  include:
+
+  - stage: test
+    services:
+      - mysql
+    before_script:
+      - composer install --prefer-dist
+    script:
+      - bin/setup.sh
+      - bin/test.sh
+
+  - stage: push
+    if: branch IN (1.x, 2.x)
+    services:
+      - docker
+    script:
+      - bin/docker_push.sh
+
+  - stage: deploy
+    name: deploy-dev-v2
+    if: branch = 2.x
+    env:
+      - CI_TRIGGER_ENV=dev CI_TRIGGER_TARGET=cms-v2-restart
+    script:
+      - bin/deploy.sh
+
+  - stage: deploy
+    name: deploy-prod-v1
+    if: branch = 1.x AND tag IS present
+    env:
+      - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-restart
+    script:
+      - bin/deploy.sh
+
+  - stage: deploy
+    name: deploy-prod-v2
+    if: branch = 2.x AND tag IS present
+    env:
+      - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-v2-restart
+    script:
+      - bin/deploy.sh
