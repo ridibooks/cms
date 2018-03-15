@@ -13,13 +13,17 @@
     "twig/twig": "^2.0.0",
     "vlucas/phpdotenv": "^2.4"
   },
+  "require-dev": {
+    "robmorgan/phinx": "^0.9.2",
+    "phpunit/phpunit": "^6.5"
+  },
   "autoload": {
     "psr-4": {
       "Ridibooks\\Cms\\": "src"
     }
   },
-  "require-dev": {
-    "robmorgan/phinx": "^0.9.2",
-    "phpunit/phpunit": "^6.5"
+  "scripts": {
+    "test": "phpunit",
+    "clear": "rm -rf vendor"
   }
 }
