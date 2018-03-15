@@ -7,10 +7,14 @@ use Illuminate\Events\Dispatcher;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-if (is_readable('.env')) {
-    $dotenv = new Dotenv\Dotenv(__DIR__, '.env');
-    $dotenv->load();
-}
+$dotenv = new Dotenv\Dotenv(__DIR__, '.env');
+$dotenv->overload();
+$dotenv->required([
+    'MYSQL_HOST',
+    'MYSQL_DATABASE',
+    'MYSQL_USER',
+    'MYSQL_PASSWORD',
+]);
 
 $capsule = new Capsule;
 
