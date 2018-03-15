@@ -46,8 +46,9 @@ class LoginService
         self::login($resource['user_id'], $resource['user_name']);
 
         $response = RedirectResponse::create($return_url);
-        self::setLoginIdCookie($response, $resource['user_id'], true);
-        self::setTokenCookie($response, $token, true);
+
+        self::setLoginIdCookie($response, $resource['user_id']);
+        self::setTokenCookie($response, $token);
 
         return $response;
     }
@@ -66,15 +67,17 @@ class LoginService
         return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
     }
 
-    private static function setTokenCookie(Response $response, $token, $secure)
+    private static function setTokenCookie(Response $response, $token)
     {
+        $secure = empty($_ENV['DEBUG']) ? false : true;
         $response->headers->setCookie(
             new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
         );
     }
 
-    private static function setLoginIdCookie(Response $response, $login_id, $secure)
+    private static function setLoginIdCookie(Response $response, $login_id)
     {
+        $secure = empty($_ENV['DEBUG']) ? false : true;
         $response->headers->setCookie(
             new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
         );
