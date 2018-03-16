@@ -12,8 +12,10 @@ cache:
 
 stages:
 - name: test
+
 - name: push
   if: type = push
+
 - name: deploy
   if: type = push
 
@@ -46,7 +48,7 @@ jobs:
 
   - stage: deploy
     name: deploy-prod-v1
-    if: branch = 1.x AND tag IS present
+    if: branch = 1.x AND tag =~ ^\d+\.\d+(\.\d+)?$
     env:
       - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-restart
     script:
@@ -54,7 +56,7 @@ jobs:
 
   - stage: deploy
     name: deploy-prod-v2
-    if: branch = 2.x AND tag IS present
+    if: branch = 2.x AND tag =~ ^\d+\.\d+(\.\d+)?$
     env:
       - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-v2-restart
     script:
