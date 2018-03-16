@@ -67,8 +67,8 @@ class LoginService
     {
         $expire = time() + self::TOKEN_EXPIRES_SEC;
         $secure = empty($_ENV['DEBUG']) ? false : true;
-        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expire, '/', null, $secure);
-        $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expire, '/', null, $secure);
+        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expire, '/', null, $secure, true);
+        $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expire, '/', null, $secure, true);
 
         $response = RedirectResponse::create($return_url);
         $response->headers->setCookie($login_id_cookie);
