@@ -1,5 +1,4 @@
 .env
 vendor
 web/static/bower_components
-docs/deploy/servers/*
-!docs/deploy/servers/sample.yml
+!tests/.env

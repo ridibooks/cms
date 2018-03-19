@@ -21,3 +21,7 @@ MYSQL_USER=yourid
 MYSQL_PASSWORD=yourpassword
 MYSQL_DATABASE=yourdb
 ```
+
+## Deployment
+We use Travis CI to deploy. See [.travis.yml](./.travis.yml)  
+You needs to be careful when push tags or create a release. 
