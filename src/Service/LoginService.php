@@ -66,7 +66,7 @@ class LoginService
     private static function createLoginResponse(string $return_url, string $login_id, string $token): Response
     {
         $expire = time() + self::TOKEN_EXPIRES_SEC;
-        $secure = empty($_ENV['DEBUG']) ? false : true;
+        $secure = empty($_ENV['DEBUG']) ? true : false;
         $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expire, '/', null, $secure, true);
         $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expire, '/', null, $secure, true);
 
