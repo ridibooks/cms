@@ -44,23 +44,9 @@ class LoginService
         return self::createLoginResponse($return_url, $resource['user_id'], $token);
     }
 
-    public static function handleLogout(string $login_url): Response
+    public static function handleLogout(string $redirect_url): Response
     {
-        return self::createLogoutResponse($login_url);
-    }
-
-    public static function getLoginPageUrl(string $login_endpoint, string $callback_path, string $return_path): string
-    {
-        $scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        if ($callback_path[0] != '/') {
-            $callback_path = '/' . $callback_path;
-        }
-        if ($return_path[0] != '/') {
-            $return_path = '/' . $return_path;
-        }
-        $callback_path = $scheme . '://' . $host . $callback_path;
-        return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
+        return self::createLogoutResponse($redirect_url);
     }
 
     private static function createLoginResponse(string $return_url, string $login_id, string $token): Response
@@ -76,9 +62,9 @@ class LoginService
         return $response;
     }
 
-    private static function createLogoutResponse(string $login_url): Response
+    private static function createLogoutResponse(string $redirect_url): Response
     {
-        $response = RedirectResponse::create($login_url);
+        $response = RedirectResponse::create($redirect_url);
         $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
         $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
         return $response;

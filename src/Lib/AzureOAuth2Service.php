@@ -17,6 +17,13 @@ class AzureOAuth2Service
             "&redirect_uri=" . urlencode($redirect_uri);
     }
 
+    public static function getLogoutEndpoint($azure_config, $redirect_url)
+    {
+        $tenent = $azure_config['tenent'];
+        return "https://login.windows.net/$tenent/oauth2/logout?"
+            . "post_logout_redirect_uri=" . urlencode($redirect_url);
+    }
+
     public static function requestAccessToken($code, $azure_config)
     {
         $tenent = $azure_config['tenent'];
