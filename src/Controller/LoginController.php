@@ -11,7 +11,6 @@ use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -81,15 +80,14 @@ class LoginController implements ControllerProviderInterface
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
         }
+
         $response->headers->clearCookie('return_url');
         return $response;
     }
 
     public function logout()
     {
-        $response = RedirectResponse::create('/login');
-        $response = LoginService::clearLoginCookies($response);
-        return $response;
+        return LoginService::handleLogout('/login');
     }
 
     public function tokenIntrospect(Request $request, Application $app)

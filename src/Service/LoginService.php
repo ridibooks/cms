@@ -28,14 +28,10 @@ class LoginService
 
     public static function handleTestLogin($return_url, $test_id): Response
     {
-        $response = RedirectResponse::create($return_url);
-        self::setLoginIdCookie($response, $test_id, false);
-        self::setTokenCookie($response, 'test', false);
-
-        return $response;
+        return self::createLoginResponse($return_url, $test_id, 'test');
     }
 
-    public static function handleAzureLogin($return_url, $code, $azure_config): Response
+    public static function handleAzureLogin(string $return_url, string $code, $azure_config): Response
     {
         $token = AzureOAuth2Service::getAccessToken($code, $azure_config);
         $resource = AzureOAuth2Service::introspectToken($token, $azure_config);
@@ -45,14 +41,15 @@ class LoginService
 
         self::login($resource['user_id'], $resource['user_name']);
 
-        $response = RedirectResponse::create($return_url);
-        self::setLoginIdCookie($response, $resource['user_id'], true);
-        self::setTokenCookie($response, $token, true);
-
-        return $response;
+        return self::createLoginResponse($return_url, $resource['user_id'], $token);
     }
 
-    public static function getLoginPageUrl($login_endpoint, $callback_path, $return_path)
+    public static function handleLogout(string $login_url): Response
+    {
+        return self::createLogoutResponse($login_url);
+    }
+
+    public static function getLoginPageUrl(string $login_endpoint, string $callback_path, string $return_path): string
     {
         $scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
@@ -66,28 +63,28 @@ class LoginService
         return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
     }
 
-    private static function setTokenCookie(Response $response, $token, $secure)
+    private static function createLoginResponse(string $return_url, string $login_id, string $token): Response
     {
-        $response->headers->setCookie(
-            new Cookie(self::TOKEN_COOKIE_NAME, $token, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
-        );
+        $expire = time() + self::TOKEN_EXPIRES_SEC;
+        $secure = empty($_ENV['DEBUG']) ? false : true;
+        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expire, '/', null, $secure, true);
+        $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expire, '/', null, $secure, true);
+
+        $response = RedirectResponse::create($return_url);
+        $response->headers->setCookie($login_id_cookie);
+        $response->headers->setCookie($token_cookie);
+        return $response;
     }
 
-    private static function setLoginIdCookie(Response $response, $login_id, $secure)
+    private static function createLogoutResponse(string $login_url): Response
     {
-        $response->headers->setCookie(
-            new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, time() + self::TOKEN_EXPIRES_SEC, '/', null, $secure)
-        );
-    }
-
-    public static function clearLoginCookies(Response $response)
-    {
+        $response = RedirectResponse::create($login_url);
         $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
         $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
         return $response;
     }
 
-    public static function GetAdminID()
+    public static function GetAdminID(): string
     {
         return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
