@@ -48,7 +48,7 @@ jobs:
 
   - stage: deploy
     name: deploy-prod-v1
-    if: branch = 1.x AND tag =~ ^\d+\.\d+(\.\d+)?$
+    if: branch = 1.x AND tag =~ ^1\.\d+(\.\d+)?$ # ex) tag = 1.0.0
     env:
       - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-restart
     script:
@@ -56,7 +56,7 @@ jobs:
 
   - stage: deploy
     name: deploy-prod-v2
-    if: branch = 2.x AND tag =~ ^\d+\.\d+(\.\d+)?$
+    if: branch = 2.x AND tag =~ ^2\.\d+(\.\d+)?$ # ex) tag = 2.0.0
     env:
       - CI_TRIGGER_ENV=prod CI_TRIGGER_TARGET=cms-v2-restart
     script:
