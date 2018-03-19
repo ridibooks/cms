@@ -49,20 +49,6 @@ class LoginService
         return self::createLogoutResponse($redirect_url);
     }
 
-    public static function getLoginPageUrl(string $login_endpoint, string $callback_path, string $return_path): string
-    {
-        $scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        if ($callback_path[0] != '/') {
-            $callback_path = '/' . $callback_path;
-        }
-        if ($return_path[0] != '/') {
-            $return_path = '/' . $return_path;
-        }
-        $callback_path = $scheme . '://' . $host . $callback_path;
-        return $login_endpoint . '?callback=' . $callback_path . '&return_url=' . $return_path;
-    }
-
     private static function createLoginResponse(string $return_url, string $login_id, string $token): Response
     {
         $expire = time() + self::TOKEN_EXPIRES_SEC;
