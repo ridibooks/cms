@@ -21,7 +21,7 @@ class LoginController implements ControllerProviderInterface
         $controller_collection = $app['controllers_factory'];
 
         // login page
-        $controller_collection->get('/login', [$this, 'getLoginPage']);
+        $controller_collection->get('/login', [$this, 'login']);
 
         // login process
         $controller_collection->get('/login-azure', [$this, 'azureLogin']);
@@ -34,7 +34,7 @@ class LoginController implements ControllerProviderInterface
         return $controller_collection;
     }
 
-    public function getLoginPage(Request $request, CmsApplication $app)
+    public function login(Request $request, CmsApplication $app)
     {
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';
@@ -43,13 +43,18 @@ class LoginController implements ControllerProviderInterface
             $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
         }
         $return_url = $request->get('return_url', '/welcome');
+        $redirect = $request->get('redirect');
 
-        $response = Response::create();
+        $response = $redirect ? RedirectResponse::create($end_point) : Response::create();
         $response->headers->setCookie(new Cookie('return_url', $return_url));
-
-        return $app->render('login.twig', [
-            'azure_login' => $end_point
-        ], $response);
+        
+        if ($redirect) {
+            return $response;
+        } else {
+            return $app->render('login.twig', [
+                'azure_login' => $end_point
+            ], $response);
+        }
     }
 
     public function azureLogin(Request $request, Application $app)
