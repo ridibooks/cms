@@ -24,7 +24,7 @@ class AzureOAuth2Service
             . "post_logout_redirect_uri=" . urlencode($redirect_url);
     }
 
-    public static function requestAccessToken($code, $azure_config)
+    public static function requestToken($code, $azure_config)
     {
         $tenent = $azure_config['tenent'];
         $client_id = $azure_config['client_id'];
@@ -76,15 +76,20 @@ class AzureOAuth2Service
         return json_decode($output);
     }
 
-    public static function getAccessToken(string $code, array $azure_config): string
+    public static function getTokens(string $code, array $azure_config): array
     {
-        $tokenOutput = self::requestAccessToken($code, $azure_config);
+        $tokenOutput = self::requestToken($code, $azure_config);
         $token_type = $tokenOutput->token_type;
         $access_token = $tokenOutput->access_token;
         if (!$token_type || !$access_token) {
             throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
         }
-        return $tokenOutput->access_token;
+
+        return [
+            "access" => $access_token,
+            "refresh" => $tokenOutput->refresh_token,
+            "expires_on" => $tokenOutput->expires_on,
+        ];
     }
 
     public static function introspectToken(string $access_token, array $azure_config): array
