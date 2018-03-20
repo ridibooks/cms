@@ -45,7 +45,7 @@ jobs:
 
   # deploy 2.x (dev)
   - stage: deploy
-    if: type = push
+    if: type = push AND branch IN (1.x, 2.x)
     env:
       - CI_TRIGGER_ENV=dev
       - CI_TRIGGER_TARGET=cms-v2-restart
