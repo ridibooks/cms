@@ -30,6 +30,8 @@ jobs:
   # push (dev)
   - stage: push
     if: type = push AND branch IN (1.x, 2.x)
+    services:
+      - docker
     env:
       - DOCKER_TAG=${TRAVIS_BRANCH}
     script:
@@ -38,6 +40,8 @@ jobs:
   # push (prod)
   - stage: push
     if: tag =~ ^v\d+\.\d+(\.\d+)?$ # ex) v1.0.0 or v2.0.0
+    services:
+      - docker
     env:
       - DOCKER_TAG=${TRAVIS_TAG}
     script:
