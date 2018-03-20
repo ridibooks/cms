@@ -31,6 +31,7 @@ class LoginController implements ControllerProviderInterface
         $controller_collection->get('/logout', [$this, 'logout']);
 
         $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
+        $controller_collection->get('/token-refresh', [$this, 'tokenRefresh']);
 
         return $controller_collection;
     }
@@ -127,5 +128,12 @@ class LoginController implements ControllerProviderInterface
             $token_resource = AzureOAuth2Service::introspectToken($token, $app['azure']);
         }
         return JsonResponse::create($token_resource);
+    }
+
+    public function tokenRefresh(Request $request, Application $app)
+    {
+        $refresh_token = $request->cookies->get(LoginService::REFRESH_COOKIE_NAME);
+
+        return LoginService::refreshToken($refresh_token, $app['azure']);
     }
 }

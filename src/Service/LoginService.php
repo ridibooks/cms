@@ -29,7 +29,8 @@ class LoginService
 
     public static function handleTestLogin($return_url, $test_id): Response
     {
-        return self::createLoginResponse($return_url, $test_id, 'test');
+        $response = RedirectResponse::create($return_url);
+        return self::createLoginCookies($response, 'test', $test_id);
     }
 
     public static function handleAzureLogin(string $return_url, string $code, $azure_config): Response
@@ -42,7 +43,8 @@ class LoginService
 
         self::login($resource['user_id'], $resource['user_name']);
 
-        return self::createLoginResponse($return_url, $resource['user_id'], $tokens['access'], $tokens['refresh'], $tokens['expires_on']);
+        $response = RedirectResponse::create($return_url);
+        return self::createLoginCookies($response, $tokens, $resource['user_id']);
     }
 
     public static function handleLogout(string $redirect_url): Response
@@ -50,18 +52,23 @@ class LoginService
         return self::createLogoutResponse($redirect_url);
     }
 
-    private static function createLoginResponse(string $return_url, string $login_id, string $token, string $refresh, int $expires_on): Response
+    private static function createLoginCookies(Response $response, array $tokens, ?string $login_id = null): Response
     {
+        $token = $tokens['access'];
+        $refresh = $tokens['refresh'];
+        $expires_on = $tokens['expires_on'];
+
         $refresh_token_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
         $secure = empty($_ENV['DEBUG']) ? true : false;
-        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expires_on, '/', null, $secure, true);
         $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expires_on, '/', null, $secure, true);
         $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh, $refresh_token_expires_on, '/token-refresh', null, $secure, true);
-
-        $response = RedirectResponse::create($return_url);
-        $response->headers->setCookie($login_id_cookie);
         $response->headers->setCookie($token_cookie);
         $response->headers->setCookie($refresh_cookie);
+        if (isset($login_id)) {
+            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $expires_on, '/', null, $secure, true);
+            $response->headers->setCookie($login_id_cookie);
+        }
+
         return $response;
     }
 
@@ -76,5 +83,13 @@ class LoginService
     public static function GetAdminID(): string
     {
         return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
+    }
+
+    public static function refreshToken($refresh_token, $azure_config): Response
+    {
+        $tokens = AzureOAuth2Service::refreshToken($refresh_token, $azure_config);
+        $response = Response::create();
+
+        return self::createLoginCookies($response, $tokens);
     }
 }
