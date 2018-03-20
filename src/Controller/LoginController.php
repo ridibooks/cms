@@ -22,6 +22,7 @@ class LoginController implements ControllerProviderInterface
 
         // login page
         $controller_collection->get('/login', [$this, 'getLoginPage']);
+        $controller_collection->get('/login-authorize', [$this, 'loginAuthorize']);
 
         // login process
         $controller_collection->get('/login-azure', [$this, 'azureLogin']);
@@ -36,20 +37,37 @@ class LoginController implements ControllerProviderInterface
 
     public function getLoginPage(Request $request, CmsApplication $app)
     {
+        $end_point = $this->buildAuthorizeEndpoint($request, $app);
+
+        $response = Response::create();
+        $return_url = $request->get('return_url', '/welcome');
+        $response->headers->setCookie(new Cookie('return_url', $return_url));
+
+        return $app->render('login.twig', [
+            'azure_login' => $end_point
+        ], $response);
+    }
+
+    public function loginAuthorize(Request $request, Application $app)
+    {
+        $end_point = $this->buildAuthorizeEndpoint($request, $app);
+
+        $response = RedirectResponse::create($end_point);
+        $return_url = $request->get('return_url', '/welcome');
+        $response->headers->setCookie(new Cookie('return_url', $return_url));
+
+        return $response;
+    }
+
+    private function buildAuthorizeEndpoint(Request $request, Application $app)
+    {
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';
         } else {
             $azure_config = $app['azure'];
             $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
         }
-        $return_url = $request->get('return_url', '/welcome');
-
-        $response = Response::create();
-        $response->headers->setCookie(new Cookie('return_url', $return_url));
-
-        return $app->render('login.twig', [
-            'azure_login' => $end_point
-        ], $response);
+        return $end_point;
     }
 
     public function azureLogin(Request $request, Application $app)
