@@ -31,7 +31,7 @@ class LoginController implements ControllerProviderInterface
         $controller_collection->get('/logout', [$this, 'logout']);
 
         $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
-        $controller_collection->get('/token-refresh', [$this, 'tokenRefresh']);
+        $controller_collection->post('/token-refresh', [$this, 'tokenRefresh']);
 
         return $controller_collection;
     }
