@@ -1,5 +1,6 @@
 # CMS
 
+[![Build Status](https://travis-ci.org/ridi/cms.svg?branch=2.x)](https://travis-ci.org/ridi/cms)
 [![](https://images.microbadger.com/badges/image/ridibooks/cms.svg)](https://microbadger.com/images/ridibooks/cms "Get your own image badge on microbadger.com")
 [![](https://images.microbadger.com/badges/version/ridibooks/cms.svg)](https://microbadger.com/images/ridibooks/cms "Get your own version badge on microbadger.com")
 
