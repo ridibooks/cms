@@ -95,11 +95,11 @@ class LoginService
         return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
 
-    public static function refreshToken($refresh_token, $azure_config): Response
+    public static function refreshToken(string $redirect_url, $refresh_token, $azure_config): Response
     {
         $tokens = AzureOAuth2Service::refreshToken($refresh_token, $azure_config);
 
-        $response = Response::create();
+        $response = RedirectResponse::create($redirect_url);
         $cookies = self::createLoginCookies($tokens);
         return self::setCookies($response, $cookies);
     }

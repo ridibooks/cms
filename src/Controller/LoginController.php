@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginController implements ControllerProviderInterface
 {
@@ -132,8 +133,15 @@ class LoginController implements ControllerProviderInterface
 
     public function tokenRefresh(Request $request, Application $app)
     {
+        $redirect_url = $request->get('redirect_url');
         $refresh_token = $request->cookies->get(LoginService::REFRESH_COOKIE_NAME);
 
-        return LoginService::refreshToken($refresh_token, $app['azure']);
+        try {
+            $response = LoginService::refreshToken($redirect_url, $refresh_token, $app['azure']);
+        } catch (\Exception $e) {
+            $redirect_param = $redirect_url ? "?redirect_url=$redirect_url" : '';
+            $response = RedirectResponse::create('/login' . $redirect_param);
+        }
+        return $response;
     }
 }
