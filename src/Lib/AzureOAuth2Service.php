@@ -28,29 +28,23 @@ class AzureOAuth2Service
 
     public static function requestToken($code, $azure_config)
     {
-        $tenent = $azure_config['tenent'];
-        $client_id = $azure_config['client_id'];
-        $redirect_uri = $azure_config['redirect_uri'];
-        $client_secret = $azure_config['client_secret'];
+        $endpoint = "https://login.microsoftonline.com/{$azure_config['tenent']}/oauth2/token";
+        $client = new Client(['verify' => false]);
+        $response = $client->post($endpoint, [
+            'form_params' => [
+                'grant_type' => 'authorization_code' ,
+                'client_id' => $azure_config['client_id'],
+                'client_secret' => $azure_config['client_secret'],
+                'redirect_uri' => $azure_config['redirect_uri'],
+                'code' => $code,
+            ],
+        ]);
 
-        $stsUrl = "https://login.microsoftonline.com/$tenent/oauth2/token";
-        $authenticationRequestBody = "grant_type=authorization_code" .
-            "&client_id=" . urlencode($client_id) .
-            "&redirect_uri=" . urlencode($redirect_uri) .
-            "&client_secret=" . urlencode($client_secret) .
-            "&code=" . $code;
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("[requestToken]\nCode: {$response->getStatusCode()}");
+        }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $stsUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $authenticationRequestBody);
-        // By default, HTTPS does not work with curl.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        $output = curl_exec($ch);
-        curl_close($ch);
-        return json_decode($output);
+        return json_decode($response->getBody()->getContents());
     }
 
     public static function requestResource($tokenType, $accessToken, $azure_config)
@@ -59,23 +53,22 @@ class AzureOAuth2Service
         $resource = $azure_config['resource'];
         $api_version = $azure_config['api_version'];
 
-        $feedURL = "$resource/$tenent/me/?api-version=$api_version";
-        $header = [
-            "Authorization:$tokenType $accessToken",
-            'Accept:application/json;odata=minimalmetadata',
-            'Content-Type:application/json'
-        ];
+        $endpoint = "$resource/$tenent/me/?api-version=$api_version";
+        $client = new Client(['verify' => false]);
+        $response = $client->get($endpoint, [
+            'headers' => [
+                'Authorization' => "$tokenType $accessToken",
+                'Accept' => 'application/json',
+                'odata' => 'minimalmetadata',
+                'Content-Type' => 'application/json',
+            ],
+        ]);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $feedURL);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // By default https does not work for CURL.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("[requestResource]\nCode: {$response->getStatusCode()}");
+        }
 
-        $output = curl_exec($ch);
-        curl_close($ch);
-        return json_decode($output);
+        return json_decode($response->getBody()->getContents());
     }
 
     public static function getTokens(string $code, array $azure_config): array
@@ -115,7 +108,7 @@ class AzureOAuth2Service
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            return null;
+            throw new \Exception("[refreshToken]\nCode: {$response->getStatusCode()}");
         }
 
         $token_resource = json_decode($response->getBody()->getContents());
@@ -128,7 +121,7 @@ class AzureOAuth2Service
         $token_type = $token_resource->token_type;
         $access_token = $token_resource->access_token;
         if (!$token_type || !$access_token) {
-            throw new \Exception("[requestAccessToken]\n $token_resource->error: $token_resource->error_description");
+            throw new \Exception("[requestToken]\n $token_resource->error: $token_resource->error_description");
         }
 
         return [
