@@ -133,15 +133,13 @@ class LoginController implements ControllerProviderInterface
 
     public function tokenRefresh(Request $request, Application $app)
     {
-        $redirect_url = $request->get('redirect_url');
+        $return_url = $request->get('return_url', '/welcome');
         $refresh_token = $request->cookies->get(LoginService::REFRESH_COOKIE_NAME);
 
-        try {
-            $response = LoginService::refreshToken($redirect_url, $refresh_token, $app['azure']);
-        } catch (\Exception $e) {
-            $redirect_param = $redirect_url ? "?redirect_url=$redirect_url" : '';
-            $response = RedirectResponse::create('/login' . $redirect_param);
+        if (empty($refresh_token)) {
+            return RedirectResponse::create("/login?return_url=$return_url");
         }
-        return $response;
+
+        return LoginService::refreshToken($return_url, $refresh_token, $app['azure']);
     }
 }

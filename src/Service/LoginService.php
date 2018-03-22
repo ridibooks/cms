@@ -81,9 +81,9 @@ class LoginService
         return $response;
     }
 
-    private static function createLogoutResponse(string $redirect_url): Response
+    private static function createLogoutResponse(string $return_url): Response
     {
-        $response = RedirectResponse::create($redirect_url);
+        $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
         $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
         $response->headers->clearCookie(self::REFRESH_COOKIE_NAME);
@@ -95,11 +95,11 @@ class LoginService
         return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
 
-    public static function refreshToken(string $redirect_url, $refresh_token, $azure_config): Response
+    public static function refreshToken(string $return_url, $refresh_token, $azure_config): Response
     {
         $tokens = AzureOAuth2Service::refreshToken($refresh_token, $azure_config);
 
-        $response = RedirectResponse::create($redirect_url);
+        $response = RedirectResponse::create($return_url);
         $cookies = self::createLoginCookies($tokens);
         return self::setCookies($response, $cookies);
     }
