@@ -12,6 +12,8 @@ class AzureOAuth2Service
     private $redirect_uri;
     private $resource;
     private $api_version;
+
+    /** @var Client */
     private $http;
 
     public function __construct(array $azure_config, array $guzzle_config = [])
@@ -79,7 +81,7 @@ class AzureOAuth2Service
     public function getTokens(string $code): array
     {
         $token_resource = self::requestToken($code);
-        return self::verifyTokenResponse($token_resource);
+        return self::parseTokenReource($token_resource);
     }
 
     public function introspectToken(string $access_token): array
@@ -117,13 +119,13 @@ class AzureOAuth2Service
 
         $token_resource = json_decode($response->getBody());
 
-        return self::verifyTokenResponse($token_resource);
+        return self::parseTokenReource($token_resource);
     }
 
     /**
      * throw Exception
      */
-    private function verifyTokenResponse($token_resource): array
+    private function parseTokenReource($token_resource): array
     {
         $token_type = $token_resource->token_type;
         $access_token = $token_resource->access_token;

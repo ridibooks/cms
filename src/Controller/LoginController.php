@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginController implements ControllerProviderInterface
 {
+    /** @var AzureOAuth2Service */
     private $azure;
 
     public function connect(Application $app)

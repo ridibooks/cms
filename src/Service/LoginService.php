@@ -30,6 +30,11 @@ class LoginService
     public static function handleTestLogin($return_url, $test_id): Response
     {
         $response = RedirectResponse::create($return_url);
+        $tokens = [
+            'access' => 'test',
+            'refresh' => 'test',
+            'expires_on' => 60 * 60 * 24 * 30, // 30 days
+        ];
         $cookies =  self::createLoginCookies($tokens, 'test');
         return self::setCookies($response, $cookies);
     }
