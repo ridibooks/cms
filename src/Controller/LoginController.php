@@ -23,7 +23,6 @@ class LoginController implements ControllerProviderInterface
 
         // login page
         $controller_collection->get('/login', [$this, 'getLoginPage']);
-        $controller_collection->get('/login-authorize', [$this, 'loginAuthorize']);
 
         // login process
         $controller_collection->get('/login-azure', [$this, 'azureLogin']);
@@ -32,7 +31,7 @@ class LoginController implements ControllerProviderInterface
         $controller_collection->get('/logout', [$this, 'logout']);
 
         $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
-        $controller_collection->get('/token-refresh', [$this, 'tokenRefresh']);
+        $controller_collection->match('/token-refresh', [$this, 'tokenRefresh']);
 
         return $controller_collection;
     }
@@ -48,17 +47,6 @@ class LoginController implements ControllerProviderInterface
         return $app->render('login.twig', [
             'azure_login' => $end_point
         ], $response);
-    }
-
-    public function loginAuthorize(Request $request, Application $app)
-    {
-        $end_point = $this->buildAuthorizeEndpoint($request, $app);
-
-        $response = RedirectResponse::create($end_point);
-        $return_url = $request->get('return_url', '/welcome');
-        $response->headers->setCookie(new Cookie('return_url', $return_url));
-
-        return $response;
     }
 
     private function buildAuthorizeEndpoint(Request $request, Application $app)
