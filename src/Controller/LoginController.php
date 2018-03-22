@@ -120,7 +120,8 @@ class LoginController implements ControllerProviderInterface
         } else {
             $token_resource = $this->azure->introspectToken($token);
         }
-        return JsonResponse::create($token_resource);
+        return JsonResponse::create($token_resource,
+            isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST: Response::HTTP_OK);
     }
 
     public function tokenRefresh(Request $request, Application $app)

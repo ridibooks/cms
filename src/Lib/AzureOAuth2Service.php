@@ -76,7 +76,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * throw Exception
+     * @throws Exception
      */
     public function getTokens(string $code): array
     {
@@ -101,7 +101,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * throw Exception
+     * @throws Exception
      */
     public function refreshToken(string $refresh_token): array
     {
@@ -123,7 +123,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * throw Exception
+     * @throws Exception
      */
     private function parseTokenReource($token_resource): array
     {
