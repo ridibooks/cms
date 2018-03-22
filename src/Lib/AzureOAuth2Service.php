@@ -31,6 +31,7 @@ class AzureOAuth2Service
         $endpoint = "https://login.microsoftonline.com/{$azure_config['tenent']}/oauth2/token";
         $client = new Client(['verify' => false]);
         $response = $client->post($endpoint, [
+            'http_errors' => false,
             'form_params' => [
                 'grant_type' => 'authorization_code' ,
                 'client_id' => $azure_config['client_id'],
@@ -40,11 +41,7 @@ class AzureOAuth2Service
             ],
         ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception("[requestToken]\nCode: {$response->getStatusCode()}");
-        }
-
-        return json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody());
     }
 
     public static function requestResource($tokenType, $accessToken, $azure_config)
@@ -56,19 +53,16 @@ class AzureOAuth2Service
         $endpoint = "$resource/$tenent/me/?api-version=$api_version";
         $client = new Client(['verify' => false]);
         $response = $client->get($endpoint, [
+            'http_errors' => false,
             'headers' => [
                 'Authorization' => "$tokenType $accessToken",
-                'Accept' => 'application/json',
+                'Accept' => 'application/json;odata=minimalmetadata',
                 'odata' => 'minimalmetadata',
                 'Content-Type' => 'application/json',
             ],
         ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception("[requestResource]\nCode: {$response->getStatusCode()}");
-        }
-
-        return json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody());
     }
 
     public static function getTokens(string $code, array $azure_config): array
@@ -98,6 +92,7 @@ class AzureOAuth2Service
         $endpoint = "https://login.microsoftonline.com/{$azure_config['tenent']}/oauth2/token";
         $client = new Client(['verify' => false]);
         $response = $client->post($endpoint, [
+            'http_errors' => false,
             'form_params' => [
                 'grant_type' => 'refresh_token' ,
                 'client_id' => $azure_config['client_id'],
@@ -107,11 +102,7 @@ class AzureOAuth2Service
             ],
         ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception("[refreshToken]\nCode: {$response->getStatusCode()}");
-        }
-
-        $token_resource = json_decode($response->getBody()->getContents());
+        $token_resource = json_decode($response->getBody());
 
         return self::verifyTokenResponse($token_resource);
     }
