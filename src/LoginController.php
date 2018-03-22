@@ -72,9 +72,12 @@ class LoginController implements ControllerProviderInterface
             if (!empty($app['test_id'])) {
                 LoginService::setSessions($app['test_id']);
                 $token = 'test';
+                $refresh = '';
                 $admin_id = $app['test_id'];
             } else {
-                $token = AzureOAuth2Service::getAccessToken($code, $app['azure']);
+                $tokens = AzureOAuth2Service::getAccessToken($code, $app['azure']);
+                $token = $tokens['token'];
+                $refresh = $tokens['refresh'];
                 $resource = AzureOAuth2Service::getTokenResource($token, $app['azure']);
                 LoginService::doLoginWithAzure($resource);
                 $admin_id = $resource['user_id'];
@@ -89,6 +92,9 @@ class LoginController implements ControllerProviderInterface
             'cms-token', $token, time() + ( 30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
+            'cms-refresh', $refresh, time() + ( 30 * 24 * 60 * 60), '/token-refresh', null, !$app['debug']
+        ));
+        $response->headers->setCookie(new Cookie(
             'admin-id', $admin_id, time() + ( 30 * 24 * 60 * 60), '/', null
         ));
         return $response;
@@ -99,6 +105,7 @@ class LoginController implements ControllerProviderInterface
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
         $response->headers->clearCookie('cms-token');
+        $response->headers->clearCookie('cms-refresh');
         $response->headers->clearCookie('admin-id');
         return $response;
     }
