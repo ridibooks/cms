@@ -6,37 +6,51 @@ use GuzzleHttp\Client;
 
 class AzureOAuth2Service
 {
-    public static function getAuthorizeEndPoint($azure_config)
-    {
-        $tenent = $azure_config['tenent'];
-        $client_id = $azure_config['client_id'];
-        $redirect_uri = $azure_config['redirect_uri'];
-        $resource = $azure_config['resource'];
+    private $tenent;
+    private $client_id;
+    private $client_secret;
+    private $redirect_uri;
+    private $resource;
+    private $api_version;
+    private $http;
 
-        return "https://login.windows.net/$tenent/oauth2/authorize?response_type=code" .
-            "&client_id=" . urlencode($client_id) .
-            "&resource=" . urlencode($resource) .
-            "&redirect_uri=" . urlencode($redirect_uri);
+    public function __construct(array $azure_config, array $guzzle_config = [])
+    {
+        $this->tenent = $azure_config['tenent'];
+        $this->client_id = $azure_config['client_id'];
+        $this->client_secret = $azure_config['client_secret'];
+        $this->redirect_uri = $azure_config['redirect_uri'];
+        $this->resource = $azure_config['resource'];
+        $this->api_version = $azure_config['api_version'];
+
+        $guzzle_config = array_merge(['verify' => false], $guzzle_config);
+        $this->http = new Client($guzzle_config);
     }
 
-    public static function getLogoutEndpoint($azure_config, $redirect_url)
+    public function getAuthorizeEndPoint(): string
     {
-        $tenent = $azure_config['tenent'];
-        return "https://login.windows.net/$tenent/oauth2/logout?"
-            . "post_logout_redirect_uri=" . urlencode($redirect_url);
+        return "https://login.windows.net/$this->tenent/oauth2/authorize?response_type=code" .
+            "&client_id=" . urlencode($this->client_id) .
+            "&resource=" . urlencode($this->resource) .
+            "&redirect_uri=" . urlencode($this->redirect_uri);
     }
 
-    public static function requestToken($code, $azure_config)
+    public function getLogoutEndpoint(string $redirect_url): string
     {
-        $endpoint = "https://login.microsoftonline.com/{$azure_config['tenent']}/oauth2/token";
-        $client = new Client(['verify' => false]);
-        $response = $client->post($endpoint, [
+        return "https://login.windows.net/$this->tenent/oauth2/logout?"
+            . "post_logout_redirect_uri=" . urlencode($this->redirect_url);
+    }
+
+    private function requestToken(string $code): \stdClass
+    {
+        $endpoint = "https://login.microsoftonline.com/$this->tenent/oauth2/token";
+        $response = $this->http->post($endpoint, [
             'http_errors' => false,
             'form_params' => [
                 'grant_type' => 'authorization_code' ,
-                'client_id' => $azure_config['client_id'],
-                'client_secret' => $azure_config['client_secret'],
-                'redirect_uri' => $azure_config['redirect_uri'],
+                'client_id' => $this->client_id,
+                'client_secret' => $this->client_secret,
+                'redirect_uri' => $this->redirect_uri,
                 'code' => $code,
             ],
         ]);
@@ -44,20 +58,14 @@ class AzureOAuth2Service
         return json_decode($response->getBody());
     }
 
-    public static function requestResource($tokenType, $accessToken, $azure_config)
+    public function requestResource(string $tokenType, string $accessToken): \stdClass
     {
-        $tenent = $azure_config['tenent'];
-        $resource = $azure_config['resource'];
-        $api_version = $azure_config['api_version'];
-
-        $endpoint = "$resource/$tenent/me/?api-version=$api_version";
-        $client = new Client(['verify' => false]);
-        $response = $client->get($endpoint, [
+        $endpoint = "$this->resource/$this->tenent/me/?api-version=$this->api_version";
+        $response = $this->http->get($endpoint, [
             'http_errors' => false,
             'headers' => [
                 'Authorization' => "$tokenType $accessToken",
                 'Accept' => 'application/json;odata=minimalmetadata',
-                'odata' => 'minimalmetadata',
                 'Content-Type' => 'application/json',
             ],
         ]);
@@ -65,15 +73,18 @@ class AzureOAuth2Service
         return json_decode($response->getBody());
     }
 
-    public static function getTokens(string $code, array $azure_config): array
+    /**
+     * throw Exception
+     */
+    public function getTokens(string $code): array
     {
-        $token_resource = self::requestToken($code, $azure_config);
+        $token_resource = self::requestToken($code);
         return self::verifyTokenResponse($token_resource);
     }
 
-    public static function introspectToken(string $access_token, array $azure_config): array
+    public function introspectToken(string $access_token): array
     {
-        $azure_resource = self::requestResource('bearer', $access_token, $azure_config);
+        $azure_resource = self::requestResource('bearer', $access_token);
         if ($error = $azure_resource->{'odata.error'}) {
             return [
                 'error' => $error->code,
@@ -87,17 +98,19 @@ class AzureOAuth2Service
         ];
     }
 
-    public static function refreshToken(string $refresh_token, $azure_config): array
+    /**
+     * throw Exception
+     */
+    public function refreshToken(string $refresh_token): array
     {
-        $endpoint = "https://login.microsoftonline.com/{$azure_config['tenent']}/oauth2/token";
-        $client = new Client(['verify' => false]);
-        $response = $client->post($endpoint, [
+        $endpoint = "https://login.microsoftonline.com/$this->tenent/oauth2/token";
+        $response = $this->http->post($endpoint, [
             'http_errors' => false,
             'form_params' => [
                 'grant_type' => 'refresh_token' ,
-                'client_id' => $azure_config['client_id'],
-                'client_secret' => $azure_config['client_secret'],
-                'resource' => $azure_config['resource'],
+                'client_id' => $this->client_id,
+                'client_secret' => $this->client_secret,
+                'resource' => $this->resource,
                 'refresh_token' => $refresh_token,
             ],
         ]);
@@ -107,7 +120,10 @@ class AzureOAuth2Service
         return self::verifyTokenResponse($token_resource);
     }
 
-    private static function verifyTokenResponse($token_resource)
+    /**
+     * throw Exception
+     */
+    private function verifyTokenResponse($token_resource): array
     {
         $token_type = $token_resource->token_type;
         $access_token = $token_resource->access_token;

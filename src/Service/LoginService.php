@@ -34,10 +34,10 @@ class LoginService
         return self::setCookies($response, $cookies);
     }
 
-    public static function handleAzureLogin(string $return_url, string $code, $azure_config): Response
+    public static function handleAzureLogin(string $return_url, string $code,  AzureOAuth2Service $azure): Response
     {
-        $tokens = AzureOAuth2Service::getTokens($code, $azure_config);
-        $resource = AzureOAuth2Service::introspectToken($tokens['access'], $azure_config);
+        $tokens = $azure->getTokens($code);
+        $resource = $azure->introspectToken($tokens['access']);
         if (isset($resource['error']) || isset($resource['message'])) {
             throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
         }
@@ -95,9 +95,9 @@ class LoginService
         return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
     }
 
-    public static function refreshToken(string $return_url, $refresh_token, $azure_config): Response
+    public static function refreshToken(string $return_url, $refresh_token, AzureOAuth2Service $azure): Response
     {
-        $tokens = AzureOAuth2Service::refreshToken($refresh_token, $azure_config);
+        $tokens = $azure->refreshToken($refresh_token);
 
         $response = RedirectResponse::create($return_url);
         $cookies = self::createLoginCookies($tokens);

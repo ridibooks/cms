@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginController implements ControllerProviderInterface
 {
+    private $azure;
+
     public function connect(Application $app)
     {
         $controller_collection = $app['controllers_factory'];
@@ -32,6 +34,8 @@ class LoginController implements ControllerProviderInterface
 
         $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
         $controller_collection->match('/token-refresh', [$this, 'tokenRefresh']);
+
+        $this->azure = new AzureOAuth2Service($app['azure']);
 
         return $controller_collection;
     }
@@ -54,8 +58,7 @@ class LoginController implements ControllerProviderInterface
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';
         } else {
-            $azure_config = $app['azure'];
-            $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
+            $end_point = $this->azure->getAuthorizeEndPoint();
         }
         return $end_point;
     }
@@ -96,7 +99,7 @@ class LoginController implements ControllerProviderInterface
     public function logout(Request $request, Application $app)
     {
         $redirect_url = $request->getUriForPath('/login');
-        $endpoint = AzureOAuth2Service::getLogoutEndpoint($app['azure'], $redirect_url);
+        $endpoint = $this->azure->getLogoutEndpoint($redirect_url);
 
         return LoginService::handleLogout($endpoint);
     }
@@ -114,7 +117,7 @@ class LoginController implements ControllerProviderInterface
                 'user_name' => 'test',
             ];
         } else {
-            $token_resource = AzureOAuth2Service::introspectToken($token, $app['azure']);
+            $token_resource = $this->azure->introspectToken($token);
         }
         return JsonResponse::create($token_resource);
     }
@@ -128,6 +131,6 @@ class LoginController implements ControllerProviderInterface
             return RedirectResponse::create("/login?return_url=$return_url");
         }
 
-        return LoginService::refreshToken($return_url, $refresh_token, $app['azure']);
+        return LoginService::refreshToken($return_url, $refresh_token, $this->azure);
     }
 }
