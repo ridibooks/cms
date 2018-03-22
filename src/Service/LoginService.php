@@ -13,7 +13,7 @@ class LoginService
     const TOKEN_COOKIE_NAME = 'cms-token';
     const REFRESH_COOKIE_NAME = 'cms-refresh';
     const ADMIN_ID_COOKIE_NAME = 'admin-id';
-    const REFRESH_TOKEN_EXPIRES_SEC = 60 * 60 * 24 * 7; // 7 days
+    const REFRESH_TOKEN_EXPIRES_SEC = 60 * 60 * 24 * 30; // 30 days
 
     public static function login($user_id, $user_name)
     {
