@@ -38,7 +38,7 @@ class LoginService
             'expires_on' => 60 * 60 * 24 * 30, // 30 days
         ];
 
-        return createLoginResponse($return_url, $tokens, $test_id);
+        return self::createLoginResponse($return_url, $tokens, $test_id);
     }
 
     /**
@@ -54,7 +54,7 @@ class LoginService
 
         self::login($resource['user_id'], $resource['user_name']);
 
-        return createLoginResponse($return_url, $tokens, $resource['user_id']);
+        return self::createLoginResponse($return_url, $tokens, $resource['user_id']);
     }
 
     public static function createLoginResponse(string $return_url, array $tokens, ?string $login_id = null): Response

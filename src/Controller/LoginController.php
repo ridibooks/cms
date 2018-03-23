@@ -87,7 +87,7 @@ class LoginController implements ControllerProviderInterface
             if (!empty($app['test_id'])) {
                 $response = LoginService::handleTestLogin($return_url, $app['test_id']);
             } else {
-                $response = LoginService::handleAzureLogin($return_url, $code, $app['azure']);
+                $response = LoginService::handleAzureLogin($return_url, $code, $this->azure);
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
