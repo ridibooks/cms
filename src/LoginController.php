@@ -92,7 +92,7 @@ class LoginController implements ControllerProviderInterface
             'cms-token', $token, time() + ( 30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'cms-refresh', $refresh, time() + ( 30 * 24 * 60 * 60), '/token-refresh', null, !$app['debug']
+            'cms-refresh', $refresh, time() + ( 30 * 24 * 60 * 60), '/v2/token-refresh', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
             'admin-id', $admin_id, time() + ( 30 * 24 * 60 * 60), '/', null
