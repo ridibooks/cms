@@ -77,7 +77,7 @@ class LoginService
         $refresh_token_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
         $secure = empty($_ENV['DEBUG']) ? true : false;
         $token_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $token, $expires_on, '/', null, $secure, true);
-        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, $refresh_token_expires_on, '/token-refresh', null, $secure, true);
+        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, $refresh_token_expires_on, '/v2/token-refresh', null, $secure, true);
 
         $login_id_cookie = null;
         if (isset($login_id)) {
