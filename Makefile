@@ -1,6 +1,8 @@
-.PHONY: all build composer phinx env-dev
+.PHONY: all dev build composer composer-dev clean
 
 all: build composer
+
+dev: build compose-dev
 
 build:
 	bower install --allow-root
@@ -8,10 +10,13 @@ build:
 composer:
 	composer install --no-dev --optimize-autoloader
 
-phinx:
-	vendor/bin/phinx migrate
-	vendor/bin/phinx seed:run
+compose-dev:
+	composer install
 
-env-dev:
-	echo "DEBUG=1" > .env
-	echo "TEST_ID=admin" >> .env
+init-db:
+	bin/setup.sh
+
+clean:
+	rm -rf vendor
+	rm -rf web/static/bower_components
+	rm .env
