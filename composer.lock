@@ -291,7 +291,7 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v5.6.11",
+            "version": "v5.6.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -335,7 +335,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v5.6.11",
+            "version": "v5.6.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -379,16 +379,16 @@
         },
         {
             "name": "illuminate/database",
-            "version": "v5.6.11",
+            "version": "v5.6.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "4d2fc3c816ed402fcac290e6ca7bc855d5313000"
+                "reference": "104cd99c17d46e6f96eafd4f1469ea921a289279"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/4d2fc3c816ed402fcac290e6ca7bc855d5313000",
-                "reference": "4d2fc3c816ed402fcac290e6ca7bc855d5313000",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/104cd99c17d46e6f96eafd4f1469ea921a289279",
+                "reference": "104cd99c17d46e6f96eafd4f1469ea921a289279",
                 "shasum": ""
             },
             "require": {
@@ -434,11 +434,11 @@
                 "orm",
                 "sql"
             ],
-            "time": "2018-03-09T13:55:05+00:00"
+            "time": "2018-03-14T12:21:13+00:00"
         },
         {
             "name": "illuminate/events",
-            "version": "v5.6.11",
+            "version": "v5.6.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/events.git",
@@ -483,30 +483,30 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v5.6.11",
+            "version": "v5.6.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "259f6f17a11b0379340ec5311fcba27bc2a04070"
+                "reference": "f0776f5bbfeeb9d4c4cac8f64d96f8f0cbe4f3f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/259f6f17a11b0379340ec5311fcba27bc2a04070",
-                "reference": "259f6f17a11b0379340ec5311fcba27bc2a04070",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/f0776f5bbfeeb9d4c4cac8f64d96f8f0cbe4f3f7",
+                "reference": "f0776f5bbfeeb9d4c4cac8f64d96f8f0cbe4f3f7",
                 "shasum": ""
             },
             "require": {
                 "doctrine/inflector": "~1.1",
                 "ext-mbstring": "*",
                 "illuminate/contracts": "5.6.*",
-                "nesbot/carbon": "^1.20",
+                "nesbot/carbon": "^1.24.1",
                 "php": "^7.1.3"
             },
             "conflict": {
                 "tightenco/collect": "<5.5.33"
             },
             "suggest": {
-                "illuminate/filesystem": "Required to use the composer class (5.2.*).",
+                "illuminate/filesystem": "Required to use the composer class (5.6.*).",
                 "symfony/process": "Required to use the composer class (~4.0).",
                 "symfony/var-dumper": "Required to use the dd function (~4.0)."
             },
@@ -536,7 +536,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-09T16:52:54+00:00"
+            "time": "2018-03-14T12:56:14+00:00"
         },
         {
             "name": "jguyomard/silex-capsule-eloquent",
@@ -638,16 +638,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.24.2",
+            "version": "1.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "bba6c6e410c6b4317e37a9474aeaa753808c3875"
+                "reference": "cbcf13da0b531767e39eb86e9687f5deba9857b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bba6c6e410c6b4317e37a9474aeaa753808c3875",
-                "reference": "bba6c6e410c6b4317e37a9474aeaa753808c3875",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/cbcf13da0b531767e39eb86e9687f5deba9857b4",
+                "reference": "cbcf13da0b531767e39eb86e9687f5deba9857b4",
                 "shasum": ""
             },
             "require": {
@@ -687,7 +687,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-03-10T10:10:14+00:00"
+            "time": "2018-03-19T15:50:49+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -983,16 +983,16 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v2.2.1",
+            "version": "v2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "3115d238473578b446562ab61083552739999940"
+                "reference": "5c1ae0b294330d35570bef8369eabf246b6313bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/3115d238473578b446562ab61083552739999940",
-                "reference": "3115d238473578b446562ab61083552739999940",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/5c1ae0b294330d35570bef8369eabf246b6313bb",
+                "reference": "5c1ae0b294330d35570bef8369eabf246b6313bb",
                 "shasum": ""
             },
             "require": {
@@ -1015,20 +1015,20 @@
                 "MIT"
             ],
             "description": "Ridibooks CMS SDK",
-            "time": "2018-03-12T09:33:51+00:00"
+            "time": "2018-03-26T07:02:05+00:00"
         },
         {
             "name": "sentry/sentry",
-            "version": "1.8.3",
+            "version": "1.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "512661046e403dc5eb5ae192d5a6cda10e068a95"
+                "reference": "643ec20d181ca55317d4ccda6ad658b9a8b4f06a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/512661046e403dc5eb5ae192d5a6cda10e068a95",
-                "reference": "512661046e403dc5eb5ae192d5a6cda10e068a95",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/643ec20d181ca55317d4ccda6ad658b9a8b4f06a",
+                "reference": "643ec20d181ca55317d4ccda6ad658b9a8b4f06a",
                 "shasum": ""
             },
             "require": {
@@ -1079,20 +1079,20 @@
                 "log",
                 "logging"
             ],
-            "time": "2018-02-07T11:26:52+00:00"
+            "time": "2018-03-20T12:52:10+00:00"
         },
         {
             "name": "silex/silex",
-            "version": "v2.2.3",
+            "version": "v2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silexphp/Silex.git",
-                "reference": "90c80c3e5ef86c54b8769feca0320154c6e63f7c"
+                "reference": "d2531e5b8099c429b752ad2154e85999c3689057"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silexphp/Silex/zipball/90c80c3e5ef86c54b8769feca0320154c6e63f7c",
-                "reference": "90c80c3e5ef86c54b8769feca0320154c6e63f7c",
+                "url": "https://api.github.com/repos/silexphp/Silex/zipball/d2531e5b8099c429b752ad2154e85999c3689057",
+                "reference": "d2531e5b8099c429b752ad2154e85999c3689057",
                 "shasum": ""
             },
             "require": {
@@ -1168,7 +1168,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2018-02-25T11:21:42+00:00"
+            "time": "2018-03-16T23:34:20+00:00"
         },
         {
             "name": "symfony/debug",
@@ -1697,16 +1697,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.4.6",
+            "version": "v2.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f"
+                "reference": "69aacd44dbbaa3199d5afb68605c996d577896fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d2117ec118c1ff3d28ccddca8212d82787a4809f",
-                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/69aacd44dbbaa3199d5afb68605c996d577896fc",
+                "reference": "69aacd44dbbaa3199d5afb68605c996d577896fc",
                 "shasum": ""
             },
             "require": {
@@ -1715,8 +1715,8 @@
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "~2.7",
-                "symfony/phpunit-bridge": "~3.3@dev"
+                "symfony/debug": "^2.7",
+                "symfony/phpunit-bridge": "^3.3"
             },
             "type": "library",
             "extra": {
@@ -1759,7 +1759,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-03-03T16:23:01+00:00"
+            "time": "2018-03-20T04:31:17+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
