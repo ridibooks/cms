@@ -40,7 +40,7 @@ class AzureOAuth2Service
     public function getLogoutEndpoint(string $redirect_url): string
     {
         return "https://login.windows.net/$this->tenent/oauth2/logout?"
-            . "post_logout_redirect_uri=" . urlencode($this->redirect_url);
+            . "post_logout_redirect_uri=" . urlencode($redirect_url);
     }
 
     private function requestToken(string $code): \stdClass
