@@ -69,7 +69,7 @@ class AzureOAuth2Service
         return json_decode($output);
     }
 
-    public static function getAccessToken(string $code, array $azure_config) : string
+    public static function getAccessToken(string $code, array $azure_config) : array
     {
         $tokenOutput = self::requestAccessToken($code, $azure_config);
         $token_type = $tokenOutput->token_type;
@@ -78,7 +78,10 @@ class AzureOAuth2Service
             throw new \Exception("[requestAccessToken]\n $tokenOutput->error: $tokenOutput->error_description");
         }
 
-        return $tokenOutput->access_token;
+        return [
+            'token' => $tokenOutput->access_token,
+            'refresh' => $tokenOutput->refresh_token,
+        ];
     }
 
     public static function getTokenResource(string $access_token, array $azure_config) : array
