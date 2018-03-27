@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+echo "Deploy:"
+echo "  ENV=${CI_TRIGGER_ENV}"
+echo "  TARGET=${CI_TRIGGER_TARGET}"
+echo "  TAG=${CI_TRIGGER_TAG}"
+
 curl -X POST \
     -F token=${CI_TRIGGER_TOKEN} \
     -F "ref=master" \
