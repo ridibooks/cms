@@ -11,9 +11,9 @@ use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class LoginController implements ControllerProviderInterface
 {
@@ -100,7 +100,11 @@ class LoginController implements ControllerProviderInterface
     public function logout(Request $request, Application $app)
     {
         $redirect_url = $request->getUriForPath('/login');
-        $endpoint = $this->azure->getLogoutEndpoint($redirect_url);
+        if (!empty($app['test_id'])) {
+            $endpoint = $redirect_url;
+        } else {
+            $endpoint = $this->azure->getLogoutEndpoint($redirect_url);
+        }
 
         return LoginService::handleLogout($endpoint);
     }
@@ -121,7 +125,7 @@ class LoginController implements ControllerProviderInterface
             $token_resource = $this->azure->introspectToken($token);
         }
         return JsonResponse::create($token_resource,
-            isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST: Response::HTTP_OK);
+            isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK);
     }
 
     public function tokenRefresh(Request $request, Application $app)

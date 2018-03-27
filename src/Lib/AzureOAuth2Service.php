@@ -49,7 +49,7 @@ class AzureOAuth2Service
         $response = $this->http->post($endpoint, [
             'http_errors' => false,
             'form_params' => [
-                'grant_type' => 'authorization_code' ,
+                'grant_type' => 'authorization_code',
                 'client_id' => $this->client_id,
                 'client_secret' => $this->client_secret,
                 'redirect_uri' => $this->redirect_uri,
@@ -76,7 +76,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function getTokens(string $code): array
     {
@@ -101,7 +101,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function refreshToken(string $refresh_token): array
     {
@@ -109,7 +109,7 @@ class AzureOAuth2Service
         $response = $this->http->post($endpoint, [
             'http_errors' => false,
             'form_params' => [
-                'grant_type' => 'refresh_token' ,
+                'grant_type' => 'refresh_token',
                 'client_id' => $this->client_id,
                 'client_secret' => $this->client_secret,
                 'resource' => $this->resource,
@@ -123,7 +123,7 @@ class AzureOAuth2Service
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function parseTokenReource($token_resource): array
     {
