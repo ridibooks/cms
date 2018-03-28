@@ -142,14 +142,14 @@ class AdminUserService implements AdminUserServiceIf
     private function selectUserMenus(string $user, ?string $column = null): array
     {
         // menu -> tag -> user
-        $user_tag_menus = DB::select('select *
+        $user_tag_menus = DB::select('select tb_admin2_menu.*
             from tb_admin2_menu
             join tb_admin2_tag_menu on tb_admin2_tag_menu.menu_id = tb_admin2_menu.id
             join tb_admin2_user_tag on tb_admin2_user_tag.tag_id = tb_admin2_tag_menu.tag_id
             where tb_admin2_user_tag.user_id = :user', ['user' => $user]);
 
         // menu -> user
-        $user_menus = DB::select('select *
+        $user_menus = DB::select('select tb_admin2_menu.*
             from tb_admin2_menu
             join tb_admin2_user_menu on tb_admin2_user_menu.menu_id = tb_admin2_menu.id
             where tb_admin2_user_menu.user_id = :user', ['user' => $user]);
@@ -191,7 +191,7 @@ class AdminUserService implements AdminUserServiceIf
         $ids = [];
         $unique = [];
         foreach ($menus as $menu) {
-            $id = $menu->menu_id;
+            $id = $menu->id;
             if (!isset($ids[$id])) {
                 $unique[$id] = $menu;
                 $ids[$id] = true;
