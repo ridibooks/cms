@@ -19,14 +19,12 @@ class LoginService
 
     public static function handleTestLogin(string $return_url, string $test_id): Response
     {
-        $access_expires_on = time() + self::TEST_TOKEN_EXPIRES_SEC;
-        $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
+        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
         return self::createLoginResponse(
             $return_url,
             'test',
-            $access_expires_on,
             'test',
-            $refresh_expires_on,
+            $login_expires_on,
             $test_id
         );
     }
@@ -38,7 +36,6 @@ class LoginService
     {
         $tokens = $azure->getTokens($code);
         $access_token = $tokens['access'];
-        $expires_on = $tokens['expires_on'];
         $refresh_token = $tokens['refresh'];
 
         $resource = $azure->introspectToken($access_token);
@@ -48,8 +45,8 @@ class LoginService
 
         self::addUserIfNotExists($resource['user_id'], $resource['user_name']);
 
-        $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
-        return self::createLoginResponse($return_url, $access_token, $expires_on, $refresh_token, $refresh_expires_on, $resource['user_id']);
+        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
+        return self::createLoginResponse($return_url, $access_token, $refresh_token, $login_expires_on, $resource['user_id']);
     }
 
     /**
@@ -67,18 +64,19 @@ class LoginService
         }
     }
 
-    public static function createLoginResponse(string $return_url, string $access_token, int $access_expires_on, string $refresh_token, int $refresh_expires_on, ?string $login_id = null): Response
+    public static function createLoginResponse(string $return_url, string $access_token, string $refresh_token,
+        int $login_expires_on, ?string $login_id = null): Response
     {
         $response = RedirectResponse::create($return_url);
 
         $is_secure = empty($_ENV['DEBUG']) ? true : false;
-        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', null, $is_secure);
-        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, $refresh_expires_on, '/v2/token-refresh', null, $is_secure);
+        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $login_expires_on, '/', null, $is_secure);
+        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, $login_expires_on, '/v2/token-refresh', null, $is_secure);
         $response->headers->setCookie($access_cookie);
         $response->headers->setCookie($refresh_cookie);
 
         if (isset($login_id)) {
-            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', null, $is_secure);
+            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $login_expires_on, '/', null, $is_secure);
             $response->headers->setCookie($login_id_cookie);
         }
 
@@ -121,8 +119,7 @@ class LoginService
 
         $access_token = $tokens['access'];
         $refresh_token = $tokens['refresh'];
-        $access_expires_on = time() + $tokens['$expires_on'];
-        $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
-        return self::createLoginResponse($return_url, $access_token, $access_expires_on, $refresh_token, $refresh_expires_on, null);
+        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
+        return self::createLoginResponse($return_url, $access_token, $refresh_token, $login_expires_on, null);
     }
 }
