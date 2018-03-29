@@ -188,13 +188,11 @@ class AdminUserService implements AdminUserServiceIf
 
     public function uniquifyMenus(array $menus)
     {
-        $ids = [];
         $unique = [];
         foreach ($menus as $menu) {
             $id = $menu->id;
-            if (!isset($ids[$id])) {
+            if (!isset($unique[$id])) {
                 $unique[$id] = $menu;
-                $ids[$id] = true;
             }
         }
         return $unique;
