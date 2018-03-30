@@ -3,21 +3,15 @@ declare(strict_types=1);
 
 use Ridibooks\Cms\Controller\CommonController;
 use Ridibooks\Cms\Controller\LoginController;
-use Ridibooks\Cms\Controller\MyInfoController;
-use Ridibooks\Cms\MiniRouter;
-use Ridibooks\Cms\Thrift\ThriftResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Ridibooks\Cms\Lib\MiddlewareFactory;
+use Symfony\Component\HttpFoundation\Response;
 
-$app->post('/', function (Request $request) {
-    return ThriftResponse::create($request);
-});
+// Thrift service
+$app->post('/', function () {
+    return new Response('Thrift request is only acceptable', Response::HTTP_BAD_REQUEST);
+})
+->before(MiddlewareFactory::thriftProcessor());
 
-// web server
-$app->mount('/', new CommonController());
-$app->mount('/', new MyInfoController());
+// web service
 $app->mount('/', new LoginController());
-
-// check auth
-$app->before(function (Request $request) {
-    return MiniRouter::shouldRedirectForLogin($request);
-});
+$app->mount('/', new CommonController());
