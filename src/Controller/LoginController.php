@@ -3,11 +3,11 @@
 namespace Ridibooks\Cms\Controller;
 
 use Moriony\Silex\Provider\SentryServiceProvider;
+use Raven_Client;
 use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Util\UrlHelper;
-use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,32 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class LoginController implements ControllerProviderInterface
+class LoginController
 {
-    /** @var AzureOAuth2Service */
-    private $azure;
-
-    public function connect(Application $app)
-    {
-        $controller_collection = $app['controllers_factory'];
-
-        // login page
-        $controller_collection->get('/login', [$this, 'getLoginPage']);
-
-        // login process
-        $controller_collection->get('/login-azure', [$this, 'azureLogin']);
-
-        // logout
-        $controller_collection->get('/logout', [$this, 'logout']);
-
-        $controller_collection->post('/token-introspect', [$this, 'tokenIntrospect']);
-        $controller_collection->match('/token-refresh', [$this, 'tokenRefresh']);
-
-        $this->azure = new AzureOAuth2Service($app['azure']);
-
-        return $controller_collection;
-    }
-
     public function getLoginPage(Request $request, CmsApplication $app)
     {
         $end_point = $this->buildAuthorizeEndpoint($request, $app);
@@ -59,7 +35,8 @@ class LoginController implements ControllerProviderInterface
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';
         } else {
-            $end_point = $this->azure->getAuthorizeEndPoint();
+            $azure = new AzureOAuth2Service($app['azure']);
+            $end_point = $azure->getAuthorizeEndPoint();
         }
         return $end_point;
     }
@@ -73,6 +50,7 @@ class LoginController implements ControllerProviderInterface
             $error = $request->get('error');
             $error_description = $request->get('error_description');
 
+            /** @var Raven_Client $sentry_client */
             $sentry_client = $app[SentryServiceProvider::SENTRY];
             if ($sentry_client) {
                 $sentry_client->captureMessage($error_description, [
@@ -87,7 +65,8 @@ class LoginController implements ControllerProviderInterface
             if (!empty($app['test_id'])) {
                 $response = LoginService::handleTestLogin($return_url, $app['test_id']);
             } else {
-                $response = LoginService::handleAzureLogin($return_url, $code, $this->azure);
+                $azure = new AzureOAuth2Service($app['azure']);
+                $response = LoginService::handleAzureLogin($return_url, $code, $azure);
             }
         } catch (\Exception $e) {
             return UrlHelper::printAlertRedirect($return_url, $e->getMessage());
@@ -103,7 +82,8 @@ class LoginController implements ControllerProviderInterface
         if (!empty($app['test_id'])) {
             $endpoint = $redirect_url;
         } else {
-            $endpoint = $this->azure->getLogoutEndpoint($redirect_url);
+            $azure = new AzureOAuth2Service($app['azure']);
+            $endpoint = $azure->getLogoutEndpoint($redirect_url);
         }
 
         return LoginService::handleLogout($endpoint);
@@ -122,7 +102,8 @@ class LoginController implements ControllerProviderInterface
                 'user_name' => 'test',
             ];
         } else {
-            $token_resource = $this->azure->introspectToken($token);
+            $azure = new AzureOAuth2Service($app['azure']);
+            $token_resource = $azure->introspectToken($token);
         }
         return JsonResponse::create($token_resource,
             isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK);
@@ -137,6 +118,7 @@ class LoginController implements ControllerProviderInterface
             return RedirectResponse::create("/login?return_url=$return_url");
         }
 
-        return LoginService::refreshToken($return_url, $refresh_token, $this->azure);
+        $azure = new AzureOAuth2Service($app['azure']);
+        return LoginService::refreshToken($return_url, $refresh_token, $azure);
     }
 }
