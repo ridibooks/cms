@@ -12,7 +12,7 @@ class MiddlewareFactory
 {
     const THRIFT_RESULT = 'thrift_result';
 
-    public static function loginRequired(): callable
+    public static function authRequired(): callable
     {
         return function (Request $request) {
             return AdminAuthService::authorize($request);

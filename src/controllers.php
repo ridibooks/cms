@@ -1,8 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Ridibooks\Cms\Controller\CommonController;
-use Ridibooks\Cms\Controller\LoginController;
+use Ridibooks\Cms\Controller\CmsControllerProvider;
 use Ridibooks\Cms\Lib\MiddlewareFactory;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,5 +12,4 @@ $app->post('/', function () {
 ->before(MiddlewareFactory::thriftProcessor());
 
 // web service
-$app->mount('/', new LoginController());
-$app->mount('/', new CommonController());
+$app->mount('/', new CmsControllerProvider());

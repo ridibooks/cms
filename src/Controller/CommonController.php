@@ -2,32 +2,14 @@
 namespace Ridibooks\Cms\Controller;
 
 use Ridibooks\Cms\CmsApplication;
-use Ridibooks\Cms\Lib\MiddlewareFactory;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Thrift\ThriftService;
-use Silex\Api\ControllerProviderInterface;
-use Silex\Application;
-use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class CommonController implements ControllerProviderInterface
+class CommonController
 {
-    public function connect(Application $app)
-    {
-        /** @var ControllerCollection $controllers */
-        $controllers = $app['controllers_factory'];
-        $controllers->before(MiddlewareFactory::loginRequired());
-
-        $controllers->get('/', [$this, 'index']);
-        $controllers->get('/welcome', [$this, 'getWelcomePage']);
-        $controllers->get('/comm/user_list.ajax', [$this, 'userList']);
-        $controllers->get('/me', [$this, 'getMyInfo']);
-        $controllers->post('/me', [$this, 'updateMyInfo']);
-        return $controllers;
-    }
-
     public function index(CmsApplication $app)
     {
         return $app->redirect('/welcome');
