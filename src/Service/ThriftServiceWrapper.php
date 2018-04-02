@@ -44,9 +44,9 @@ class ThriftServiceWrapper
             if ($arg === null) {
                 return 'null';
             } elseif (is_string($arg)) {
-                return "'" . $arg . "'";
+                return '"' . $arg . '"';
             } elseif (is_array($arg)) {
-                return $this->printArguments($arg);
+                return  '[' . $this->printArguments($arg) . ']';
             }
 
             return $arg;
