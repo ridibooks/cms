@@ -5,7 +5,7 @@ use Moriony\Silex\Provider\SentryServiceProvider;
 $config = [
     'debug' => $_ENV['DEBUG'],
     'test_id' => $_ENV['TEST_ID'],
-    'azure' => [
+    'azure.options' => [
         'tenent' => $_ENV['AZURE_TENENT'] ?? '',
         'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
         'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',

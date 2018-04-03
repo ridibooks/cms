@@ -10,10 +10,13 @@ use Ridibooks\Cms\Service\AdminAuthService;
 use Ridibooks\Cms\Service\AdminMenuService;
 use Ridibooks\Cms\Service\AdminTagService;
 use Ridibooks\Cms\Service\AdminUserService;
+use Ridibooks\Cms\Service\AzureServiceProvider;
 use Ridibooks\Cms\Service\ThriftServiceProvider;
 use Silex\Provider\MonologServiceProvider;
 
 $app = new CmsApplication($config);
+
+$app->register(new Silex\Provider\RoutingServiceProvider());
 
 $app->register(new CapsuleServiceProvider(), [
     'capsule.connections' => $app['capsule.connections'],
@@ -29,16 +32,20 @@ $app->register(new MonologServiceProvider(), [
     'monolog.handler' => new StreamHandler('php://stdout', Logger::INFO),
 ]);
 
+$app->register(new AzureServiceProvider(), [
+    'azure.options' => $app['azure.options'],
+]);
+
 $app->register(new ThriftServiceProvider(), [
-    'thrift.logger' => function ($app) {
-        return $app['logger'];
+    'thrift.logger' => $app['logger'],
+    'thrift.services' => function () {
+        return [
+            'AdminAuth' => new AdminAuthService(),
+            'AdminMenu' => new AdminMenuService(),
+            'AdminTag' => new AdminTagService(),
+            'AdminUser' => new AdminUserService(),
+        ];
     },
-    'thrift.services' => [
-        'AdminAuth' => new AdminAuthService(),
-        'AdminMenu' => new AdminMenuService(),
-        'AdminTag' => new AdminTagService(),
-        'AdminUser' => new AdminUserService(),
-    ]
 ]);
 
 return $app;
