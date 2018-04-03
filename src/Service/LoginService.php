@@ -19,12 +19,12 @@ class LoginService
 
     public static function handleTestLogin(string $return_url, string $test_id): Response
     {
-        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
+        $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
         return self::createLoginResponse(
             $return_url,
             'test',
             'test',
-            $login_expires_on,
+            $refresh_expires_on,
             $test_id
         );
     }
@@ -45,8 +45,8 @@ class LoginService
 
         self::addUserIfNotExists($resource['user_id'], $resource['user_name']);
 
-        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
-        return self::createLoginResponse($return_url, $access_token, $refresh_token, $login_expires_on, $resource['user_id']);
+        $access_expires_on = $tokens['expires_on'];
+        return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, $resource['user_id']);
     }
 
     /**
@@ -65,18 +65,20 @@ class LoginService
     }
 
     public static function createLoginResponse(string $return_url, string $access_token, string $refresh_token,
-        int $login_expires_on, ?string $login_id = null): Response
+        int $access_expires_on, ?string $login_id = null): Response
     {
-        $response = RedirectResponse::create($return_url);
-
         $is_secure = empty($_ENV['DEBUG']) ? true : false;
-        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $login_expires_on, '/', null, $is_secure);
-        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, $login_expires_on, '/v2/token-refresh', null, $is_secure);
+        $authorize_path = '/authorize';
+
+        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', null, $is_secure);
+        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, time() + self::REFRESH_TOKEN_EXPIRES_SEC, $authorize_path, null, $is_secure);
+
+        $response = RedirectResponse::create($return_url);
         $response->headers->setCookie($access_cookie);
         $response->headers->setCookie($refresh_cookie);
 
         if (isset($login_id)) {
-            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $login_expires_on, '/', null, $is_secure);
+            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', null, $is_secure);
             $response->headers->setCookie($login_id_cookie);
         }
 
@@ -99,19 +101,29 @@ class LoginService
 
     public static function GetAdminID(): string
     {
-        return $_COOKIE[self::ADMIN_ID_COOKIE_NAME];
+        return $_COOKIE[self::ADMIN_ID_COOKIE_NAME] ?? '';
+    }
+
+    public static function getAccessToken(): string
+    {
+        return $_COOKIE[self::TOKEN_COOKIE_NAME] ?? '';
+    }
+
+    public static function getRefreshToken(): string
+    {
+        return $_COOKIE[self::REFRESH_COOKIE_NAME] ?? '';
     }
 
     /**
      * @throws \Exception
      */
-    public static function refreshToken(string $return_url, $refresh_token, AzureOAuth2Service $azure): Response
+    public static function refreshToken(string $return_url, string $refresh_token, AzureOAuth2Service $azure): Response
     {
         if ($refresh_token === 'test') {
             $tokens = [
                 'access' => 'test',
                 'refresh' => 'test',
-                'expires_on' => self::TEST_TOKEN_EXPIRES_SEC,
+                'expires_on' => time() + self::TEST_TOKEN_EXPIRES_SEC,
             ];
         } else {
             $tokens = $azure->refreshToken($refresh_token);
@@ -119,7 +131,26 @@ class LoginService
 
         $access_token = $tokens['access'];
         $refresh_token = $tokens['refresh'];
-        $login_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
-        return self::createLoginResponse($return_url, $access_token, $refresh_token, $login_expires_on, null);
+        $access_expires_on = $tokens['expires_on'];
+        return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, null);
+    }
+
+    public static function handleAuthorize(string $return_url, string $login_path, AzureOAuth2Service $azure): Response
+    {
+        $access_token = self::getAccessToken();
+        if ($access_token) {
+            $token_resource = $azure->introspectToken($access_token);
+            if (empty($token_resource['error'])) {
+                return RedirectResponse::create($return_url);
+            }
+        }
+
+        // If access token is invalid, try refresh token
+        $refresh_token = self::getRefreshToken();
+        if ($refresh_token) {
+            return self::refreshToken($return_url, $refresh_token, $azure);
+        }
+
+        return RedirectResponse::create($login_path . '?return_url=' . urlencode($return_url));
     }
 }
