@@ -15,22 +15,35 @@ class CmsControllerProvider implements ControllerProviderInterface
         /** @var ControllerCollection $controllers */
         $controllers = $app['controllers_factory'];
 
-        $login = new LoginController();
-        $controllers->get('/login', [$login, 'getLoginPage']);
-        $controllers->get('/login-azure', [$login, 'azureLogin']);
-        $controllers->get('/logout', [$login, 'logout']);
-        $controllers->post('/token-introspect', [$login, 'tokenIntrospect']);
-        $controllers->match('/token-refresh', [$login, 'tokenRefresh']);
+        // Thrift service
+        $thrift = new ThriftController();
+        $app->post('/', [$thrift, 'process'])
+            ->before(MiddlewareFactory::thriftContent())
+            ->bind('thrift');
 
+        // Login service
+        $auth = new AuthController();
+        $controllers->get('/login', [$auth, 'login'])
+            ->bind('login');
+        $controllers->get('/logout', [$auth, 'logout'])
+            ->bind('logout');
+        $controllers->get('/authorize', [$auth, 'authorize'])
+            ->bind('authorize');
+        $controllers->get('/login-azure', [$auth, 'azureCallback'])
+            ->bind('azureCallback');
+
+        // Common service
         $common = new CommonController();
         $controllers->get('/', [$common, 'index']);
         $controllers->get('/welcome', [$common, 'getWelcomePage'])
+            ->before(MiddlewareFactory::authRequired())
+            ->bind('home');
+        $controllers->get('/me', [$common, 'getMyInfo'])
+            ->before(MiddlewareFactory::authRequired())
+            ->bind('me');
+        $controllers->post('/me', [$common, 'updateMyInfo'])
             ->before(MiddlewareFactory::authRequired());
         $controllers->get('/comm/user_list.ajax', [$common, 'userList'])
-            ->before(MiddlewareFactory::authRequired());
-        $controllers->get('/me', [$common, 'getMyInfo'])
-            ->before(MiddlewareFactory::authRequired());
-        $controllers->post('/me', [$common, 'updateMyInfo'])
             ->before(MiddlewareFactory::authRequired());
 
         return $controllers;

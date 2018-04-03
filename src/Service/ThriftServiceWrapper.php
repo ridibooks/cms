@@ -5,6 +5,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\SystemException;
+use Thrift\Exception\TException;
 
 class ThriftServiceWrapper
 {
@@ -30,6 +31,8 @@ class ThriftServiceWrapper
             }
 
             return call_user_func_array([$this->service, $name], $arguments);
+        } catch (TException $e) {
+            throw $e;
         } catch (\Exception $e) {
             throw new SystemException([
                 'code' => ErrorCode::INTERNAL_SERVER_ERROR,
