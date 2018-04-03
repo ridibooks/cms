@@ -2,7 +2,12 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\AdminMenu\AdminMenu as ThriftAdminMenu;
+use Ridibooks\Cms\Thrift\Errors\ErrorCode;
+use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
+use Ridibooks\Cms\Thrift\Errors\NoTokenException;
+use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 
 /**권한 설정 Service
  * @deprecated
@@ -31,6 +36,66 @@ class AdminAuthService
         return array_map(function ($menu) {
             return new ThriftAdminMenu($menu);
         }, $admin_menus);
+    }
+
+    public function hideEmptyRootMenus(array $menus): array
+    {
+        $topMenuFlags = array_map(function ($menu) {
+            $url = self::parseUrlAuth($menu['menu_url'])['url'];
+            return $menu['menu_deep'] == 0 && strlen($url) == 0;
+        }, $menus);
+
+        $topMenuFlags[] = true; // For tail check
+        for ($i = 0; $i < count($menus); ++$i) {
+            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
+                $menus[$i]['is_show'] = false;
+            }
+        }
+
+        return $menus;
+    }
+
+    /**
+     * @throws TokenException
+     * @throws UnauthorizedException
+     */
+    public static function authorize($token, $method, $check_url)
+    {
+        if (isset($_ENV['DEBUG'])) {
+            return;
+        }
+
+        if (empty($token)) {
+            throw new NoTokenException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '토큰을 찾을 수 없습니다.',
+            ]);
+        }
+
+        /** @var AzureOAuth2Service $azure */
+        $azure = new AzureOAuth2Service([
+            'tenent' => $_ENV['AZURE_TENENT'] ?? '',
+            'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
+            'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
+            'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
+            'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+            'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
+        ]);
+
+        $token_resource = $azure->introspectToken($token);
+        if (isset($token_resource['error'])) {
+            throw new MalformedTokenException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '잘못된 토큰입니다.',
+            ]);
+        }
+
+        if (!self::checkAuth($method, null, $check_url, $token_resource['user_id'])) {
+            throw new UnauthorizedException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '접근 권한이 없습니다.',
+            ]);
+        }
     }
 
     public static function isValidUser(string $user_id): bool
@@ -100,7 +165,36 @@ class AdminAuthService
         return false;
     }
 
-    public static function isWhiteListUrl(string $check_url): bool
+    // 해당 URL의 Hash 권한이 있는지 검사한다.
+    public static function hasHashAuth(string $hash, string $check_url, string $admin_id): bool
+    {
+        return self::checkAuth(null, $hash, $check_url, $admin_id);
+    }
+
+    public static function checkAuth(?string $method, ?string $hash, string $check_url, string $admin_id): bool
+    {
+        if (self::isWhiteListUrl($check_url)) {
+            return true;
+        }
+
+        if (empty($admin_id) || !self::isValidUser($admin_id)) {
+            return false;
+        }
+
+        $auth_list = self::readUserAuth($admin_id);
+
+        foreach ($auth_list as $auth) {
+            $auth = self::parseUrlAuth($auth);
+            if (self::isAuthUrl($check_url, $auth['url'])
+                && self::isAuthCorrect($hash, $auth['hash'] ?? [])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function isWhiteListUrl(string $check_url): bool
     {
         $public_urls = [
             '/admin/book/pa',
@@ -116,7 +210,7 @@ class AdminAuthService
         return in_array($check_url, $public_urls);
     }
 
-    public static function readUserAuth(string $user_id): array
+    private static function readUserAuth(string $user_id): array
     {
         $user_service = new AdminUserService();
         $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
@@ -124,35 +218,6 @@ class AdminAuthService
         $urls = array_merge($menu_urls, $ajax_urls);
 
         return $urls;
-    }
-
-    public static function checkAuth(?string $hash, string $check_url, array $auth_list): bool
-    {
-        foreach ($auth_list as $auth) {
-            $auth = self::parseUrlAuth($auth);
-            if (self::isAuthUrl($check_url, $auth['url'])
-                && self::isAuthCorrect($hash, $auth['hash'] ?? [])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // 해당 URL의 Hash 권한이 있는지 검사한다.
-    public static function hasHashAuth(?string $hash, string $check_url, ?string $admin_id = null): bool
-    {
-        if (self::isWhiteListUrl($check_url)) {
-            return true;
-        }
-
-        $admin_id = $admin_id ?? LoginService::GetAdminID();
-        if (empty($admin_id) || !self::isValidUser($admin_id)) {
-            return false;
-        }
-
-        $auth_list = self::readUserAuth($admin_id);
-
-        return self::checkAuth($hash, $check_url, $auth_list);
     }
 
     // 해당 URL의 Hash 권한 Array를 반환한다.
@@ -179,22 +244,5 @@ class AdminAuthService
         }, $auth_urls);
 
         return array_filter($hash_array);
-    }
-
-    public function hideEmptyRootMenus(array $menus): array
-    {
-        $topMenuFlags = array_map(function ($menu) {
-            $url = self::parseUrlAuth($menu['menu_url'])['url'];
-            return $menu['menu_deep'] == 0 && strlen($url) == 0;
-        }, $menus);
-
-        $topMenuFlags[] = true; // For tail check
-        for ($i = 0; $i < count($menus); ++$i) {
-            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
-                $menus[$i]['is_show'] = false;
-            }
-        }
-
-        return $menus;
     }
 }
