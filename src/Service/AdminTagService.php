@@ -3,6 +3,7 @@ namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminTagService implements AdminTagServiceIf
@@ -38,5 +39,16 @@ class AdminTagService implements AdminTagServiceIf
         $menus = $admin_service->getMenus($menu_ids);
         $menus = ThriftService::convertMenuCollectionToArray($menus);
         return AdminAuthService::getHashesFromMenus($check_url, $menus);
+    }
+    
+    public function getAdminTag($tag_id): ThriftAdminTag
+    {
+        /** @var AdminTag $tag */
+        $tag = AdminTag::find($tag_id);
+
+        if (empty($tag)) {
+            return new ThriftAdminTag();
+        }
+        return new ThriftAdminTag($tag->toArray());
     }
 }
