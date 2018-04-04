@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MiddlewareFactory
 {
-    const THRIFT_RESULT = 'thrift_result';
-
     public static function authRequired(): callable
     {
         return function (Request $request) {
