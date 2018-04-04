@@ -35,7 +35,7 @@ class AdminAuthService
         return $admin_menus;
     }
 
-    private function hideEmptyRootMenus(array $menus): array
+    public function hideEmptyRootMenus(array $menus): array
     {
         $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];
@@ -57,7 +57,7 @@ class AdminAuthService
      * @throws MalformedTokenException
      * @throws UnauthorizedException
      */
-    public function authorize(string $token, string $method, string $check_url)
+    public function authorize(string $token, array $methods, string $check_url)
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             return;
@@ -88,7 +88,7 @@ class AdminAuthService
             ]);
         }
 
-        if (!self::checkAuth($method, $check_url, $token_resource['user_id'])) {
+        if (!self::checkAuth($methods, $check_url, $token_resource['user_id'])) {
             throw new UnauthorizedException([
                 'code' => ErrorCode::BAD_REQUEST,
                 'message' => '접근 권한이 없습니다.',
@@ -96,7 +96,7 @@ class AdminAuthService
         }
     }
 
-    public function checkAuth(string $check_method, string $check_url, string $admin_id): bool
+    public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
     {
         $parsed = parse_url($check_url);
         $check_url = rtrim($parsed['path'], '/');

@@ -53,8 +53,8 @@ class AdminAuthThrift implements AdminAuthServiceIf
      * @throws MalformedTokenException
      * @throws UnauthorizedException
      */
-    public function authorize($token, $method, $check_url)
+    public function authorize($token, array $methods, $check_url)
     {
-        $this->server->authorize($token, $method, $check_url);
+        $this->server->authorize($token, $methods, $check_url);
     }
 }
