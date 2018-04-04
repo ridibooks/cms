@@ -41,7 +41,7 @@ class AdminTagService implements AdminTagServiceIf
         return AdminAuthService::getHashesFromMenus($check_url, $menus);
     }
     
-    public function getAdminTag(int $tag_id): ThriftAdminTag
+    public function getAdminTag($tag_id): ThriftAdminTag
     {
         /** @var AdminTag $tag */
         $tag = AdminTag::find($tag_id);
