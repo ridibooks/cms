@@ -15,4 +15,14 @@ class AdminTagServiceTest extends TestCase
 
         $this->assertNotEmpty($tag->id);
     }
+
+    public function testGetAdminTags()
+    {
+        $tag_service = new AdminTagService();
+        $tags = $tag_service->getAdminTags([1,2]);
+
+        $this->assertEquals(2, count($tags));
+        $this->assertNotEmpty($tags[0]->name);
+        $this->assertNotEmpty($tags[1]->name);
+    }
 }

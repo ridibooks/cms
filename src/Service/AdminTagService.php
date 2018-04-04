@@ -51,4 +51,13 @@ class AdminTagService implements AdminTagServiceIf
         }
         return new ThriftAdminTag($tag->toArray());
     }
+
+    public function getAdminTags(array $tag_ids): array
+    {
+        foreach($tag_ids as $id) {
+            $tags[] = $this->getAdminTag($id);
+        }
+        
+        return $tags;
+    }
 }

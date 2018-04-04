@@ -14,6 +14,12 @@ class Tag extends AbstractSeed
                 'creator' => 'admin',
                 'reg_date' => date('Y-m-d H:i:s'),
             ],
+            [
+                'name' => '퍼포먼스팀',
+                'is_use' => 1,
+                'creator' => 'admin',
+                'reg_date' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         $posts = $this->table('tb_admin2_tag');
