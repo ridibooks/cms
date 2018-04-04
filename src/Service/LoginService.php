@@ -67,7 +67,7 @@ class LoginService
     public static function createLoginResponse(string $return_url, string $access_token, string $refresh_token,
         int $access_expires_on, ?string $login_id = null): Response
     {
-        $is_secure = empty($_ENV['DEBUG']) ? true : false;
+        $is_secure = empty($_ENV['TEST_SECURED_DISABLE']) ? true : false;
         $authorize_path = '/authorize';
 
         $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', null, $is_secure);

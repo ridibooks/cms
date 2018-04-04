@@ -15,7 +15,7 @@ class AdminAuthService
 {
     public function getAdminMenu(string $user_id): array
     {
-        if (isset($_ENV['DEBUG'])) {
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             $user_service = new AdminUserService();
             $menus = $user_service->getAllMenus($user_id);
         } else {
@@ -59,7 +59,7 @@ class AdminAuthService
      */
     public function authorize(string $token, string $method, string $check_url)
     {
-        if (isset($_ENV['DEBUG'])) {
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             return;
         }
 
@@ -98,6 +98,9 @@ class AdminAuthService
 
     public function checkAuth(string $check_method, string $check_url, string $admin_id): bool
     {
+        $parsed = parse_url($check_url);
+        $check_url = rtrim($parsed['path'], '/');
+
         if ($this->isWhiteListUrl($check_url)) {
             return true;
         }
@@ -106,11 +109,15 @@ class AdminAuthService
             return false;
         }
 
-        $auth_list = $this->readUserAuth($admin_id);
 
+        $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            // regex check + method check
-            if (1) {
+            // If auth is not form of regex..
+            if (!preg_match("/^\/[\s\S]+\/$/", $auth)) {
+                $auth = '/' . preg_quote($auth, '/') . '/';
+            }
+
+            if (preg_match($auth, $check_url) === 1) {
                 return true;
             }
         }
@@ -163,6 +170,10 @@ class AdminAuthService
     /** @deprecated */
     public function hasHashAuth(string $hash, string $check_url, string $admin_id): bool
     {
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return true;
+        }
+
         if ($this->isWhiteListUrl($check_url)) {
             return true;
         }
