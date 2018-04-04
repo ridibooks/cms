@@ -14,4 +14,4 @@ else
 fi
 
 vendor/bin/phinx migrate -e phinx_env
-vendor/bin/phinx seed:run -s User -s Menu -s MenuAjax -s UserMenu -s Tag -e phinx_env
+vendor/bin/phinx seed:run -s User -s Menu -s MenuAjax -s Tag -s TagMenu -s UserTag -e phinx_env

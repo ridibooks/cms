@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Ridibooks\Cms\Service;
 
 use PHPUnit\Framework\TestCase;
-use Ridibooks\Cms\Service\AdminUserService;
 
 // TODO(devgrapher): temparary test cases. Model classes are statically bound inside. Hard to inject mocks.
 class AdminUserServiceTest extends TestCase

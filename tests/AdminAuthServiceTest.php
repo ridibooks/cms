@@ -11,54 +11,66 @@ class AdminAuthServiceTest extends TestCase
 {
     public function testCheckAuth()
     {
-        $auth_list = ['/admin/book/productList'];
+        $service = new AdminAuthService();
 
         $this->assertTrue(
-            AdminAuthService::checkAuth(null, '/admin/book/productList', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users', 'admin')
+        );
+        $this->assertTrue(
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users/', 'admin')
+        );
+        $this->assertTrue(
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users?some_param=some_value', 'admin')
         );
         $this->assertFalse(
-            AdminAuthService::checkAuth(null, '/admin/book/product', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/unauthorized/path', 'admin')
         );
     }
 
     public function testCheckAuthWithSubpath()
     {
-        $auth_list = ['/admin/book/productList'];
+        $service = new AdminAuthService();
+
         $this->assertTrue(
-            AdminAuthService::checkAuth(null, '/admin/book/productList/', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users/subpath', 'admin')
         );
         $this->assertTrue(
-            AdminAuthService::checkAuth(null, '/admin/book/productList/subpath', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users/subpath/', 'admin')
         );
         $this->assertTrue(
-            AdminAuthService::checkAuth(null, '/admin/book/productList/subpath/subsub', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users/subpath?some_param=some_value', 'admin')
+        );
+        $this->assertTrue(
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/super/users/subpath/subsub', 'admin')
         );
 
         // As-is state, but somewhat problematic.
         $this->assertTrue(
-            AdminAuthService::checkAuth(null, '/weired/admin/book/productList/subpath/subsub', $auth_list)
+            $service->checkAuth(['GET', 'POST', 'PUT', 'DELETE'], '/weired/super/users/subpath/subsub', 'admin')
         );
     }
 
-    public function testCheckAuth_withHash()
+    public function testCheckAuthWithHash()
     {
-        $auth_list = ['/admin/book/productList#EDIT_세트도서'];
+        $service = new AdminAuthService();
 
         $this->assertTrue(
-            AdminAuthService::checkAuth('EDIT_세트도서', '/admin/book/productList', $auth_list)
+            $service->hasHashAuth('EDIT', '/super/users', 'admin')
         );
         $this->assertFalse(
-            AdminAuthService::checkAuth('', '/admin/book/productList', $auth_list)
+            $service->hasHashAuth('', '/super/users', 'admin')
         );
         $this->assertFalse(
-            AdminAuthService::checkAuth('DELETE_세트도서', '/admin/book/productList', $auth_list)
+            $service->hasHashAuth('DELETE', '/super/users', 'admin')
         );
     }
 
     public function testGetHashesFromMenus()
     {
+        $service = new AdminAuthService();
+
         $auth_list = ['/admin/book/productList#EDIT_세트도서'];
-        $hashs = AdminAuthService::getHashesFromMenus('/admin/book/productList', $auth_list);
+        $hashs = $service->getHashesFromMenus('/admin/book/productList', $auth_list);
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
 
