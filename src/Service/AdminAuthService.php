@@ -16,11 +16,11 @@ class AdminAuthService
     public function getAdminMenu(string $user_id): array
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            $user_service = new AdminUserService();
-            $menus = $user_service->getAllMenus($user_id);
-        } else {
             $menu_service = new AdminMenuService();
             $menus = $menu_service->queryMenus(true);
+        } else {
+            $user_service = new AdminUserService();
+            $menus = $user_service->getAllMenus($user_id);
         }
 
         $menus = $this->hideEmptyRootMenus($menus);
