@@ -2,8 +2,8 @@
 
 namespace Ridibooks\Cms\Thrift;
 
-use Ridibooks\Cms\Thrift\AdminAuth\AdminAuthServiceIf;
 use Ridibooks\Cms\Service\AdminAuthService;
+use Ridibooks\Cms\Thrift\AdminAuth\AdminAuthServiceIf;
 use Ridibooks\Cms\Thrift\AdminAuth\AdminMenu;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;

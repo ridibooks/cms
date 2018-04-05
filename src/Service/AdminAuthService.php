@@ -109,7 +109,6 @@ class AdminAuthService
             return false;
         }
 
-
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
             // If auth is not form of regex..
@@ -167,6 +166,7 @@ class AdminAuthService
     }
 
     // 해당 URL의 Hash 권한이 있는지 검사한다.
+
     /** @deprecated */
     public function hasHashAuth(string $hash, string $check_url, string $admin_id): bool
     {
