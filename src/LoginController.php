@@ -3,9 +3,9 @@
 namespace Ridibooks\Cms;
 
 use Moriony\Silex\Provider\SentryServiceProvider;
-use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
+use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Ridibooks\Platform\Cms\Util\UrlHelper;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
@@ -100,13 +100,13 @@ class LoginController implements ControllerProviderInterface
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
         $response->headers->setCookie(new Cookie(
-            'cms-token', $token, time() + ( 30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'cms-token', $token, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'cms-refresh', $refresh, time() + ( 30 * 24 * 60 * 60), '/v2/token-refresh', null, !$app['debug']
+            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/v2/token-refresh', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'admin-id', $admin_id, time() + ( 30 * 24 * 60 * 60), '/', null
+            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null
         ));
         return $response;
     }
