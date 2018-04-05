@@ -3,6 +3,7 @@
 namespace Ridibooks\Cms;
 
 use Moriony\Silex\Provider\SentryServiceProvider;
+use Ridibooks\Platform\Cms\Auth\AdminAuthService;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Platform\Cms\Util\UrlHelper;
@@ -25,13 +26,16 @@ class LoginController implements ControllerProviderInterface
         // login process
         $controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
 
+        // login page
+        $controller_collection->get('/authorize', [$this, 'authorize']);
+
         // logout
         $controller_collection->get('/logout', [$this, 'logout']);
 
         return $controller_collection;
     }
 
-    public function getLoginPage(Request $request, CmsServerApplication $app)
+    private function getAzureAuthorizeEndpoint(CmsServerApplication $app)
     {
         if (!empty($app['test_id'])) {
             $end_point = '/login-azure?code=test';
@@ -39,9 +43,16 @@ class LoginController implements ControllerProviderInterface
             $azure_config = $app['azure'];
             $end_point = AzureOAuth2Service::getAuthorizeEndPoint($azure_config);
         }
-        $return_url = $request->get('return_url', '/welcome');
+
+        return $end_point;
+    }
+
+    public function getLoginPage(Request $request, CmsServerApplication $app)
+    {
+        $end_point = $this->getAzureAuthorizeEndpoint($app);
 
         $response = Response::create();
+        $return_url = $request->get('return_url', '/welcome');
         $response->headers->setCookie(new Cookie('return_url', $return_url));
 
         return $app->render('login.twig', [
@@ -97,6 +108,22 @@ class LoginController implements ControllerProviderInterface
         $response->headers->setCookie(new Cookie(
             'admin-id', $admin_id, time() + ( 30 * 24 * 60 * 60), '/', null
         ));
+        return $response;
+    }
+
+    public function authorize(Request $request, CmsServerApplication $app)
+    {
+        $response = AdminAuthService::authorize($request);
+        if ($response) {
+            return $response;
+        }
+
+        $end_point = $this->getAzureAuthorizeEndpoint($app);
+        $return_url = $request->get('return_url', '/welcome');
+
+        $response = RedirectResponse::create($end_point);
+        $response->headers->setCookie(new Cookie('return_url', $return_url));
+
         return $response;
     }
 
