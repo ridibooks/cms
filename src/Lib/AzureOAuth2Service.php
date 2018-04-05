@@ -29,7 +29,7 @@ class AzureOAuth2Service
         $this->http = new Client($guzzle_config);
     }
 
-    public function getAuthorizeEndPoint(): string
+    public function getAuthenticationEndPoint(): string
     {
         return "https://login.windows.net/$this->tenent/oauth2/authorize?response_type=code" .
             "&client_id=" . urlencode($this->client_id) .

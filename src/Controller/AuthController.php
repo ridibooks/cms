@@ -22,7 +22,7 @@ class AuthController
         $response->headers->setCookie(new Cookie(self::RETURN_URL_COOKIE_NAME, $return_url));
 
         return $app->render('login.twig', [
-            'azure_login' => $this->buildAuthorizeEndpoint($app),
+            'azure_login' => $this->buildAuthenticationEndpoint($app),
         ], $response);
     }
 
@@ -31,14 +31,14 @@ class AuthController
         return LoginService::handleLogout($app['url_generator']->generate('login'));
     }
 
-    private function buildAuthorizeEndpoint(Application $app)
+    private function buildAuthenticationEndpoint(Application $app)
     {
         if (!empty($app['test_id'])) {
             $end_point = $app['url_generator']->generate('azureCallback') . '?code=test';
         } else {
             /** @var AzureOAuth2Service $azure */
             $azure = $app['azure'];
-            $end_point = $azure->getAuthorizeEndPoint();
+            $end_point = $azure->getAuthenticationEndPoint();
         }
         return $end_point;
     }
