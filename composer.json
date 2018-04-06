@@ -2,6 +2,12 @@
   "name": "ridibooks/cms",
   "description": "Ridibooks CMS Server Aplication",
   "license": "MIT",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/apache/thrift.git"
+    }
+  ],
   "require": {
     "illuminate/database": "^5.2",
     "jguyomard/silex-capsule-eloquent": "^2.0",
