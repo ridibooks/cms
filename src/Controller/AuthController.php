@@ -50,7 +50,7 @@ class AuthController
         $login_path = $app['url_generator']->generate('login');
         $home_path = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_path);
-        return LoginService::handleAuthorize($return_url, $login_path, $app['azure']);
+        return LoginService::handleAuthorize($return_url, $login_path, $app['azure'], $app['logger']);
     }
 
     public function azureCallback(Request $request, Application $app)

@@ -135,12 +135,20 @@ class LoginService
         return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, null);
     }
 
-    public static function handleAuthorize(string $return_url, string $login_path, AzureOAuth2Service $azure): Response
+    public static function handleAuthorize(string $return_url, string $login_path, AzureOAuth2Service $azure, $logger): Response
     {
         $access_token = self::getAccessToken();
         if ($access_token) {
             $token_resource = $azure->introspectToken($access_token);
-            if (empty($token_resource['error'])) {
+            if (isset($token_resource['error'])) {
+                if ($logger) {
+                    $logger->error(sprintf(
+                        'Azure introspect error (%s): %s',
+                        $token_resource['error'],
+                        $token_resource['message'])
+                    );
+                }
+            } else {
                 return RedirectResponse::create($return_url);
             }
         }
