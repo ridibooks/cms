@@ -32,6 +32,9 @@ class CmsControllerProvider implements ControllerProviderInterface
         $controllers->get('/login-azure', [$auth, 'azureCallback'])
             ->bind('azureCallback');
 
+        $controllers->post('/token-introspect', [$auth, 'tokenIntrospect']);
+        $controllers->match('/token-refresh', [$auth, 'tokenRefresh']);
+
         // Common service
         $common = new CommonController();
         $controllers->get('/', [$common, 'index']);

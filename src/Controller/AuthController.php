@@ -7,6 +7,8 @@ use Ridibooks\Cms\Service\LoginService;
 use Ridibooks\Cms\Util\UrlHelper;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -70,5 +72,37 @@ class AuthController
 
         $response->headers->clearCookie(self::RETURN_URL_COOKIE_NAME);
         return $response;
+    }
+
+    /** @deprecated  */
+    public function tokenIntrospect(Request $request, Application $app)
+    {
+        $token = $request->get('token');
+        if (empty($token)) {
+            return Response::create('Bad parameters', Response::HTTP_BAD_REQUEST);
+        }
+        if (!empty($app['test_id'])) {
+            $token_resource = [
+                'user_id' => $app['test_id'],
+                'user_name' => 'test',
+            ];
+        } else {
+            $azure = new AzureOAuth2Service($app['azure.options']);
+            $token_resource = $azure->introspectToken($token);
+        }
+        return JsonResponse::create($token_resource,
+            isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK);
+    }
+
+    /** @deprecated  */
+    public function tokenRefresh(Request $request, Application $app)
+    {
+        $return_url = $request->get('return_url', '/welcome');
+        $refresh_token = $request->cookies->get(LoginService::REFRESH_COOKIE_NAME);
+        if (empty($refresh_token)) {
+            return RedirectResponse::create("/login?return_url=$return_url");
+        }
+        $azure = new AzureOAuth2Service($app['azure.options']);
+        return LoginService::refreshToken($return_url, $refresh_token, $azure);
     }
 }

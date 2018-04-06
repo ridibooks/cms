@@ -168,7 +168,7 @@ class AdminAuthService
     // 해당 URL의 Hash 권한이 있는지 검사한다.
 
     /** @deprecated */
-    public function hasHashAuth(string $hash, string $check_url, string $admin_id): bool
+    public function hasHashAuth(?string $hash, string $check_url, string $admin_id): bool
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             return true;
