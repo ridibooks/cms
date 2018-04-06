@@ -2,6 +2,7 @@
   "name": "ridibooks/cms",
   "description": "Ridibooks CMS Server Aplication",
   "license": "MIT",
+  "type": "project",
   "repositories": [
     {
       "type": "vcs",

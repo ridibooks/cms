@@ -4,30 +4,37 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f1a9dbf14f9028a175eb4fd55a63a343",
-    "content-hash": "2673370d3a5e9258faa6561f8b4b30d2",
+    "hash": "032e4241c2c2a473a5ce970acf671612",
+    "content-hash": "9cae8271dd86240a393f9dc443d64848",
     "packages": [
         {
             "name": "apache/thrift",
             "version": "0.10.0",
             "source": {
                 "type": "git",
-                "url": "https://git-wip-us.apache.org/repos/asf/thrift.git",
+                "url": "https://github.com/apache/thrift.git",
                 "reference": "b2a4d4ae21c789b689dd162deb819665567f481c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apache/thrift/zipball/b2a4d4ae21c789b689dd162deb819665567f481c",
+                "reference": "b2a4d4ae21c789b689dd162deb819665567f481c",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "type": "library",
             "extra": {
-                "branch-alias": []
+                "branch-alias": {
+                    "dev-master": "0.10.0"
+                }
             },
             "autoload": {
                 "psr-0": {
                     "Thrift": "lib/php/lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -40,7 +47,12 @@
             ],
             "description": "Apache Thrift RPC system",
             "homepage": "http://thrift.apache.org/",
-            "time": "2016-04-04 18:25:03"
+            "support": {
+                "email": "dev@thrift.apache.org",
+                "issues": "https://issues.apache.org/jira/browse/THRIFT",
+                "source": "https://github.com/apache/thrift/tree/0.10.0"
+            },
+            "time": "2016-12-21 20:36:22"
         },
         {
             "name": "doctrine/inflector",
@@ -653,12 +665,12 @@
             "version": "v1.0.10",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ridibooks/cms-sdk.git",
+                "url": "https://github.com/ridi/cms-sdk.git",
                 "reference": "7bfa86e6e2336cc77f94160ffbd0b133187d7cff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridibooks/cms-sdk/zipball/7bfa86e6e2336cc77f94160ffbd0b133187d7cff",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/7bfa86e6e2336cc77f94160ffbd0b133187d7cff",
                 "reference": "7bfa86e6e2336cc77f94160ffbd0b133187d7cff",
                 "shasum": ""
             },
