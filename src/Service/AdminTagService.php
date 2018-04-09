@@ -2,8 +2,8 @@
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminTag;
-use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
+use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
 use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminTagService implements AdminTagServiceIf
@@ -40,7 +40,7 @@ class AdminTagService implements AdminTagServiceIf
         $menus = ThriftService::convertMenuCollectionToArray($menus);
         return AdminAuthService::getHashesFromMenus($check_url, $menus);
     }
-    
+
     public function getAdminTag($tag_id): ThriftAdminTag
     {
         /** @var AdminTag $tag */
@@ -54,10 +54,10 @@ class AdminTagService implements AdminTagServiceIf
 
     public function getAdminTags(array $tag_ids): array
     {
-        foreach($tag_ids as $id) {
+        foreach ($tag_ids as $id) {
             $tags[] = $this->getAdminTag($id);
         }
-        
+
         return $tags;
     }
 }

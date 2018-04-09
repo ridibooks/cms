@@ -32,7 +32,7 @@ class AzureOAuth2ServiceTest extends TestCase
     {
         $azure = new AzureOAuth2Service($this->config);
 
-        $endpoint = $azure->getAuthorizeEndPoint();
+        $endpoint = $azure->getAuthenticationEndPoint();
         $this->assertStringStartsWith('https://login.windows.net', $endpoint);
         $this->assertRegexp("/{$this->config['tenent']}/", $endpoint);
         $this->assertRegexp("/response_type=code/", $endpoint);

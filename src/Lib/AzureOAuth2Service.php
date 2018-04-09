@@ -29,18 +29,12 @@ class AzureOAuth2Service
         $this->http = new Client($guzzle_config);
     }
 
-    public function getAuthorizeEndPoint(): string
+    public function getAuthenticationEndPoint(): string
     {
         return "https://login.windows.net/$this->tenent/oauth2/authorize?response_type=code" .
             "&client_id=" . urlencode($this->client_id) .
             "&resource=" . urlencode($this->resource) .
             "&redirect_uri=" . urlencode($this->redirect_uri);
-    }
-
-    public function getLogoutEndpoint(string $redirect_url): string
-    {
-        return "https://login.windows.net/$this->tenent/oauth2/logout?"
-            . "post_logout_redirect_uri=" . urlencode($redirect_url);
     }
 
     private function requestToken(string $code): \stdClass

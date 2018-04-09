@@ -3,15 +3,11 @@
 namespace Ridibooks\Cms\Lib;
 
 use Ridibooks\Cms\Auth\AdminAuthService;
-use Ridibooks\Cms\Thrift\ThriftServer;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class MiddlewareFactory
 {
-    const THRIFT_RESULT = 'thrift_result';
-
     public static function authRequired(): callable
     {
         return function (Request $request) {
@@ -19,23 +15,17 @@ class MiddlewareFactory
         };
     }
 
-    public static function thriftProcessor(): callable
+    public static function thriftContent(): callable
     {
-        return function (Request $request, Application $app) {
+        return function (Request $request) {
             $request->setFormat('thrift', 'application/x-thrift');
-            $content_type = $request->getContentType();
 
+            $content_type = $request->getContentType();
             if ($content_type !== 'thrift') {
-                return null;
+                return new Response('Thrift request is only acceptable', Response::HTTP_BAD_REQUEST);
             }
 
-            /** @var ThriftServer $thrift */
-            $thrift = $app['thrift.server'];
-            $output = $thrift->process($request->getContent());
-
-            return new Response($output, Response::HTTP_OK, [
-                'Content-Type' => 'application/x-thrift'
-            ]);
+            return null;
         };
     }
 }

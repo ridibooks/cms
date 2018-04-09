@@ -6,14 +6,13 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\CmsApplication;
-use Ridibooks\Cms\Service\AdminAuthService;
-use Ridibooks\Cms\Service\AdminMenuService;
-use Ridibooks\Cms\Service\AdminTagService;
-use Ridibooks\Cms\Service\AdminUserService;
-use Ridibooks\Cms\Service\ThriftServiceProvider;
+use Ridibooks\Cms\Service;
+use Ridibooks\Cms\Thrift;
 use Silex\Provider\MonologServiceProvider;
 
 $app = new CmsApplication($config);
+
+$app->register(new Silex\Provider\RoutingServiceProvider());
 
 $app->register(new CapsuleServiceProvider(), [
     'capsule.connections' => $app['capsule.connections'],
@@ -29,16 +28,20 @@ $app->register(new MonologServiceProvider(), [
     'monolog.handler' => new StreamHandler('php://stdout', Logger::INFO),
 ]);
 
-$app->register(new ThriftServiceProvider(), [
-    'thrift.logger' => function ($app) {
-        return $app['logger'];
+$app->register(new Service\AzureServiceProvider(), [
+    'azure.options' => $app['azure.options'],
+]);
+
+$app->register(new Service\ThriftServiceProvider(), [
+    'thrift.logger' => $app['logger'],
+    'thrift.services' => function () {
+        return [
+            'AdminAuth' => new Thrift\AdminAuthThrift(new Service\AdminAuthService()),
+            'AdminMenu' => new Thrift\AdminMenuThrift(new Service\AdminMenuService()),
+            'AdminTag' => new Thrift\AdminTagThrift(new Service\AdminTagService()),
+            'AdminUser' => new Thrift\AdminUserThrift(new Service\AdminUserService()),
+        ];
     },
-    'thrift.services' => [
-        'AdminAuth' => new AdminAuthService(),
-        'AdminMenu' => new AdminMenuService(),
-        'AdminTag' => new AdminTagService(),
-        'AdminUser' => new AdminUserService(),
-    ]
 ]);
 
 return $app;
