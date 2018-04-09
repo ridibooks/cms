@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Ridibooks\Cms\Service;
 
 use PHPUnit\Framework\TestCase;
-use Ridibooks\Cms\Service\AdminAuthService;
-use Ridibooks\Cms\Service\AdminUserService;
 
 class AdminAuthServiceTest extends TestCase
 {
@@ -77,19 +75,19 @@ class AdminAuthServiceTest extends TestCase
     public function testHideEmptyRootMenus()
     {
         $menus = [
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
-            [ 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true ],
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true ],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
+            ['menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
         ];
 
         $authService = new AdminAuthService();
         $result = $authService->hideEmptyRootMenus($menus);
         $this->assertEquals([
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            [ 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
-            [ 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
+            ['menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
+            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
         ], $result);
     }
 }

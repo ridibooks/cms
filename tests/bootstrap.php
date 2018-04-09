@@ -16,7 +16,7 @@ $dotenv->required([
     'MYSQL_PASSWORD',
 ]);
 
-$capsule = new Capsule;
+$capsule = new Capsule();
 
 $capsule->addConnection([
     'driver' => 'mysql',
@@ -29,7 +29,7 @@ $capsule->addConnection([
 ]);
 
 // Set the event dispatcher used by Eloquent models... (optional)
-$capsule->setEventDispatcher(new Dispatcher(new Container));
+$capsule->setEventDispatcher(new Dispatcher(new Container()));
 
 // Make this Capsule instance available globally via static methods... (optional)
 $capsule->setAsGlobal();

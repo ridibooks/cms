@@ -26,7 +26,7 @@ class AzureOAuth2ServiceTest extends TestCase
         "resource" => "https://service.contoso.com/",
         "refresh_token" => "AwABAAAAvPM1KaPlrEqdFSBzjqfTGAxA",
         "scope" => "https%3A%2F%2Fgraph.microsoft.com%2Fmail.read",
-    ]; 
+    ];
 
     public function testGetAuthorizeEndPoint()
     {

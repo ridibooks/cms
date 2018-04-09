@@ -18,7 +18,7 @@ class AdminTagServiceTest extends TestCase
     public function testGetAdminTags()
     {
         $tag_service = new AdminTagService();
-        $tags = $tag_service->getAdminTags([1,2]);
+        $tags = $tag_service->getAdminTags([1, 2]);
 
         $this->assertEquals(2, count($tags));
         $this->assertNotEmpty($tags[0]->name);
