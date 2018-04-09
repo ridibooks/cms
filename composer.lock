@@ -1061,16 +1061,16 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v2.2.5",
+            "version": "v2.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "70c8aaace6f40ae1733742185c9cd4db21926714"
+                "reference": "4bd4e1edea38706c734f7a02bf306a054aba3434"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/70c8aaace6f40ae1733742185c9cd4db21926714",
-                "reference": "70c8aaace6f40ae1733742185c9cd4db21926714",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/4bd4e1edea38706c734f7a02bf306a054aba3434",
+                "reference": "4bd4e1edea38706c734f7a02bf306a054aba3434",
                 "shasum": ""
             },
             "require": {
@@ -1093,7 +1093,7 @@
                 "MIT"
             ],
             "description": "Ridibooks CMS SDK",
-            "time": "2018-04-03T05:44:34+00:00"
+            "time": "2018-04-09T02:43:13+00:00"
         },
         {
             "name": "sentry/sentry",
