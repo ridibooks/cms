@@ -4,15 +4,35 @@ use Moriony\Silex\Provider\SentryServiceProvider;
 
 $config = [
     'debug' => $_ENV['DEBUG'],
-    'test_id' => $_ENV['TEST_ID'],
-    'azure.options' => [
-        'tenent' => $_ENV['AZURE_TENENT'] ?? '',
-        'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
-        'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
-        'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
-        'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-        'redirect_path' => $_ENV['AZURE_REDIRECT_PATH'] ?? '',
-        'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
+    'oauth2.options' => [
+        'azure' => [
+            'tenent' => $_ENV['AZURE_TENENT'] ?? '',
+            'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
+            'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
+            'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+            'redirect_path' => $_ENV['AZURE_REDIRECT_PATH'] ?? '',
+            'resource' => $_ENV['AZURE_RESOURCE'],
+        ],
+    ],
+    'auth.enabled' => ['oauth2', 'password', 'test'],
+    'auth.options' => [
+
+        // oauth2 authenticator
+        'oauth2' => [
+            'authorize' => '/auth/oauth2/{provider}/authorize',
+            'callback' => '/auth/oauth2/callback',
+        ],
+
+        // password authenticator
+        'password' => [
+            'login' => '/auth/password/authorize',
+        ],
+
+        // test authenticator
+        'test' => [
+            'login' => '/auth/test/authorize',
+            'test_user_id' => $_ENV['TEST_ID'],
+        ],
     ],
     'capsule.connections' => [
         'default' => [

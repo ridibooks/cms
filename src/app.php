@@ -7,12 +7,14 @@ use Monolog\Logger;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Service;
+use Ridibooks\Cms\Service\Auth\OAuth2;
 use Ridibooks\Cms\Thrift;
 use Silex\Provider\MonologServiceProvider;
 
 $app = new CmsApplication($config);
 
 $app->register(new Silex\Provider\RoutingServiceProvider());
+$app->register(new Silex\Provider\ServiceControllerServiceProvider());
 
 $app->register(new CapsuleServiceProvider(), [
     'capsule.connections' => $app['capsule.connections'],
@@ -29,10 +31,6 @@ $app->register(new MonologServiceProvider(), [
     'monolog.handler' => new StreamHandler('php://stdout', Logger::INFO),
 ]);
 
-$app->register(new Service\AzureServiceProvider(), [
-    'azure.options' => $app['azure.options'],
-]);
-
 $app->register(new Service\ThriftServiceProvider(), [
     'thrift.logger' => $app['logger'],
     'thrift.services' => function () {
@@ -44,5 +42,19 @@ $app->register(new Service\ThriftServiceProvider(), [
         ];
     },
 ]);
+
+$app->register(new Service\Auth\AuthServiceProvider(), [
+    'auth.options' => $config['auth.options'],
+    'auth.oauth2.clients' => function (CmsApplication $app) {
+        return [
+            'azure' => new OAuth2\AzureClient($app['oauth2.options']['azure']),
+        ];
+    },
+]);
+
+// TODO: error handler
+//$app->error(function () {
+//
+//});
 
 return $app;

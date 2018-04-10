@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\Cms\Service;
+namespace Ridibooks\Cms\Thrift;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -23,6 +23,9 @@ class ThriftServiceWrapper
         $this->log_level = $log_level;
     }
 
+    /**
+     * @throws SystemException
+     */
     public function __call($name, $arguments)
     {
         try {
@@ -33,7 +36,10 @@ class ThriftServiceWrapper
 
             return call_user_func_array([$this->service, $name], $arguments);
         } catch (TException $e) {
-            throw $e;
+            throw new SystemException([
+                'code' => ErrorCode::INTERNAL_SERVER_ERROR,
+                'message' => $e->getMessage()
+            ]);
         } catch (\Exception $e) {
             throw new SystemException([
                 'code' => ErrorCode::INTERNAL_SERVER_ERROR,
