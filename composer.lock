@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "032e4241c2c2a473a5ce970acf671612",
-    "content-hash": "9cae8271dd86240a393f9dc443d64848",
+    "content-hash": "7581012715130977ce153a9b57dff1f9",
     "packages": [
         {
             "name": "apache/thrift",
@@ -15,26 +14,19 @@
                 "url": "https://github.com/apache/thrift.git",
                 "reference": "b2a4d4ae21c789b689dd162deb819665567f481c"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/apache/thrift/zipball/b2a4d4ae21c789b689dd162deb819665567f481c",
-                "reference": "b2a4d4ae21c789b689dd162deb819665567f481c",
-                "shasum": ""
-            },
             "require": {
                 "php": ">=5.3.0"
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "0.10.0"
-                }
+                "branch-alias": []
             },
             "autoload": {
                 "psr-0": {
                     "Thrift": "lib/php/lib/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -47,12 +39,7 @@
             ],
             "description": "Apache Thrift RPC system",
             "homepage": "http://thrift.apache.org/",
-            "support": {
-                "email": "dev@thrift.apache.org",
-                "issues": "https://issues.apache.org/jira/browse/THRIFT",
-                "source": "https://github.com/apache/thrift/tree/0.10.0"
-            },
-            "time": "2016-12-21 20:36:22"
+            "time": "2016-04-04T18:25:03+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -119,7 +106,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2015-11-06 14:35:42"
+            "time": "2015-11-06T14:35:42+00:00"
         },
         {
             "name": "illuminate/container",
@@ -162,7 +149,7 @@
             ],
             "description": "The Illuminate Container package.",
             "homepage": "https://laravel.com",
-            "time": "2017-04-16 13:32:45"
+            "time": "2017-04-16T13:32:45+00:00"
         },
         {
             "name": "illuminate/contracts",
@@ -204,7 +191,7 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2017-03-29 13:17:47"
+            "time": "2017-03-29T13:17:47+00:00"
         },
         {
             "name": "illuminate/database",
@@ -264,7 +251,7 @@
                 "orm",
                 "sql"
             ],
-            "time": "2017-04-11 22:53:18"
+            "time": "2017-04-11T22:53:18+00:00"
         },
         {
             "name": "illuminate/events",
@@ -309,7 +296,7 @@
             ],
             "description": "The Illuminate Events package.",
             "homepage": "https://laravel.com",
-            "time": "2017-05-02 12:57:00"
+            "time": "2017-05-02T12:57:00+00:00"
         },
         {
             "name": "illuminate/support",
@@ -366,7 +353,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2017-04-09 14:34:57"
+            "time": "2017-04-09T14:34:57+00:00"
         },
         {
             "name": "jguyomard/silex-capsule-eloquent",
@@ -416,7 +403,7 @@
                 "query",
                 "sql"
             ],
-            "time": "2016-10-21 07:34:11"
+            "time": "2016-10-21T07:34:11+00:00"
         },
         {
             "name": "moriony/silex-sentry-provider",
@@ -464,7 +451,7 @@
                 "sentry",
                 "silex"
             ],
-            "time": "2016-08-20 08:47:40"
+            "time": "2016-08-20T08:47:40+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -517,7 +504,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2017-01-16 07:55:07"
+            "time": "2017-01-16T07:55:07+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -565,7 +552,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2017-03-13 16:27:32"
+            "time": "2017-03-13T16:27:32+00:00"
         },
         {
             "name": "pimple/pimple",
@@ -611,7 +598,7 @@
                 "container",
                 "dependency injection"
             ],
-            "time": "2015-09-11 15:10:35"
+            "time": "2015-09-11T15:10:35+00:00"
         },
         {
             "name": "psr/log",
@@ -658,60 +645,42 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v1.0.10",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "7bfa86e6e2336cc77f94160ffbd0b133187d7cff"
+                "reference": "4e2e23c682a1887d411645c258be2e30004a304f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/7bfa86e6e2336cc77f94160ffbd0b133187d7cff",
-                "reference": "7bfa86e6e2336cc77f94160ffbd0b133187d7cff",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/4e2e23c682a1887d411645c258be2e30004a304f",
+                "reference": "4e2e23c682a1887d411645c258be2e30004a304f",
                 "shasum": ""
             },
             "require": {
-                "apache/thrift": "^0.10.0"
-            },
-            "suggest": {
+                "apache/thrift": "^0.10.0",
                 "silex/silex": "^2.0",
-                "twig/twig": "^1.0.0"
+                "twig/twig": "^2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Ridibooks\\Platform\\Cms\\": "src",
-                    "Ridibooks\\Cms\\Thrift\\": "src/thrift"
+                    "Ridibooks\\Cms\\": "lib/php/src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "김범준",
-                    "email": "bj.kim@ridi.com"
-                },
-                {
-                    "name": "박주현",
-                    "email": "blu@ridi.com"
-                },
-                {
-                    "name": "이영규",
-                    "email": "younggyu.lee@ridi.com"
-                },
-                {
-                    "name": "강기태",
-                    "email": "kt.kang@ridi.com"
-                }
-            ],
             "description": "Ridibooks CMS SDK",
-            "time": "2017-09-26 06:53:42"
+            "time": "2018-04-10T06:04:18+00:00"
         },
         {
             "name": "sentry/sentry",
@@ -772,7 +741,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2017-02-03 07:32:53"
+            "time": "2017-02-03T07:32:53+00:00"
         },
         {
             "name": "silex/silex",
@@ -857,7 +826,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2016-11-06 18:09:06"
+            "time": "2016-11-06T18:09:06+00:00"
         },
         {
             "name": "symfony/debug",
@@ -914,7 +883,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2017-03-28 21:38:24"
+            "time": "2017-03-28T21:38:24+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -974,7 +943,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2017-04-04 07:26:27"
+            "time": "2017-04-04T07:26:27+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -1027,7 +996,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-04-04 15:30:56"
+            "time": "2017-04-04T15:30:56+00:00"
         },
         {
             "name": "symfony/http-kernel",
@@ -1109,7 +1078,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2017-04-05 12:52:03"
+            "time": "2017-04-05T12:52:03+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1168,7 +1137,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-11-14 01:06:16"
+            "time": "2016-11-14T01:06:16+00:00"
         },
         {
             "name": "symfony/routing",
@@ -1243,7 +1212,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-03-02 15:58:09"
+            "time": "2017-03-02T15:58:09+00:00"
         },
         {
             "name": "symfony/translation",
@@ -1307,7 +1276,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-03-21 21:44:32"
+            "time": "2017-03-21T21:44:32+00:00"
         },
         {
             "name": "twig/twig",
@@ -1370,7 +1339,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2017-04-21 00:13:02"
+            "time": "2017-04-21T00:13:02+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1420,7 +1389,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2016-09-01 10:05:43"
+            "time": "2016-09-01T10:05:43+00:00"
         }
     ],
     "packages-dev": [],
