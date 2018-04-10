@@ -1,0 +1,58 @@
+os: linux
+sudo: false
+dist: trusty
+language: php
+php:
+- '7.1'
+
+cache:
+  directories:
+  - "${HOME}/.cache/composer/files"
+  - "${HOME}/.composer/cache/files"
+
+stages:
+- name: test
+- name: push
+- name: deploy
+
+jobs:
+  include:
+
+  - stage: test
+    services:
+      - mysql
+    before_script:
+      - composer install --prefer-dist
+    script:
+      - bin/setup.sh
+      - bin/test.sh
+
+  # push (dev)
+  - stage: push
+    if: type = push AND branch IN (1.x)
+    services:
+      - docker
+    env:
+      - DOCKER_TAG=${TRAVIS_BRANCH}
+    script:
+      - bin/docker_push.sh
+
+  # push 1.x (prod)
+  - stage: push
+    if: tag =~ ^v1\.\d+(\.\d+)?$ # ex) v1.0.0
+    services:
+      - docker
+    env:
+      - DOCKER_TAG=${TRAVIS_TAG}
+    script:
+      - bin/docker_push.sh
+
+  # deploy 1.x (prod)
+  - stage: deploy
+    if: tag =~ ^v1\.\d+(\.\d+)?$ # ex) v1.0.0
+    env:
+      - CI_TRIGGER_ENV=prod
+      - CI_TRIGGER_TARGET=cms-restart
+      - CI_TRIGGER_TAG=${TRAVIS_TAG}
+    script:
+      - bin/deploy.sh
