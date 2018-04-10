@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d905a867ed626caba82e24ca169dcdc7",
+    "content-hash": "da0bf29be5dec99a6b38dc6d6dfe9055",
     "packages": [
         {
             "name": "apache/thrift",
@@ -14,19 +14,26 @@
                 "url": "https://github.com/apache/thrift.git",
                 "reference": "b2a4d4ae21c789b689dd162deb819665567f481c"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apache/thrift/zipball/b2a4d4ae21c789b689dd162deb819665567f481c",
+                "reference": "b2a4d4ae21c789b689dd162deb819665567f481c",
+                "shasum": ""
+            },
             "require": {
                 "php": ">=5.3.0"
             },
             "type": "library",
             "extra": {
-                "branch-alias": []
+                "branch-alias": {
+                    "dev-master": "0.10.0"
+                }
             },
             "autoload": {
                 "psr-0": {
                     "Thrift": "lib/php/lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -39,7 +46,12 @@
             ],
             "description": "Apache Thrift RPC system",
             "homepage": "http://thrift.apache.org/",
-            "time": "2016-04-04T18:25:03+00:00"
+            "support": {
+                "email": "dev@thrift.apache.org",
+                "issues": "https://issues.apache.org/jira/browse/THRIFT",
+                "source": "https://github.com/apache/thrift/tree/0.10.0"
+            },
+            "time": "2016-12-21T20:36:22+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -291,7 +303,7 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v5.6.15",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -335,16 +347,16 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v5.6.15",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "965b814964cc4649cd7e933bba2ae3eeb11f2927"
+                "reference": "322ec80498b3bf85bc4025d028e130a9b50242b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/965b814964cc4649cd7e933bba2ae3eeb11f2927",
-                "reference": "965b814964cc4649cd7e933bba2ae3eeb11f2927",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/322ec80498b3bf85bc4025d028e130a9b50242b9",
+                "reference": "322ec80498b3bf85bc4025d028e130a9b50242b9",
                 "shasum": ""
             },
             "require": {
@@ -375,20 +387,20 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-25T12:54:46+00:00"
+            "time": "2018-04-07T17:05:26+00:00"
         },
         {
             "name": "illuminate/database",
-            "version": "v5.6.15",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "56c2ab0b8a2f75764082d9087d43d2a3d46c59b0"
+                "reference": "10ae33d266d71e43ca60a3a9675237836bf7b89d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/56c2ab0b8a2f75764082d9087d43d2a3d46c59b0",
-                "reference": "56c2ab0b8a2f75764082d9087d43d2a3d46c59b0",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/10ae33d266d71e43ca60a3a9675237836bf7b89d",
+                "reference": "10ae33d266d71e43ca60a3a9675237836bf7b89d",
                 "shasum": ""
             },
             "require": {
@@ -434,11 +446,11 @@
                 "orm",
                 "sql"
             ],
-            "time": "2018-03-30T13:11:54+00:00"
+            "time": "2018-04-09T13:16:47+00:00"
         },
         {
             "name": "illuminate/events",
-            "version": "v5.6.15",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/events.git",
@@ -483,16 +495,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v5.6.15",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "79d074f5a49fa972b3c0ccf4468be2ad92eb3e3d"
+                "reference": "fad0669f858423679497a17f973261cc32f9a5a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/79d074f5a49fa972b3c0ccf4468be2ad92eb3e3d",
-                "reference": "79d074f5a49fa972b3c0ccf4468be2ad92eb3e3d",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/fad0669f858423679497a17f973261cc32f9a5a8",
+                "reference": "fad0669f858423679497a17f973261cc32f9a5a8",
                 "shasum": ""
             },
             "require": {
@@ -536,7 +548,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-29T15:55:16+00:00"
+            "time": "2018-04-05T21:19:22+00:00"
         },
         {
             "name": "jguyomard/silex-capsule-eloquent",
@@ -1061,21 +1073,20 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v2.2.6",
+            "version": "v2.3.0-rc.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "4bd4e1edea38706c734f7a02bf306a054aba3434"
+                "reference": "e7128a103c65f917cbebd7163ba2cf803eea7dc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/4bd4e1edea38706c734f7a02bf306a054aba3434",
-                "reference": "4bd4e1edea38706c734f7a02bf306a054aba3434",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/e7128a103c65f917cbebd7163ba2cf803eea7dc1",
+                "reference": "e7128a103c65f917cbebd7163ba2cf803eea7dc1",
                 "shasum": ""
             },
             "require": {
                 "apache/thrift": "^0.10.0",
-                "guzzlehttp/guzzle": "^6.3",
                 "silex/silex": "^2.0",
                 "twig/twig": "^2.0"
             },
@@ -1093,7 +1104,7 @@
                 "MIT"
             ],
             "description": "Ridibooks CMS SDK",
-            "time": "2018-04-09T02:43:13+00:00"
+            "time": "2018-04-10T03:26:29+00:00"
         },
         {
             "name": "sentry/sentry",
@@ -1250,7 +1261,7 @@
         },
         {
             "name": "symfony/debug",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
@@ -1306,16 +1317,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.4.7",
+            "version": "v3.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "58990682ac3fdc1f563b7e705452921372aad11d"
+                "reference": "fdd5abcebd1061ec647089c6c41a07ed60af09f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/58990682ac3fdc1f563b7e705452921372aad11d",
-                "reference": "58990682ac3fdc1f563b7e705452921372aad11d",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/fdd5abcebd1061ec647089c6c41a07ed60af09f8",
+                "reference": "fdd5abcebd1061ec647089c6c41a07ed60af09f8",
                 "shasum": ""
             },
             "require": {
@@ -1365,11 +1376,11 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-14T10:03:57+00:00"
+            "time": "2018-04-06T07:35:25+00:00"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v3.4.7",
+            "version": "v3.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
@@ -1423,16 +1434,16 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v3.4.7",
+            "version": "v3.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "43cfdad2ca1dba608662db0699c1bbb715d08191"
+                "reference": "3cc2d4374aa9590c09277ad68657671cf49dbbf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/43cfdad2ca1dba608662db0699c1bbb715d08191",
-                "reference": "43cfdad2ca1dba608662db0699c1bbb715d08191",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/3cc2d4374aa9590c09277ad68657671cf49dbbf4",
+                "reference": "3cc2d4374aa9590c09277ad68657671cf49dbbf4",
                 "shasum": ""
             },
             "require": {
@@ -1507,7 +1518,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2018-04-03T05:49:44+00:00"
+            "time": "2018-04-06T15:19:48+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1629,16 +1640,16 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v3.4.7",
+            "version": "v3.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
-                "reference": "5f90733adbf19ea71468a5761fb8f5a043d424dd"
+                "reference": "50f333b707bef9f6972ad04e6df3ec8875c9a67c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/routing/zipball/5f90733adbf19ea71468a5761fb8f5a043d424dd",
-                "reference": "5f90733adbf19ea71468a5761fb8f5a043d424dd",
+                "url": "https://api.github.com/repos/symfony/routing/zipball/50f333b707bef9f6972ad04e6df3ec8875c9a67c",
+                "reference": "50f333b707bef9f6972ad04e6df3ec8875c9a67c",
                 "shasum": ""
             },
             "require": {
@@ -1703,11 +1714,11 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-03-23T08:14:09+00:00"
+            "time": "2018-04-04T13:22:16+00:00"
         },
         {
             "name": "symfony/translation",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
@@ -2309,16 +2320,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "5.3.0",
+            "version": "5.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "661f34d0bd3f1a7225ef491a70a020ad23a057a1"
+                "reference": "c89677919c5dd6d3b3852f230a663118762218ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/661f34d0bd3f1a7225ef491a70a020ad23a057a1",
-                "reference": "661f34d0bd3f1a7225ef491a70a020ad23a057a1",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/c89677919c5dd6d3b3852f230a663118762218ac",
+                "reference": "c89677919c5dd6d3b3852f230a663118762218ac",
                 "shasum": ""
             },
             "require": {
@@ -2368,7 +2379,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-12-06T09:29:45+00:00"
+            "time": "2018-04-06T15:36:58+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3331,7 +3342,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
@@ -3393,7 +3404,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -3461,7 +3472,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -3510,7 +3521,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.0.7",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
@@ -3658,9 +3669,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
-    "prefer-stable": false,
+    "minimum-stability": "RC",
+    "stability-flags": {
+        "ridibooks/cms-sdk": 5
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
