@@ -26,7 +26,7 @@ class LoginController implements ControllerProviderInterface
         // login process
         $controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
 
-        // login page
+        // authorize
         $controller_collection->get('/authorize', [$this, 'authorize']);
 
         // logout
@@ -103,37 +103,31 @@ class LoginController implements ControllerProviderInterface
             'cms-token', $token, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/v2/token-refresh', null, !$app['debug']
+            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null
+            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         return $response;
     }
 
     public function authorize(Request $request, CmsServerApplication $app)
     {
-        $response = AdminAuthService::authorize($request);
-        if ($response) {
-            return $response;
-        }
-
         $end_point = $this->getAzureAuthorizeEndpoint($app);
         $return_url = $request->get('return_url', '/welcome');
 
         $response = RedirectResponse::create($end_point);
         $response->headers->setCookie(new Cookie('return_url', $return_url));
-
         return $response;
     }
 
-    public function logout()
+    public function logout(CmsServerApplication $app)
     {
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
-        $response->headers->clearCookie('cms-token');
-        $response->headers->clearCookie('cms-refresh');
-        $response->headers->clearCookie('admin-id');
+        $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-refresh', '/', null, !$app['debug']);
         return $response;
     }
 }
