@@ -106,7 +106,7 @@ class LoginController implements ControllerProviderInterface
             'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/v2/token-refresh', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null
+            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         return $response;
     }
@@ -131,9 +131,9 @@ class LoginController implements ControllerProviderInterface
     {
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
-        $response->headers->clearCookie('cms-token');
-        $response->headers->clearCookie('cms-refresh');
-        $response->headers->clearCookie('admin-id');
+        $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-refresh', '/authorize', null, !$app['debug']);
         return $response;
     }
 }

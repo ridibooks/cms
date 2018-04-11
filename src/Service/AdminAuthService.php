@@ -48,7 +48,7 @@ class AdminAuthService
             $menu_id_array[] = $menuid;
         }
 
-        if ($_ENV['DEBUG']) {
+        if ($_ENV['TEST_AUTH_DISABLE']) {
             //개발 모드일 경우 모든 메뉴 id array 가져온다.
             $menuids_owned = $menu_id_array;
         } else {
@@ -284,7 +284,7 @@ class AdminAuthService
      */
     public static function hasUrlAuth($method = null, $check_url = null)
     {
-        if (!self::hasHashAuth($method, $check_url) && !$_ENV['DEBUG']) {
+        if (!self::hasHashAuth($method, $check_url) && !$_ENV['TEST_AUTH_DISABLE']) {
             throw new \Exception("해당 권한이 없습니다.");
         }
     }
