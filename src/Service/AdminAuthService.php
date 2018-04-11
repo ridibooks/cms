@@ -170,10 +170,6 @@ class AdminAuthService
             return true;
         }
 
-        if ($this->isWhiteListUrl($check_url)) {
-            return true;
-        }
-
         if (!$this->isValidUser($admin_id)) {
             return false;
         }
