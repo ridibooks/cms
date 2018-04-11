@@ -307,6 +307,7 @@ class AdminAuthService
             '/logout',
             '/login-azure',
             '/index.php',
+            '/authorize',
             '/',
         ];
 
