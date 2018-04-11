@@ -101,12 +101,12 @@ class AdminAuthService
         $parsed = parse_url($check_url);
         $check_url = rtrim($parsed['path'], '/');
 
-        if ($this->isWhiteListUrl($check_url)) {
-            return true;
-        }
-
         if (!$this->isValidUser($admin_id)) {
             return false;
+        }
+
+        if ($this->isWhiteListUrl($check_url)) {
+            return true;
         }
 
         $auth_list = $this->readUserAuth($admin_id);
@@ -130,11 +130,6 @@ class AdminAuthService
             '/admin/book/pa',
             '/me', // 본인 정보 수정
             '/welcome',
-            '/logout',
-            '/login-azure',
-            '/token-introspect',
-            '/authorize',
-            '/index.php',
             '/',
         ];
 
