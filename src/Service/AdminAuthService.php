@@ -133,6 +133,7 @@ class AdminAuthService
             '/logout',
             '/login-azure',
             '/token-introspect',
+            '/authorize',
             '/index.php',
             '/',
         ];
