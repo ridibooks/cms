@@ -103,7 +103,7 @@ class LoginController implements ControllerProviderInterface
             'cms-token', $token, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/authorize', null, !$app['debug']
+            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
             'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
@@ -113,11 +113,6 @@ class LoginController implements ControllerProviderInterface
 
     public function authorize(Request $request, CmsServerApplication $app)
     {
-        $response = AdminAuthService::authorize($request);
-        if ($response) {
-            return $response;
-        }
-
         $end_point = $this->getAzureAuthorizeEndpoint($app);
         $return_url = $request->get('return_url', '/welcome');
 
@@ -127,13 +122,13 @@ class LoginController implements ControllerProviderInterface
         return $response;
     }
 
-    public function logout()
+    public function logout(CmsServerApplication $app)
     {
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
         $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
         $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
-        $response->headers->clearCookie('cms-refresh', '/authorize', null, !$app['debug']);
+        $response->headers->clearCookie('cms-refresh', '/', null, !$app['debug']);
         return $response;
     }
 }
