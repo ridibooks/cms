@@ -31,7 +31,7 @@ class AzureOAuth2Service
 
     public function getAuthenticationEndPoint(): string
     {
-        return "https://login.windows.net/$this->tenent/oauth2/authorize?response_type=code" .
+        return "https://login.microsoftonline.com/$this->tenent/oauth2/authorize?response_type=code" .
             "&client_id=" . urlencode($this->client_id) .
             "&resource=" . urlencode($this->resource) .
             "&redirect_uri=" . urlencode($this->redirect_uri);
