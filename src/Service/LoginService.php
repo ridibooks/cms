@@ -14,6 +14,7 @@ class LoginService
     const REFRESH_COOKIE_NAME = 'cms-refresh';
     const ADMIN_ID_COOKIE_NAME = 'admin-id';
     const REFRESH_TOKEN_EXPIRES_SEC = 60 * 60 * 24 * 30; // 30 days
+    const REFRESH_TOKEN_COOKIE_PATH = '/authorize';
 
     const TEST_TOKEN_EXPIRES_SEC = 60 * 60; // 1 hour
 
@@ -64,24 +65,19 @@ class LoginService
         }
     }
 
-    public static function createLoginResponse(string $return_url, string $access_token, string $refresh_token,
-        int $access_expires_on, ?string $login_id = null): Response
+    private static function createLoginResponse(string $return_url, string $access_token, string $refresh_token,
+        int $access_expires_on, string $login_id): Response
     {
         $is_secure = empty($_ENV['TEST_SECURED_DISABLE']) ? true : false;
-        $authorize_path = '/authorize';
 
         $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', null, $is_secure);
-        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, time() + self::REFRESH_TOKEN_EXPIRES_SEC, $authorize_path, null, $is_secure);
+        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, time() + self::REFRESH_TOKEN_EXPIRES_SEC, self::REFRESH_TOKEN_COOKIE_PATH, null, $is_secure);
+        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', null, $is_secure);
 
         $response = RedirectResponse::create($return_url);
         $response->headers->setCookie($access_cookie);
         $response->headers->setCookie($refresh_cookie);
-
-        if (isset($login_id)) {
-            $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', null, $is_secure);
-            $response->headers->setCookie($login_id_cookie);
-        }
-
+        $response->headers->setCookie($login_id_cookie);
         return $response;
     }
 
@@ -92,10 +88,12 @@ class LoginService
 
     private static function createLogoutResponse(string $return_url): Response
     {
+        $is_secure = empty($_ENV['TEST_SECURED_DISABLE']) ? true : false;
+
         $response = RedirectResponse::create($return_url);
-        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME);
-        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME);
-        $response->headers->clearCookie(self::REFRESH_COOKIE_NAME);
+        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME, '/', null, $is_secure);
+        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME, '/', null, $is_secure);
+        $response->headers->clearCookie(self::REFRESH_COOKIE_NAME, self::REFRESH_TOKEN_COOKIE_PATH, null, $is_secure);
         return $response;
     }
 
@@ -131,14 +129,22 @@ class LoginService
 
         $access_token = $tokens['access'];
         $refresh_token = $tokens['refresh'];
+
+        $resource = $azure->introspectToken($access_token);
+        if (isset($resource['error']) || isset($resource['message'])) {
+            throw new \Exception("[requestResource]\n {$resource['error']}: {$resource['message']}");
+        }
+
+        self::addUserIfNotExists($resource['user_id'], $resource['user_name']);
+
         $access_expires_on = $tokens['expires_on'];
-        return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, null);
+        return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, $resource['user_id']);
     }
 
     public static function handleAuthorize(string $return_url, string $login_path, AzureOAuth2Service $azure, $logger): Response
     {
         $access_token = self::getAccessToken();
-        if ($access_token) {
+        if (!empty($access_token)) {
             $token_resource = $azure->introspectToken($access_token);
             if (isset($token_resource['error'])) {
                 if ($logger) {
@@ -155,7 +161,7 @@ class LoginService
 
         // If access token is invalid, try refresh token
         $refresh_token = self::getRefreshToken();
-        if ($refresh_token) {
+        if (!empty($refresh_token)) {
             return self::refreshToken($return_url, $refresh_token, $azure);
         }
 
