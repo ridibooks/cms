@@ -173,6 +173,10 @@ class AdminAuthService
         if (!$this->isValidUser($admin_id)) {
             return false;
         }
+        
+        if ($this->isWhiteListUrl($check_url)) {
+            return true;
+        }
 
         $auth_list = self::readUserAuth($admin_id);
 
