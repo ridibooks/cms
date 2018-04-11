@@ -36,7 +36,16 @@ class MiniRouter
      */
     private static function onLoginPage($request)
     {
-        $login_url = '/login';
-        return strncmp($request->getRequestUri(), $login_url, strlen($login_url)) === 0;
+        $login_urls = [
+            '/login',
+            '/logout',
+            '/authorize',
+        ];
+
+        foreach ($login_urls as $login_url) {
+            if (strncmp($request->getRequestUri(), $login_url, strlen($login_url)) === 0) {
+                return true;
+            }
+        }
     }
 }

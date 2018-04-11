@@ -26,7 +26,7 @@ class LoginController implements ControllerProviderInterface
         // login process
         $controller_collection->get('/login-azure', [$this, 'loginWithAzure']);
 
-        // login page
+        // authorize
         $controller_collection->get('/authorize', [$this, 'authorize']);
 
         // logout
@@ -118,7 +118,6 @@ class LoginController implements ControllerProviderInterface
 
         $response = RedirectResponse::create($end_point);
         $response->headers->setCookie(new Cookie('return_url', $return_url));
-
         return $response;
     }
 
