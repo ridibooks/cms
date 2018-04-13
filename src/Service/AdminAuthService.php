@@ -59,10 +59,6 @@ class AdminAuthService
      */
     public function authorize(string $token, array $methods, string $check_url)
     {
-        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            return;
-        }
-
         if (empty($token)) {
             throw new NoTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
@@ -86,6 +82,10 @@ class AdminAuthService
                 'code' => ErrorCode::BAD_REQUEST,
                 'message' => '잘못된 토큰입니다.',
             ]);
+        }
+
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
         }
 
         if (!self::checkAuth($methods, $check_url, $token_resource['user_id'])) {
