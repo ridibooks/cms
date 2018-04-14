@@ -99,7 +99,7 @@ class AdminAuthService
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
     {
         $parsed = parse_url($check_url);
-        $check_url = rtrim($parsed['path'], '/');
+        $check_url = rtrim($parsed['path']);
 
         if (!$this->isValidUser($admin_id)) {
             return false;
@@ -111,11 +111,7 @@ class AdminAuthService
 
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            // If auth is not form of regex..
-            if (!preg_match("/^\/[\s\S]+\/$/", $auth)) {
-                $auth = '/' . preg_quote($auth, '/') . '/';
-            }
-
+            $auth = '/' . preg_quote($auth, '/') . '/';
             if (preg_match($auth, $check_url) === 1) {
                 return true;
             }
