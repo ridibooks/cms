@@ -111,12 +111,23 @@ class AdminAuthService
 
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            $auth = '/' . preg_quote($auth, '/') . '/';
-            if (preg_match($auth, $check_url) === 1) {
+            if ($this->isAuthUrl($check_url, $auth)) {
                 return true;
             }
         }
 
+        return false;
+    }
+
+    private function isAuthUrl($check_url, $menu_url)
+    {
+        $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
+        if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
+            return true;
+        }
+        if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
+            return true;
+        }
         return false;
     }
 
