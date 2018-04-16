@@ -99,7 +99,7 @@ class AdminAuthService
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
     {
         $parsed = parse_url($check_url);
-        $check_url = rtrim($parsed['path']);
+        $check_url = $parsed['path'];
 
         if (!$this->isValidUser($admin_id)) {
             return false;
@@ -111,7 +111,7 @@ class AdminAuthService
 
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            if ($this->isAuthorizedUrl($check_url, $auth)) {
+            if ($this->hasAuthority($check_url, $auth)) {
                 return true;
             }
         }
@@ -119,7 +119,7 @@ class AdminAuthService
         return false;
     }
 
-    private function isAuthorizedUrl($check_url, $menu_url)
+    private function hasAuthority($check_url, $menu_url)
     {
         $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
         if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
