@@ -111,7 +111,7 @@ class AdminAuthService
 
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            if ($this->isAuthUrl($check_url, $auth)) {
+            if ($this->isAuthorizedUrl($check_url, $auth)) {
                 return true;
             }
         }
@@ -119,7 +119,7 @@ class AdminAuthService
         return false;
     }
 
-    private function isAuthUrl($check_url, $menu_url)
+    private function isAuthorizedUrl($check_url, $menu_url)
     {
         $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
         if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
