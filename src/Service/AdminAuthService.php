@@ -59,10 +59,6 @@ class AdminAuthService
      */
     public function authorize(string $token, array $methods, string $check_url)
     {
-        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            return;
-        }
-
         if (empty($token)) {
             throw new NoTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
@@ -88,6 +84,10 @@ class AdminAuthService
             ]);
         }
 
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
         if (!self::checkAuth($methods, $check_url, $token_resource['user_id'])) {
             throw new UnauthorizedException([
                 'code' => ErrorCode::BAD_REQUEST,
@@ -99,7 +99,7 @@ class AdminAuthService
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
     {
         $parsed = parse_url($check_url);
-        $check_url = rtrim($parsed['path'], '/');
+        $check_url = $parsed['path'];
 
         if (!$this->isValidUser($admin_id)) {
             return false;
@@ -111,16 +111,23 @@ class AdminAuthService
 
         $auth_list = $this->readUserAuth($admin_id);
         foreach ($auth_list as $auth) {
-            // If auth is not form of regex..
-            if (!preg_match("/^\/[\s\S]+\/$/", $auth)) {
-                $auth = '/' . preg_quote($auth, '/') . '/';
-            }
-
-            if (preg_match($auth, $check_url) === 1) {
+            if ($this->hasAuthority($check_url, $auth)) {
                 return true;
             }
         }
 
+        return false;
+    }
+
+    private function hasAuthority($check_url, $menu_url)
+    {
+        $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
+        if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
+            return true;
+        }
+        if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
+            return true;
+        }
         return false;
     }
 
