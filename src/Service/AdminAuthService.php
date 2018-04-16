@@ -66,6 +66,10 @@ class AdminAuthService
             ]);
         }
 
+        if (!empty($_ENV['TEST_ID'])) {
+            return;
+        }
+
         /** @var AzureOAuth2Service $azure */
         $azure = new AzureOAuth2Service([
             'tenent' => $_ENV['AZURE_TENENT'] ?? '',
