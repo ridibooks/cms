@@ -90,4 +90,11 @@ class AdminAuthServiceTest extends TestCase
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
         ], $result);
     }
+
+    public function testAuthorizeWithTestID()
+    {
+        $_ENV['TEST_ID'] = 'admin';
+        $authService = new AdminAuthService();
+        $this->assertNull($authService->authorize('test', [], '/test'));
+    }
 }
