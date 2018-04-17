@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 use PHPUnit\Framework\TestCase;
 
 class AdminAuthServiceTest extends TestCase
@@ -91,10 +92,17 @@ class AdminAuthServiceTest extends TestCase
         ], $result);
     }
 
-    public function testAuthorizeWithTestID()
+    public function testAuthorizeSkipTokenValidationWhenTestIDSet()
     {
         $_ENV['TEST_ID'] = 'admin';
-        $authService = new AdminAuthService();
+        $authService = $this->getMockBuilder(AdminAuthService::class)
+            ->setMethods(['checkAuth', 'introspectToken'])
+            ->getMock();
+
+        $authService->expects($this->never())
+            ->method('introspectToken');
+
+        $this->expectException(UnauthorizedException::class);
         $this->assertNull($authService->authorize('test', [], '/test'));
     }
 }
