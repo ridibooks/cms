@@ -59,6 +59,30 @@ class AdminAuthService
      */
     public function authorize(string $token, array $methods, string $check_url)
     {
+        if (!empty($_ENV['TEST_ID'])) {
+            $user_id = $_ENV['TEST_ID'];
+        } else {
+            $user_id = self::introspectToken($token);
+        }
+
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
+        if (!self::checkAuth($methods, $check_url, $user_id)) {
+            throw new UnauthorizedException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '접근 권한이 없습니다.',
+            ]);
+        }
+    }
+
+    /**
+     * @throws NoTokenException
+     * @throws MalformedTokenException
+     */
+    private function introspectToken($token)
+    {
         if (empty($token)) {
             throw new NoTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
@@ -84,16 +108,7 @@ class AdminAuthService
             ]);
         }
 
-        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            return;
-        }
-
-        if (!self::checkAuth($methods, $check_url, $token_resource['user_id'])) {
-            throw new UnauthorizedException([
-                'code' => ErrorCode::BAD_REQUEST,
-                'message' => '접근 권한이 없습니다.',
-            ]);
-        }
+        return  $token_resource['user_id'];
     }
 
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
