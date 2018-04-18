@@ -4,7 +4,7 @@ namespace Ridibooks\Cms\Service;
 use Ridibooks\Cms\Model\AdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
-use Ridiboks\Cms\Thrift\ThriftService;
+use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminTagService implements AdminTagServiceIf
 {
