@@ -4,7 +4,7 @@ namespace Ridibooks\Cms\Service;
 use Ridibooks\Cms\Model\AdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTag as ThriftAdminTag;
 use Ridibooks\Cms\Thrift\AdminTag\AdminTagServiceIf;
-use Ridibooks\Cms\Thrift\ThriftService;
+use Ridiboks\Cms\Thrift\ThriftService;
 
 class AdminTagService implements AdminTagServiceIf
 {
@@ -59,5 +59,24 @@ class AdminTagService implements AdminTagServiceIf
         }
 
         return $tags;
+    }
+
+    public function findTagByName(string $name): ?int
+    {
+        $tag = AdminTag::where('name', $name)->first();
+        if (empty($tag)) {
+            return null;
+        }
+
+        return $tag_id;
+    }
+
+    public function findTagsByName(array $tag_names): array
+    {
+        foreach ($tag_names as $name) {
+            $tag_ids[] = self::findTagByName($name);
+        }
+
+        return array_filter($tag_ids);
     }
 }

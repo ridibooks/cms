@@ -80,6 +80,31 @@ class AdminAuthService
     /**
      * @throws NoTokenException
      * @throws MalformedTokenException
+     * @throws UnauthorizedException
+     */
+    public function authorizeByTag(string $token, array $tags)
+    {
+        if (!empty($_ENV['TEST_ID'])) {
+            $user_id = $_ENV['TEST_ID'];
+        } else {
+            $user_id = self::introspectToken($token);
+        }
+
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
+        if (!self::checkAuthByTag($user_id, $tags)) {
+            throw new UnauthorizedException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '접근 권한이 없습니다.',
+            ]);
+        }
+    }
+
+    /**
+     * @throws NoTokenException
+     * @throws MalformedTokenException
      */
     private function introspectToken($token)
     {
@@ -131,6 +156,23 @@ class AdminAuthService
             }
         }
 
+        return false;
+    }
+
+    public function checkAuthByTag(string $admin_id, array $tag_names): bool
+    {
+        if (!$this->isValidUser($admin_id)) {
+            return false;
+        }
+
+        $user_service = new AdminUserService();
+        $tag_service = new AdminTagService();
+        $user_tags = $user_service->getAdminUserTag($admin_id);
+        $required_tags = $tag_service->findTagsByName($tag_names);
+
+        if (!empty(array_intersect($user_tags, $required_tags))) {
+            return true;
+        }
         return false;
     }
 
