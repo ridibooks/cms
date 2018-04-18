@@ -68,7 +68,7 @@ class AdminTagService implements AdminTagServiceIf
             return null;
         }
 
-        return $tag->pluck('id');
+        return $tag->pluck('id')->all();
     }
 
     public function findTagsByName(array $tag_names): array
@@ -77,7 +77,6 @@ class AdminTagService implements AdminTagServiceIf
         if (empty($tag)) {
             return [];
         }
-
 
         return $tag->pluck('id')->all();
     }
