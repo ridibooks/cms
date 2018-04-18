@@ -59,14 +59,14 @@ class AdminAuthService
      */
     public function authorize(string $token, array $methods, string $check_url)
     {
+        if (!empty($token) && !empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
         if (!empty($_ENV['TEST_ID'])) {
             $user_id = $_ENV['TEST_ID'];
         } else {
             $user_id = self::introspectToken($token);
-        }
-
-        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            return;
         }
 
         if (!self::checkAuth($methods, $check_url, $user_id)) {
