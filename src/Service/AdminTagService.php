@@ -68,15 +68,17 @@ class AdminTagService implements AdminTagServiceIf
             return null;
         }
 
-        return $tag_id;
+        return $tag->pluck('id');
     }
 
     public function findTagsByName(array $tag_names): array
     {
-        foreach ($tag_names as $name) {
-            $tag_ids[] = self::findTagByName($name);
+        $tag = AdminTag::whereIn('name', $tag_names)->first();
+        if (empty($tag)) {
+            return [];
         }
 
-        return array_filter($tag_ids);
+
+        return $tag->pluck('id')->all();
     }
 }
