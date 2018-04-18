@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Pimple\Container;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
@@ -11,8 +12,14 @@ use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 /**권한 설정 Service
  * @deprecated
  */
-class AdminAuthService
+class AdminAuthService extends Container
 {
+    public function __construct()
+    {
+        $this['user_service'] = new AdminUserService();
+        $this['tag_service'] = new AdminTagService();
+    }
+
     public function getAdminMenu(string $user_id): array
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
@@ -165,10 +172,8 @@ class AdminAuthService
             return false;
         }
 
-        $user_service = new AdminUserService();
-        $tag_service = new AdminTagService();
-        $user_tags = $user_service->getAdminUserTag($admin_id);
-        $required_tags = $tag_service->findTagsByName($tag_names);
+        $user_tags = $this['user_service']->getAdminUserTag($admin_id);
+        $required_tags = $this['tag_service']->findTagsByName($tag_names);
 
         if (!empty(array_intersect($user_tags, $required_tags))) {
             return true;

@@ -82,8 +82,8 @@ class AdminAuthServiceTest extends TestCase
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
         ];
 
-        $authService = new AdminAuthService();
-        $result = $authService->hideEmptyRootMenus($menus);
+        $auth_service = new AdminAuthService();
+        $result = $auth_service->hideEmptyRootMenus($menus);
         $this->assertEquals([
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
@@ -95,14 +95,35 @@ class AdminAuthServiceTest extends TestCase
     public function testAuthorizeSkipTokenValidationWhenTestIDSet()
     {
         $_ENV['TEST_ID'] = 'admin';
-        $authService = $this->getMockBuilder(AdminAuthService::class)
+        $auth_service = $this->getMockBuilder(AdminAuthService::class)
             ->setMethods(['checkAuth', 'introspectToken'])
             ->getMock();
 
-        $authService->expects($this->never())
+        $auth_service->expects($this->never())
             ->method('introspectToken');
 
         $this->expectException(UnauthorizedException::class);
-        $this->assertNull($authService->authorize('test', [], '/test'));
+        $this->assertNull($auth_service->authorize('test', [], '/test'));
+    }
+
+    public function testAuthorizeByTag()
+    {
+        $auth_service = new AdminAuthService();
+        $auth_service['user_service'] = $this->createMock(AdminUserService::class);
+        $auth_service['user_service']->method('getAdminUserTag')
+            ->willReturn([1, 2]);
+        $auth_service['tag_service'] = $this->createMock(AdminTagService::class);
+        $auth_service['tag_service']->method('findTagsByName')
+            ->willReturn([2, 3]);
+
+        $this->assertNull($auth_service->authorizeByTag('test', ['test']));
+
+        # Fail test
+        $auth_service['tag_service'] = $this->createMock(AdminTagService::class);
+        $auth_service['tag_service']->method('findTagsByName')
+            ->willReturn([3, 4]);
+
+        $this->expectException(UnauthorizedException::class);
+        $auth_service->authorizeByTag('test', ['test']);
     }
 }
