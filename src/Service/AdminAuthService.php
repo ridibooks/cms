@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Service;
 
+use Pimple\Container;
 use Ridibooks\Cms\Lib\AzureOAuth2Service;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
@@ -11,16 +12,21 @@ use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 /**권한 설정 Service
  * @deprecated
  */
-class AdminAuthService
+class AdminAuthService extends Container
 {
+    public function __construct()
+    {
+        $this['user_service'] = new AdminUserService();
+        $this['tag_service'] = new AdminTagService();
+        $this['menu_service'] = new AdminMenuService();
+    }
+
     public function getAdminMenu(string $user_id): array
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            $menu_service = new AdminMenuService();
-            $menus = $menu_service->queryMenus(true);
+            $menus = $this['menu_service']->queryMenus(true);
         } else {
-            $user_service = new AdminUserService();
-            $menus = $user_service->getAllMenus($user_id);
+            $menus = $this['user_service']->getAllMenus($user_id);
         }
 
         $menus = $this->hideEmptyRootMenus($menus);
@@ -165,10 +171,8 @@ class AdminAuthService
             return false;
         }
 
-        $user_service = new AdminUserService();
-        $tag_service = new AdminTagService();
-        $user_tags = $user_service->getAdminUserTag($admin_id);
-        $required_tags = $tag_service->findTagsByName($tag_names);
+        $user_tags = $this['user_service']->getAdminUserTag($admin_id);
+        $required_tags = $this['tag_service']->findTagsByName($tag_names);
 
         if (!empty(array_intersect($user_tags, $required_tags))) {
             return true;
@@ -206,8 +210,7 @@ class AdminAuthService
             return false;
         }
 
-        $user_service = new AdminUserService();
-        $admin = $user_service->getUser($user_id);
+        $admin = $this['user_service']->getUser($user_id);
         if (!$admin->id) {
             return false;
         }
@@ -217,9 +220,8 @@ class AdminAuthService
 
     private function readUserAuth(string $user_id): array
     {
-        $user_service = new AdminUserService();
-        $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
-        $ajax_urls = $user_service->getAllMenuAjaxList($user_id, 'ajax_url');
+        $menu_urls = $this['user_service']->getAllMenus($user_id, 'menu_url');
+        $ajax_urls = $this['user_service']->getAllMenuAjaxList($user_id, 'ajax_url');
         $urls = array_merge($menu_urls, $ajax_urls);
 
         return $urls;
