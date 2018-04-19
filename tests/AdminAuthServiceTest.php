@@ -3,11 +3,22 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service;
 
+use Ridibooks\Cms\Thrift\AdminUser\AdminUser;
 use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 use PHPUnit\Framework\TestCase;
 
 class AdminAuthServiceTest extends TestCase
 {
+    private $auth_service;
+
+    protected function setUp()
+    {
+        $this->auth_service = new AdminAuthService();
+        $this->auth_service['user_service'] = $this->createMock(AdminUserService::class);
+        $this->auth_service['menu_service'] = $this->createMock(AdminMenuService::class);
+        $this->auth_service['tag_service'] = $this->createMock(AdminTagService::class);
+    }
+
     public function testCheckAuth()
     {
         $service = new AdminAuthService();
@@ -103,27 +114,40 @@ class AdminAuthServiceTest extends TestCase
             ->method('introspectToken');
 
         $this->expectException(UnauthorizedException::class);
-        $this->assertNull($auth_service->authorize('test', [], '/test'));
+        $auth_service->authorize('test', [], '/test');
     }
 
     public function testAuthorizeByTag()
     {
-        $auth_service = new AdminAuthService();
-        $auth_service['user_service'] = $this->createMock(AdminUserService::class);
-        $auth_service['user_service']->method('getAdminUserTag')
+        $this->auth_service['user_service']->method('getUser')
+            ->willReturn(new AdminUser(['id' => 'test', 'is_use' => true]));
+        $this->auth_service['user_service']->method('getAdminUserTag')
             ->willReturn([1, 2]);
-        $auth_service['tag_service'] = $this->createMock(AdminTagService::class);
-        $auth_service['tag_service']->method('findTagsByName')
-            ->willReturn([2, 3]);
+        $this->auth_service['tag_service']->method('findTagsByName')
+            ->will($this->onConsecutiveCalls(
+                [2, 3],
+                [3, 4] # fail case
+            ));
 
-        $this->assertNull($auth_service->authorizeByTag('test', ['test']));
+        $this->assertNull($this->auth_service->authorizeByTag('test', ['test']));
 
-        # Fail test
-        $auth_service['tag_service'] = $this->createMock(AdminTagService::class);
-        $auth_service['tag_service']->method('findTagsByName')
-            ->willReturn([3, 4]);
+        # Fail case
+        $this->expectException(UnauthorizedException::class);
+        $this->auth_service->authorizeByTag('test', ['test']);
+    }
+
+    public function testAuthorizeFailIfUserIsInvalid()
+    {
+        $this->auth_service['user_service']->method('getUser')
+            ->willReturn(new AdminUser(['id' => 'test', 'is_use' => false]));
 
         $this->expectException(UnauthorizedException::class);
-        $auth_service->authorizeByTag('test', ['test']);
+        $this->assertNull($this->auth_service->authorize('test', [], '/test'));
+
+        $this->auth_service['user_service']->method('getUser')
+            ->willReturn(new AdminUser([]));
+
+        $this->expectException(UnauthorizedException::class);
+        $this->assertNull($this->auth_service->authorize('test', [], '/test'));
     }
 }

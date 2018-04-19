@@ -18,16 +18,15 @@ class AdminAuthService extends Container
     {
         $this['user_service'] = new AdminUserService();
         $this['tag_service'] = new AdminTagService();
+        $this['menu_service'] = new AdminMenuService();
     }
 
     public function getAdminMenu(string $user_id): array
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-            $menu_service = new AdminMenuService();
-            $menus = $menu_service->queryMenus(true);
+            $menus = $this['menu_service']->queryMenus(true);
         } else {
-            $user_service = new AdminUserService();
-            $menus = $user_service->getAllMenus($user_id);
+            $menus = $this['user_service']->getAllMenus($user_id);
         }
 
         $menus = $this->hideEmptyRootMenus($menus);
@@ -211,8 +210,7 @@ class AdminAuthService extends Container
             return false;
         }
 
-        $user_service = new AdminUserService();
-        $admin = $user_service->getUser($user_id);
+        $admin = $this['user_service']->getUser($user_id);
         if (!$admin->id) {
             return false;
         }
@@ -222,9 +220,8 @@ class AdminAuthService extends Container
 
     private function readUserAuth(string $user_id): array
     {
-        $user_service = new AdminUserService();
-        $menu_urls = $user_service->getAllMenus($user_id, 'menu_url');
-        $ajax_urls = $user_service->getAllMenuAjaxList($user_id, 'ajax_url');
+        $menu_urls = $this['user_service']->getAllMenus($user_id, 'menu_url');
+        $ajax_urls = $this['user_service']->getAllMenuAjaxList($user_id, 'ajax_url');
         $urls = array_merge($menu_urls, $ajax_urls);
 
         return $urls;
