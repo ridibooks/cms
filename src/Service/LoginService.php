@@ -18,8 +18,13 @@ class LoginService
 
     const TEST_TOKEN_EXPIRES_SEC = 60 * 60; // 1 hour
 
+    /**
+     * @throws \Exception
+     */
     public static function handleTestLogin(string $return_url, string $test_id): Response
     {
+        self::addUserIfNotExists($test_id, $test_id);
+
         $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
         return self::createLoginResponse(
             $return_url,
