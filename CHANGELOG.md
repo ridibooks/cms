@@ -1,6 +1,8 @@
 # Ridibooks CMS
 
 ## [Unreleased]
+### Feature
+- If set env TEST_AUTH_DISABLE, set TEST_ID also
 
 ## [v2.1.7] - 2018-04-16
 ### Fixed
