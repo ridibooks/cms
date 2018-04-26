@@ -20,45 +20,18 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
             return new Authenticator\AuthCookieStorage();
         };
 
-        $this->registerOAuth2Auth($app);
-        $this->registerPasswordAuth($app);
-        $this->registerTestAuth($app);
-    }
 
-    private function registerOAuth2Auth(Container $app)
-    {
+        // OAuth2 clients array -> [ 'oauth2 provider name' => ${Auth\OAuth2ClientInterface object} ]
         $app['auth.oauth2.clients'] = [];
 
+
+        // Authenticators
         $app['auth.oauth2.authenticator'] = function (Container $app) {
             return new Authenticator\OAuth2Authenticator($app['auth.oauth2.clients'], $app['auth.storage']);
         };
 
-        $app['auth.oauth2.controller'] = function (Container $app) {
-            $authenticator = $app['auth.oauth2.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new DefaultController\OAuth2Controller($authenticator, $home_url);
-        };
-    }
-
-    private function registerPasswordAuth(Container $app)
-    {
         $app['auth.password.authenticator'] = function (Container $app) {
             return new Authenticator\PasswordAuthenticator($app['auth.storage']);
-        };
-
-        $app['auth.password.controller'] = function (Container $app) {
-            $authenticator = $app['auth.password.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new DefaultController\PasswordController($authenticator, $home_url);
-        };
-    }
-
-    private function registerTestAuth(Container $app)
-    {
-        $app['auth.test.controller'] = function (Container $app) {
-            $authenticator = $app['auth.test.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new DefaultController\TestController($authenticator, $home_url);
         };
 
         $app['auth.test.authenticator'] = function (Container $app) {
@@ -67,6 +40,26 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
             ], $app['auth.options']['test']);
 
             return new Authenticator\TestAuthenticator($test_option['test_user_id'], $app['auth.storage']);
+        };
+
+
+        // Controllers
+        $app['auth.oauth2.controller'] = function (Container $app) {
+            $authenticator = $app['auth.oauth2.authenticator'];
+            $home_url = $app['url_generator']->generate('home');
+            return new Controller\OAuth2Controller($authenticator, $home_url);
+        };
+
+        $app['auth.password.controller'] = function (Container $app) {
+            $authenticator = $app['auth.password.authenticator'];
+            $home_url = $app['url_generator']->generate('home');
+            return new Controller\DefaultController($authenticator, $home_url);
+        };
+
+        $app['auth.test.controller'] = function (Container $app) {
+            $authenticator = $app['auth.test.authenticator'];
+            $home_url = $app['url_generator']->generate('home');
+            return new Controller\DefaultController($authenticator, $home_url);
         };
     }
 

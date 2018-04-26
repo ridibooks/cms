@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service\Auth\DefaultController;
+namespace Ridibooks\Cms\Service\Auth\Controller;
 
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Symfony\Component\HttpFoundation\RedirectResponse;

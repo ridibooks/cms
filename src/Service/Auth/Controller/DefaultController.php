@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service\Auth\DefaultController;
+namespace Ridibooks\Cms\Service\Auth\Controller;
 
 use Ridibooks\Cms\Service\Auth\Authenticator\AuthenticatorInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class PasswordController
+class DefaultController
 {
     private $authenticator;
     private $default_return_url;
