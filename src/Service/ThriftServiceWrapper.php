@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\Cms\Thrift;
+namespace Ridibooks\Cms\Service;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;

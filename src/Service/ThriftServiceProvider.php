@@ -7,7 +7,6 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Psr\Log\LogLevel;
 use Ridibooks\Cms\Thrift\ThriftServer;
-use Ridibooks\Cms\Thrift\ThriftServiceWrapper;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
