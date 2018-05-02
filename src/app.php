@@ -47,7 +47,7 @@ $app->register(new Service\Auth\AuthServiceProvider(), [
     'auth.options' => $config['auth.options'],
     'auth.oauth2.clients' => function (CmsApplication $app) {
         return [
-            'azure' => new OAuth2\AzureClient($app['oauth2.options']['azure']),
+            'azure' => new OAuth2\Client\AzureClient($app['oauth2.options']['azure']),
         ];
     },
 ]);

@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service\Auth;
+namespace Ridibooks\Cms\Service\Auth\Storage;
 
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthCookieStorage
+class AuthCookieStorage implements AuthStorageInterface
 {
     private $origin = [];
     private $modified = [];

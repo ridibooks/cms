@@ -1,7 +1,8 @@
 <?php
 
-namespace Ridibooks\Cms\Service\Auth\OAuth2;
+namespace Ridibooks\Cms\Service\Auth\OAuth2\Client;
 
+use Ridibooks\Cms\Service\Auth\OAuth2\OAuth2Credential;
 use TheNetworg\OAuth2\Client\Provider\Azure;
 use TheNetworg\OAuth2\Client\Token\AccessToken;
 

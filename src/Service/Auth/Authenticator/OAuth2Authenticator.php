@@ -5,8 +5,9 @@ namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
 use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\OAuth2ClientInterface;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
-use Ridibooks\Cms\Service\Auth\OAuth2\OAuth2ClientInterface;
+use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
 use Symfony\Component\HttpFoundation\Request;
 
 class OAuth2Authenticator extends BaseAuthenticator

@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service\Auth\OAuth2;
+namespace Ridibooks\Cms\Service\Auth\OAuth2\Client;
+
+use Ridibooks\Cms\Service\Auth\OAuth2\OAuth2Credential;
 
 interface OAuth2ClientInterface
 {

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
+use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

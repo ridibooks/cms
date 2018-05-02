@@ -28,11 +28,4 @@ class DefaultController
         $return_url = $request->get('return_url', $this->default_return_url);
         return new RedirectResponse($return_url);
     }
-
-//    public function logout(Request $request)
-//    {
-//        $this->authenticator->removeCredential();
-//        $return_url = $request->get('return_url', $this->default_return_url);
-//        return new RedirectResponse($return_url);
-//    }
 }

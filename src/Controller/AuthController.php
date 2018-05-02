@@ -2,7 +2,7 @@
 
 namespace Ridibooks\Cms\Controller;
 
-use Ridibooks\Cms\Service\Auth\Authenticator\AuthCookieStorage;
+use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

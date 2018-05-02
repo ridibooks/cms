@@ -39,10 +39,4 @@ class OAuth2Controller
         $this->authenticator->setReturnUrl(null);
         return new RedirectResponse($return_url);
     }
-
-//    public function revoke()
-//    {
-//        $this->authenticator->removeCredential();
-//        return new RedirectResponse($this->default_home_url);
-//    }
 }

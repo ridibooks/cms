@@ -12,7 +12,7 @@ use Ridibooks\Cms\Thrift\Errors\NoTokenException;
 use Ridibooks\Cms\Thrift\Errors\SystemException;
 use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
 
-class AdminAuthThrift// implements AdminAuthServiceIf
+class AdminAuthThrift // implements AdminAuthServiceIf
 {
     /** @var AdminAuthService $server */
     private $server = null;
