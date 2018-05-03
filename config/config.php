@@ -2,11 +2,12 @@
 
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
 $config = [
     'debug' => $_ENV['DEBUG'],
     'oauth2.options' => [
-        'azure' => [
+        AzureClient::PROVIDER_NAME => [
             'tenent' => $_ENV['AZURE_TENENT'] ?? '',
             'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
             'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',

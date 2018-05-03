@@ -8,6 +8,8 @@ use TheNetworg\OAuth2\Client\Token\AccessToken;
 
 class AzureClient implements OAuth2ClientInterface
 {
+    const PROVIDER_NAME = 'azure';
+
     /** @var Azure $azure */
     private $azure;
 

@@ -4,6 +4,8 @@ namespace Ridibooks\Cms\Controller;
 
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,11 +18,21 @@ class AuthController
         $return_url = $request->get('return_url', $home_url);
 
         $azure_authorize_url = $app['url_generator']->generate('oauth2_authorize', [
-            'provider' => 'azure',
+            'provider' => AzureClient::PROVIDER_NAME
+        ]);
+
+        $password_authorize_url = $app['url_generator']->generate('default_authorize', [
+            'auth_type' => AuthServiceProvider::AUTH_TYPE_PASSWORD
+        ]);
+
+        $test_authorize_url = $app['url_generator']->generate('default_authorize', [
+            'auth_type' => AuthServiceProvider::AUTH_TYPE_TEST
         ]);
 
         return $app->render('login.twig', [
             'azure_authorize_url' => $azure_authorize_url . '?return_url=' . $return_url,
+            'password_authorize_url' => $password_authorize_url . '?return_url=' . $return_url,
+            'test_authorize_url' => $test_authorize_url . '?return_url=' . $return_url,
         ]);
     }
 

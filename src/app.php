@@ -7,7 +7,7 @@ use Monolog\Logger;
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Service;
-use Ridibooks\Cms\Service\Auth\OAuth2;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Thrift;
 use Silex\Provider\MonologServiceProvider;
 
@@ -47,7 +47,7 @@ $app->register(new Service\Auth\AuthServiceProvider(), [
     'auth.options' => $config['auth.options'],
     'auth.oauth2.clients' => function (CmsApplication $app) {
         return [
-            'azure' => new OAuth2\Client\AzureClient($app['oauth2.options']['azure']),
+            AzureClient::PROVIDER_NAME => new AzureClient($app['oauth2.options']['azure']),
         ];
     },
 ]);
