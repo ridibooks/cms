@@ -30,6 +30,6 @@ class AdminTagServiceTest extends TestCase
         $tag_service = new AdminTagService();
         $hashes = $tag_service->getMappedAdminMenuHashes('/super/users', '1');
 
-        $this->assertNotNull($hashes, 'EDIT');
+        $this->assertEquals(['EDIT'], array_values($hashes));
     }
 }
