@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.1.9] - 2018-05-03
+### Fixed
+- Fix invoking error in `getHashesFromMenus`
+
 ## [v2.1.8] - 2018-04-19
 ### Fixed
 - Fix authorize error when TEST_ID set (#53)
