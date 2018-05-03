@@ -64,10 +64,6 @@ $config = [
     'twig.path' => [
         __DIR__ . '/../views/'
     ],
-    'twig.options' => [
-        'cache' => __DIR__ . '/../var/cache',
-        'auto_reload' => true,
-    ],
 ];
 
 return $config;
