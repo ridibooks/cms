@@ -312,15 +312,15 @@ class AdminAuthService extends Container
         return $hash_array;
     }
 
-    public function getHashesFromMenus(string $check_url, array $auth_urls): array
+    public function getHashesFromMenus(string $check_url, array $menus): array
     {
-        $auth_urls = array_filter($auth_urls, function ($url) use ($check_url) {
-            return $this->compareUrl($check_url, $url);
+        $menus = array_filter($menus, function ($menu) use ($check_url) {
+            return isset($menu->menu_url) && $this->compareUrl($check_url, $menu->menu_url);
         });
 
-        $hash_array = array_map(function ($url) {
-            return $this->parseUrlAuth($url)['hash'];
-        }, $auth_urls);
+        $hash_array = array_map(function ($menu) {
+            return $this->parseUrlAuth($menu->menu_url)['hash'];
+        }, $menus);
 
         return array_filter($hash_array);
     }
