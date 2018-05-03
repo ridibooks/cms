@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
-use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
+use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class PasswordAuthenticator extends BaseAuthenticator

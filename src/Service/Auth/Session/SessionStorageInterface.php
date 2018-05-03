@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service\Auth\Storage;
+namespace Ridibooks\Cms\Service\Auth\Session;
 
 interface SessionStorageInterface
 {

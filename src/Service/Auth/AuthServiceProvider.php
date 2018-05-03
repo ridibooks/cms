@@ -10,8 +10,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
-use Ridibooks\Cms\Service\Auth\Storage\CookieSessionStorage;
-use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
+use Ridibooks\Cms\Service\Auth\Session;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 
@@ -27,7 +26,7 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
             TestAuthenticator::AUTH_TYPE,
         ];
 
-        $app['auth.session'] = function (Container $app): SessionStorageInterface {
+        $app['auth.session'] = function (Container $app): Session\SessionStorageInterface {
             $enabled = $app['auth.enabled'];
 
             $cookie_keys = [BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type'];
@@ -37,11 +36,11 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
                 }
             }
 
-            return new Storage\CookieSessionStorage($cookie_keys);
+            return new Session\CookieSessionStorage($cookie_keys);
         };
 
         $app['auth.authenticator'] = function (Container $app): BaseAuthenticator {
-            /** @var SessionStorageInterface $session */
+            /** @var Session\SessionStorageInterface $session */
             $session = $app['auth.session'];
             $auth_type = $session->get(BaseAuthenticator::KEY_AUTH_TYPE);
 
@@ -100,7 +99,7 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
         }
 
         $session = $app['auth.session'];
-        if ($session instanceof CookieSessionStorage) {
+        if ($session instanceof Session\CookieSessionStorage) {
             $app->before('auth.session:readCookie', Application::EARLY_EVENT);
             $app->after('auth.session:writeCookie', Application::LATE_EVENT);
         }
