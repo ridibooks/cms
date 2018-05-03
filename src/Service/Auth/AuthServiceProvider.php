@@ -29,7 +29,14 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
         $app['auth.session'] = function (Container $app): Session\SessionStorageInterface {
             $enabled = $app['auth.enabled'];
 
-            $cookie_keys = [BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type'];
+            $cookie_keys = [
+                BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type',
+
+                // TODO: Remove these
+                LoginService::TOKEN_COOKIE_NAME => LoginService::TOKEN_COOKIE_NAME,
+                LoginService::ADMIN_ID_COOKIE_NAME => LoginService::ADMIN_ID_COOKIE_NAME
+            ];
+
             foreach ($enabled as $enabled_type) {
                 if (isset($app['auth.' . $enabled_type . '.cookie_keys'])) {
                     $cookie_keys = array_merge($cookie_keys, $app['auth.' . $enabled_type . '.cookie_keys']);
@@ -58,10 +65,6 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
             OAuth2Authenticator::KEY_REFRESH_TOKEN => 'oauth2_refresh_token',
             OAuth2Authenticator::KEY_STATE => 'oauth2_state',
             OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
-
-            // TODO: Remove these
-            LoginService::TOKEN_COOKIE_NAME => LoginService::TOKEN_COOKIE_NAME,
-            LoginService::ADMIN_ID_COOKIE_NAME => LoginService::ADMIN_ID_COOKIE_NAME
         ];
 
         $app['auth.oauth2.authenticator'] = function (Container $app) {

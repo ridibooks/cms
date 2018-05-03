@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
+use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -26,6 +27,9 @@ class TestAuthenticator extends BaseAuthenticator
      */
     public function createCredential(Request $request)
     {
+        // TODO: Remove this
+        $this->session->set(LoginService::ADMIN_ID_COOKIE_NAME, $this->test_user_id);
+        $this->session->set(LoginService::TOKEN_COOKIE_NAME, 'test');
         return $this->test_user_id;
     }
 

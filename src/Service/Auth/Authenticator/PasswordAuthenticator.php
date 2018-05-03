@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
+use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,6 +20,8 @@ class PasswordAuthenticator extends BaseAuthenticator
     {
         $user_id = $request->get('user_id');
         $user_password = $request->get('password');
+
+        $this->session->set(LoginService::ADMIN_ID_COOKIE_NAME, $user_id); // TODO: Remove this
         return [
             'user_id' => $user_id,
             'password' => $user_password,
