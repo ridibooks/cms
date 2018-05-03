@@ -38,7 +38,11 @@ class AdminTagService implements AdminTagServiceIf
         $admin_service = new AdminMenuService();
         $menus = $admin_service->getMenus($menu_ids);
         $menus = ThriftService::convertMenuCollectionToArray($menus);
-        return AdminAuthService::getHashesFromMenus($check_url, $menus);
+        $urls = array_map(function($menu) {
+            return $menu['menu_url'] ?? '';
+        }, $menus);
+        $auth_service = new AdminAuthService();
+        return $auth_service->getHashesFromMenus($check_url, $menus);
     }
 
     public function getAdminTag($tag_id): ThriftAdminTag
