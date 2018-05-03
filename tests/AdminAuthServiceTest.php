@@ -79,9 +79,7 @@ class AdminAuthServiceTest extends TestCase
     {
         $service = new AdminAuthService();
 
-        $auth_list = [[
-            'menu_url' => '/admin/book/productList#EDIT_세트도서'],
-        ];
+        $auth_list = ['/admin/book/productList#EDIT_세트도서'];
         $hashs = $service->getHashesFromMenus('/admin/book/productList', $auth_list);
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
