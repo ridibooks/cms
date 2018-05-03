@@ -15,7 +15,7 @@ class TestAuthenticator extends BaseAuthenticator
     /** @var string $test_user */
     private $test_user_id;
 
-    public function __construct(string $test_user_id, SessionStorageInterface $session)
+    public function __construct(SessionStorageInterface $session, string $test_user_id)
     {
         parent::__construct(self::AUTH_TYPE, $session);
         $this->test_user_id = $test_user_id;

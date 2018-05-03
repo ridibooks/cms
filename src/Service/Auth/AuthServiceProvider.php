@@ -66,12 +66,12 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
         ];
 
         $app['auth.oauth2.authenticator'] = function (Container $app) {
-            return new OAuth2Authenticator($app['auth.oauth2.clients'], $app['auth.session']);
+            return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients']);
         };
 
         // Password authenticators
         $app['auth.password.authenticator'] = function (Container $app) {
-            return new PasswordAuthenticator();
+            return new PasswordAuthenticator($app['auth.session']);
         };
 
         // Test authenticators
@@ -84,7 +84,7 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
                 'test_user_id' => 'admin',
             ], $app['auth.options']['test']);
 
-            return new TestAuthenticator($test_option['test_user_id'], $app['auth.session']);
+            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
         };
     }
 

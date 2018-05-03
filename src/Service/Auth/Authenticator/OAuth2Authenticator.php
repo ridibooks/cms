@@ -22,7 +22,7 @@ class OAuth2Authenticator extends BaseAuthenticator
 
     private $clients;
 
-    public function __construct(array $clients, SessionStorageInterface $session)
+    public function __construct(SessionStorageInterface $session, array $clients)
     {
         parent::__construct(self::AUTH_TYPE, $session);
 
