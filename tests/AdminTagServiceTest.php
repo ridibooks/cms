@@ -24,4 +24,12 @@ class AdminTagServiceTest extends TestCase
         $this->assertNotEmpty($tags[0]->name);
         $this->assertNotEmpty($tags[1]->name);
     }
+
+    public function testGetMappedAdminMenuHashes()
+    {
+        $tag_service = new AdminTagService();
+        $hashes = $tag_service->getMappedAdminMenuHashes('/super/users', '1');
+
+        $this->assertNotNull($hashes, 'EDIT');
+    }
 }

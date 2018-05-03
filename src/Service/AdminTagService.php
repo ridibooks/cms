@@ -42,7 +42,7 @@ class AdminTagService implements AdminTagServiceIf
             return $menu['menu_url'] ?? '';
         }, $menus);
         $auth_service = new AdminAuthService();
-        return $auth_service->getHashesFromMenus($check_url, $menus);
+        return $auth_service->getHashesFromMenus($check_url, $urls);
     }
 
     public function getAdminTag($tag_id): ThriftAdminTag
