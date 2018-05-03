@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v2.1.9] - 2018-05-03
+## [v2.1.10] - 2018-05-03
 ### Fixed
 - Fix invoking error in `getHashesFromMenus`
 
