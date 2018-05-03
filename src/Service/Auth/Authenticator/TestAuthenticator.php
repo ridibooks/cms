@@ -6,8 +6,10 @@ namespace Ridibooks\Cms\Service\Auth\Authenticator;
 use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class TestAuthenticator
+class TestAuthenticator extends BaseAuthenticator
 {
+    const AUTH_TYPE = 'test';
+
     const KEY_USER_ID = 'test_user_id';
 
     /** @var string $test_user */
@@ -15,6 +17,7 @@ class TestAuthenticator
 
     public function __construct(string $test_user_id, SessionStorageInterface $session)
     {
+        parent::__construct(self::AUTH_TYPE, $session);
         $this->test_user_id = $test_user_id;
     }
 

@@ -29,9 +29,18 @@
     <div class="col-md-offset-4 col-md-4">
       <h3 class="text-center">Ridibooks CMS</h3>
       <hr/>
+
+      {% if azure_authorize_url is defined %}
       <a role="button" class="btn btn-info btn-block" href='{{ azure_authorize_url }}'>
         Sign in with Azure
       </a>
+      {% endif %}
+
+      {% if test_authorize_url is defined %}
+      <a role="button" class="btn btn-default btn-block" href='{{ test_authorize_url }}'>
+        Sign in with Test
+      </a>
+      {% endif %}
 
     </div>
   </div>

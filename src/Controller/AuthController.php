@@ -4,7 +4,8 @@ namespace Ridibooks\Cms\Controller;
 
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
-use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -17,23 +18,34 @@ class AuthController
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
 
-        $azure_authorize_url = $app['url_generator']->generate('oauth2_authorize', [
-            'provider' => AzureClient::PROVIDER_NAME
-        ]);
+        $auth_enabled = $app['auth.enabled'];
 
-        $password_authorize_url = $app['url_generator']->generate('default_authorize', [
-            'auth_type' => AuthServiceProvider::AUTH_TYPE_PASSWORD
-        ]);
+        $twig_params = [];
+        if (in_array(OAuth2Authenticator::AUTH_TYPE, $auth_enabled)) {
+            $azure_authorize_url = $app['url_generator']->generate('oauth2_authorize', [
+                'provider' => AzureClient::PROVIDER_NAME,
+            ]);
+            $azure_authorize_url .= '?return_url=' . $return_url;
+            $twig_params['azure_authorize_url'] = $azure_authorize_url;
+        }
 
-        $test_authorize_url = $app['url_generator']->generate('default_authorize', [
-            'auth_type' => AuthServiceProvider::AUTH_TYPE_TEST
-        ]);
+        if (in_array(PasswordAuthenticator::AUTH_TYPE, $auth_enabled)) {
+            $password_authorize_url = $app['url_generator']->generate('default_authorize', [
+                'auth_type' => PasswordAuthenticator::AUTH_TYPE,
+            ]);
+            $password_authorize_url .= '?return_url=' . $return_url;
+            $twig_params['password_authorize_url'] = $password_authorize_url;
+        }
 
-        return $app->render('login.twig', [
-            'azure_authorize_url' => $azure_authorize_url . '?return_url=' . $return_url,
-            'password_authorize_url' => $password_authorize_url . '?return_url=' . $return_url,
-            'test_authorize_url' => $test_authorize_url . '?return_url=' . $return_url,
-        ]);
+        if (in_array(TestAuthenticator::AUTH_TYPE, $auth_enabled)) {
+            $test_authorize_url = $app['url_generator']->generate('default_authorize', [
+                'auth_type' => TestAuthenticator::AUTH_TYPE,
+            ]);
+            $test_authorize_url .= '?return_url=' . $return_url;
+            $twig_params['test_authorize_url'] = $test_authorize_url;
+        }
+
+        return $app->render('login.twig', $twig_params);
     }
 
     public function logout(Request $request, Application $app)

@@ -1,7 +1,9 @@
 <?php
 
 use Moriony\Silex\Provider\SentryServiceProvider;
-use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
 $config = [
@@ -17,9 +19,9 @@ $config = [
         ],
     ],
     'auth.enabled' => [
-        AuthServiceProvider::AUTH_TYPE_OAUTH2,
-        AuthServiceProvider::AUTH_TYPE_PASSWORD,
-        AuthServiceProvider::AUTH_TYPE_TEST,
+        OAuth2Authenticator::AUTH_TYPE,
+        PasswordAuthenticator::AUTH_TYPE,
+        TestAuthenticator::AUTH_TYPE,
     ],
     'auth.options' => [
 
@@ -61,6 +63,10 @@ $config = [
     ],
     'twig.path' => [
         __DIR__ . '/../views/'
+    ],
+    'twig.options' => [
+        'cache' => __DIR__ . '/../var/cache',
+        'auto_reload' => true,
     ],
 ];
 

@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
+use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class PasswordAuthenticator implements AuthenticatorInterface
+class PasswordAuthenticator extends BaseAuthenticator
 {
+    const AUTH_TYPE = 'password';
+
+    public function __construct(SessionStorageInterface $session)
+    {
+        parent::__construct(self::AUTH_TYPE, $session);
+    }
+
     public function createCredential(Request $request)
     {
         $user_id = $request->get('user_id');

@@ -17,20 +17,14 @@ use Silex\Application;
 
 class AuthServiceProvider implements ServiceProviderInterface, BootableProviderInterface
 {
-    const KEY_AUTH_TYPE = 'KEY_AUTH_TYPE';
-
-    const AUTH_TYPE_OAUTH2 = 'oauth2';
-    const AUTH_TYPE_PASSWORD = 'password';
-    const AUTH_TYPE_TEST = 'test';
-
     public function register(Container $app)
     {
         $app['auth.options'] = [];
 
         $app['auth.enabled'] = [
-            self::AUTH_TYPE_OAUTH2,
-            self::AUTH_TYPE_PASSWORD,
-            self::AUTH_TYPE_TEST,
+            OAuth2Authenticator::AUTH_TYPE,
+            PasswordAuthenticator::AUTH_TYPE,
+            TestAuthenticator::AUTH_TYPE,
         ];
 
         $app['auth.session'] = function (Container $app): SessionStorageInterface {
@@ -99,9 +93,9 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
         if (empty($app['auth.enabled'])) {
             throw new \InvalidArgumentException(
                 'You should enable one of \'' .
-                self::AUTH_TYPE_OAUTH2 . '\', \'' .
-                self::AUTH_TYPE_PASSWORD . '\', \'' .
-                self::AUTH_TYPE_TEST . '\''
+                OAuth2Authenticator::AUTH_TYPE . '\', \'' .
+                PasswordAuthenticator::AUTH_TYPE . '\', \'' .
+                TestAuthenticator::AUTH_TYPE . '\''
             );
         }
 

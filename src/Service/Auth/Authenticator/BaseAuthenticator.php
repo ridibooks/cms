@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 abstract class BaseAuthenticator implements AuthenticatorInterface
 {
-    const KEY_AUTH_TYPE = 'auth_type';
+    const KEY_AUTH_TYPE = 'KEY_AUTH_TYPE';
 
     private $auth_type;
 
