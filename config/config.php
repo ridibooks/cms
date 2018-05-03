@@ -1,6 +1,7 @@
 <?php
 
 use Moriony\Silex\Provider\SentryServiceProvider;
+use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
 
 $config = [
     'debug' => $_ENV['DEBUG'],
@@ -14,23 +15,23 @@ $config = [
             'resource' => $_ENV['AZURE_RESOURCE'],
         ],
     ],
-    'auth.enabled' => ['oauth2', 'password', 'test'],
+    'auth.enabled' => [
+        AuthServiceProvider::AUTH_TYPE_OAUTH2,
+        AuthServiceProvider::AUTH_TYPE_PASSWORD,
+        AuthServiceProvider::AUTH_TYPE_TEST,
+    ],
     'auth.options' => [
 
         // oauth2 authenticator
         'oauth2' => [
-            'authorize' => '/auth/oauth2/{provider}/authorize',
-            'callback' => '/auth/oauth2/callback',
         ],
 
         // password authenticator
         'password' => [
-            'login' => '/auth/password/authorize',
         ],
 
         // test authenticator
         'test' => [
-            'login' => '/auth/test/authorize',
             'test_user_id' => $_ENV['TEST_ID'],
         ],
     ],

@@ -3,16 +3,10 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
-use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
 use Symfony\Component\HttpFoundation\Request;
 
-class PasswordAuthenticator extends BaseAuthenticator
+class PasswordAuthenticator implements AuthenticatorInterface
 {
-    public function __construct(AuthCookieStorage $storage)
-    {
-        parent::__construct($storage);
-    }
-
     public function createCredential(Request $request)
     {
         $user_id = $request->get('user_id');
@@ -33,5 +27,9 @@ class PasswordAuthenticator extends BaseAuthenticator
     public function getUserId($credentials): string
     {
         return $credentials['user_id'];
+    }
+
+    public function removeCredential()
+    {
     }
 }

@@ -2,9 +2,7 @@
 
 namespace Ridibooks\Cms\Service\Auth;
 
-use Ridibooks\Cms\Service\Auth\Authenticator\AuthenticatorInterface;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
-use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,20 +13,13 @@ class AuthMiddleware
     {
         return function (Request $request, Application $app) {
             try {
-                /** @var AuthCookieStorage $storage */
-                $storage = $app['auth.storage'];
-                $auth_type = $storage->get(BaseAuthenticator::KEY_AUTH);
-                if (empty($auth_type)) {
+                /** @var BaseAuthenticator $authenticator */
+                $authenticator = $app['auth.authenticator'];
+                if (empty($authenticator)) {
                     throw new Exception\NoCredentialException();
                 }
 
-                /** @var AuthenticatorInterface $authenticator */
-                $authenticator = $app['auth.' . $auth_type . '.authenticator'];
-
-                $credentials = $authenticator->createCredential($request);
-                $authenticator->validateCredential($credentials);
-
-                $user_id = $authenticator->getUserId($credentials);
+                $user_id = $authenticator->signIn($request);
                 if (empty($user_id)) {
                     throw new Exception\NoCredentialException();
                 }

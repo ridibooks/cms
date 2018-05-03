@@ -3,46 +3,37 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
-use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
+use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 abstract class BaseAuthenticator implements AuthenticatorInterface
 {
-    const KEY_AUTH = 'auth_type';
+    const KEY_AUTH_TYPE = 'auth_type';
 
-    protected $storage;
+    private $auth_type;
 
-    public function __construct(AuthCookieStorage $storage)
+    protected $session;
+
+    public function __construct(string $auth_type, SessionStorageInterface $session)
     {
-        $this->storage = $storage;
+        $this->auth_type = $auth_type;
+        $this->session = $session;
     }
 
-    public function getAuthType(): ?string
+    public function signIn(Request $request): string
     {
-        return $this->storage->get(self::KEY_AUTH);
+        $credential = $this->createCredential($request);
+        $this->validateCredential($credential);
+
+        // This is necessary to remember which type of authenticator was used.
+        $this->session->set(self::KEY_AUTH_TYPE, $this->auth_type);
+
+        return $this->getUserId($credential);
     }
 
-    public function setAuthType(?string $auth)
+    public function signOut()
     {
-        $this->storage->set(self::KEY_AUTH, $auth);
-    }
-
-    public function readCookieList(): array
-    {
-        return [];
-    }
-
-    public function readCookie(Request $request)
-    {
-        $cookie_key_list = $this->readCookieList();
-        $cookie_key_list[] = self::KEY_AUTH;
-        $this->storage->readCookie($request, $cookie_key_list);
-    }
-
-    public function writeCookie(Request $request, Response $response)
-    {
-        $this->storage->writeCookie($response);
+        $this->removeCredential();
     }
 
     abstract public function createCredential(Request $request);
@@ -51,7 +42,7 @@ abstract class BaseAuthenticator implements AuthenticatorInterface
 
     public function removeCredential()
     {
-        $this->storage->clearAll();
+        $this->session->clearAll();
     }
 
     abstract public function getUserId($credentials): string;

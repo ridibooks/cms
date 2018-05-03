@@ -3,20 +3,18 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
-use Ridibooks\Cms\Service\Auth\Storage\AuthCookieStorage;
+use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class TestAuthenticator extends BaseAuthenticator
+class TestAuthenticator
 {
     const KEY_USER_ID = 'test_user_id';
 
     /** @var string $test_user */
     private $test_user_id;
 
-    public function __construct(string $test_user_id, AuthCookieStorage $storage)
+    public function __construct(string $test_user_id, SessionStorageInterface $session)
     {
-        parent::__construct($storage);
-
         $this->test_user_id = $test_user_id;
     }
 
@@ -47,11 +45,11 @@ class TestAuthenticator extends BaseAuthenticator
 
     public function getTestUserId(): string
     {
-        return $this->storage->get(self::KEY_USER_ID);
+        return $this->session->get(self::KEY_USER_ID);
     }
 
     public function setTestUserId(?string $test_user_id)
     {
-        $this->storage->set(self::KEY_USER_ID, $test_user_id);
+        $this->session->set(self::KEY_USER_ID, $test_user_id);
     }
 }

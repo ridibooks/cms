@@ -5,105 +5,110 @@ namespace Ridibooks\Cms\Service\Auth;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Ridibooks\Cms\Auth\LoginService;
+use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
+use Ridibooks\Cms\Service\Auth\Storage\CookieSessionStorage;
+use Ridibooks\Cms\Service\Auth\Storage\SessionStorageInterface;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 
 class AuthServiceProvider implements ServiceProviderInterface, BootableProviderInterface
 {
+    const KEY_AUTH_TYPE = 'KEY_AUTH_TYPE';
+
+    const AUTH_TYPE_OAUTH2 = 'oauth2';
+    const AUTH_TYPE_PASSWORD = 'password';
+    const AUTH_TYPE_TEST = 'test';
+
     public function register(Container $app)
     {
         $app['auth.options'] = [];
 
-        $app['auth.enabled'] = ['oauth2', 'password', 'test'];
+        $app['auth.enabled'] = [
+            self::AUTH_TYPE_OAUTH2,
+            self::AUTH_TYPE_PASSWORD,
+            self::AUTH_TYPE_TEST,
+        ];
 
-        $app['auth.storage'] = function () {
-            return new Storage\AuthCookieStorage();
+        $app['auth.session'] = function (Container $app): SessionStorageInterface {
+            $enabled = $app['auth.enabled'];
+
+            $cookie_keys = [BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type'];
+            foreach ($enabled as $enabled_type) {
+                if (isset($app['auth.' . $enabled_type . '.cookie_keys'])) {
+                    $cookie_keys = array_merge($cookie_keys, $app['auth.' . $enabled_type . '.cookie_keys']);
+                }
+            }
+
+            return new Storage\CookieSessionStorage($cookie_keys);
         };
 
-        // OAuth2 clients array -> [ 'oauth2 provider name' => ${Auth\OAuth2ClientInterface object} ]
-        $app['auth.oauth2.clients'] = [];
+        $app['auth.authenticator'] = function (Container $app): BaseAuthenticator {
+            /** @var SessionStorageInterface $session */
+            $session = $app['auth.session'];
+            $auth_type = $session->get(BaseAuthenticator::KEY_AUTH_TYPE);
 
-        // Authenticators
+            return $app['auth.' . $auth_type . '.authenticator'];
+        };
+
+        // OAuth2 authenticators
+        $app['auth.oauth2.clients'] = [
+            // 'oauth2 provider name' => ${Auth\OAuth2ClientInterface object}
+        ];
+
+        $app['auth.oauth2.cookie_keys'] = [
+            OAuth2Authenticator::KEY_PROVIDER => 'oauth2_provider',
+            OAuth2Authenticator::KEY_ACCESS_TOKEN => 'oauth2_access_token',
+            OAuth2Authenticator::KEY_REFRESH_TOKEN => 'oauth2_refresh_token',
+            OAuth2Authenticator::KEY_STATE => 'oauth2_state',
+            OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
+
+            // TODO: Remove these
+            LoginService::TOKEN_COOKIE_NAME => LoginService::TOKEN_COOKIE_NAME,
+            LoginService::ADMIN_ID_COOKIE_NAME => LoginService::ADMIN_ID_COOKIE_NAME
+        ];
+
         $app['auth.oauth2.authenticator'] = function (Container $app) {
-            return new Authenticator\OAuth2Authenticator($app['auth.oauth2.clients'], $app['auth.storage']);
+            return new OAuth2Authenticator($app['auth.oauth2.clients'], $app['auth.session']);
         };
 
+        // Password authenticators
         $app['auth.password.authenticator'] = function (Container $app) {
-            return new Authenticator\PasswordAuthenticator($app['auth.storage']);
+            return new PasswordAuthenticator();
         };
+
+        // Test authenticators
+        $app['auth.test.cookie_keys'] = [
+            TestAuthenticator::KEY_USER_ID => 'test_user_id',
+        ];
 
         $app['auth.test.authenticator'] = function (Container $app) {
             $test_option = array_replace([
                 'test_user_id' => 'admin',
             ], $app['auth.options']['test']);
 
-            return new Authenticator\TestAuthenticator($test_option['test_user_id'], $app['auth.storage']);
-        };
-
-        // Controllers
-        $app['auth.oauth2.controller'] = function (Container $app) {
-            $authenticator = $app['auth.oauth2.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new Controller\OAuth2Controller($authenticator, $home_url);
-        };
-
-        $app['auth.password.controller'] = function (Container $app) {
-            $authenticator = $app['auth.password.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new Controller\DefaultController($authenticator, $home_url);
-        };
-
-        $app['auth.test.controller'] = function (Container $app) {
-            $authenticator = $app['auth.test.authenticator'];
-            $home_url = $app['url_generator']->generate('home');
-            return new Controller\DefaultController($authenticator, $home_url);
+            return new TestAuthenticator($test_option['test_user_id'], $app['auth.session']);
         };
     }
 
     public function boot(Application $app)
     {
-        $enabled = $app['auth.enabled'];
-
-        if (in_array('oauth2', $enabled)) {
-            $oauth2_option = array_replace([
-                'authorize' => '/auth/oauth2/{provider}/authorize',
-                'callback' => '/auth/oauth2/callback',
-            ], $app['auth.options']['oauth2']);
-
-            $app->get($oauth2_option['authorize'], 'auth.oauth2.controller:authorize')
-                ->bind('oauth2_authorize');
-
-            $app->get($oauth2_option['callback'], 'auth.oauth2.controller:callback')
-                ->bind('oauth2_callback');
-
-            $app->before('auth.oauth2.authenticator:readCookie', Application::EARLY_EVENT);
-            $app->after('auth.oauth2.authenticator:writeCookie', Application::LATE_EVENT);
+        if (empty($app['auth.enabled'])) {
+            throw new \InvalidArgumentException(
+                'You should enable one of \'' .
+                self::AUTH_TYPE_OAUTH2 . '\', \'' .
+                self::AUTH_TYPE_PASSWORD . '\', \'' .
+                self::AUTH_TYPE_TEST . '\''
+            );
         }
 
-        if (in_array('password', $enabled)) {
-            $password_option = array_replace([
-                'authorize' => '/auth/password/authorize',
-            ], $app['auth.options']['password']);
-
-            $app->get($password_option['authorize'], 'auth.password.controller:authorize')
-                ->bind('password_authorize');
-
-            $app->before('auth.password.authenticator:readCookie', Application::EARLY_EVENT);
-            $app->after('auth.password.authenticator:writeCookie', Application::LATE_EVENT);
-        }
-
-        if (in_array('test', $enabled)) {
-            $test_option = array_replace([
-                'authorize' => '/auth/test/authorize',
-            ], $app['auth.options']['test']);
-
-            $app->get($test_option['authorize'], 'auth.test.controller:authorize')
-                ->bind('test_authorize');
-
-            $app->before('auth.test.authenticator:readCookie', Application::EARLY_EVENT);
-            $app->after('auth.test.authenticator:writeCookie', Application::LATE_EVENT);
-        } else {
-            throw new \InvalidArgumentException('You should enable one of \'oauth\', \'password\', \'test\'');
+        $session = $app['auth.session'];
+        if ($session instanceof CookieSessionStorage) {
+            $app->before('auth.session:readCookie', Application::EARLY_EVENT);
+            $app->after('auth.session:writeCookie', Application::LATE_EVENT);
         }
     }
 }
