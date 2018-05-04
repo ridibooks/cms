@@ -6,6 +6,18 @@ use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
+$auth_enabled = [
+    OAuth2Authenticator::AUTH_TYPE,
+];
+
+if (!empty($_ENV['AUTH_USE_TEST'])) {
+    $auth_enabled[] = TestAuthenticator::AUTH_TYPE;
+}
+
+if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
+    $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
+}
+
 $config = [
     'debug' => $_ENV['DEBUG'],
     'oauth2.options' => [
@@ -18,11 +30,7 @@ $config = [
             'resource' => $_ENV['AZURE_RESOURCE'],
         ],
     ],
-    'auth.enabled' => [
-        OAuth2Authenticator::AUTH_TYPE,
-        PasswordAuthenticator::AUTH_TYPE,
-        TestAuthenticator::AUTH_TYPE,
-    ],
+    'auth.enabled' => $auth_enabled,
     'auth.options' => [
 
         // oauth2 authenticator
