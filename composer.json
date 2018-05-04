@@ -27,6 +27,11 @@
       "Ridibooks\\Cms\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Ridibooks\\Cms\\Tests\\": "tests"
+    }
+  },
   "scripts": {
     "test": "phpunit",
     "clear": "rm -rf vendor"
