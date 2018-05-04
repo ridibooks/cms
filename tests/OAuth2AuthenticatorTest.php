@@ -43,7 +43,7 @@ class OAuth2AuthenticatorTest extends TestCase
         $this->assertStringStartsWith('https://login.microsoftonline.com', $endpoint);
         $this->assertRegexp("/{$this->config['tenent']}/", $endpoint);
         $this->assertRegexp("/response_type=code/", $endpoint);
-        $this->assertRegexp("/client_id={$this->config['client_id']}/", $endpoint);
+        $this->assertRegexp("/client_id={$this->config['clientId']}/", $endpoint);
         $this->assertRegexp("/redirect_uri=" . urlencode($this->config['redirect_uri']) . "/", $endpoint);
     }
 }

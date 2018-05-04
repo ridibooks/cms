@@ -6,7 +6,7 @@ namespace Ridibooks\Cms\Service\Auth\Authenticator;
 use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class BaseAuthenticator implements AuthenticatorInterface
+abstract class BaseAuthenticator
 {
     const KEY_AUTH_TYPE = 'KEY_AUTH_TYPE';
 
