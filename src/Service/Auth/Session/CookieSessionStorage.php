@@ -17,17 +17,23 @@ class CookieSessionStorage implements SessionStorageInterface
     public function __construct(array $cookie_keys)
     {
         $this->cookie_keys = $cookie_keys;
+
+        foreach ($cookie_keys as $key_name => $key) {
+            $this->origin[$key_name] = null;
+        }
     }
 
     public function get(string $key_name): ?string
     {
         $values = array_merge($this->origin, $this->modified);
-        return $values[$key_name];
+        return $values[$key_name] ?? null;
     }
 
     public function set(string $key_name, ?string $value)
     {
-        $this->modified[$key_name] = $value;
+        if (array_key_exists($key_name, $this->origin)) {
+            $this->modified[$key_name] = $value;
+        }
     }
 
     public function clearAll()

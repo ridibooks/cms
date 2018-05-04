@@ -11,7 +11,7 @@ class TestAuthenticator extends BaseAuthenticator
 {
     const AUTH_TYPE = 'test';
 
-    const KEY_USER_ID = 'test_user_id';
+    const KEY_USER_ID = 'KEY_USER_ID';
 
     /** @var string $test_user */
     private $test_user_id;

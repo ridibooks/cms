@@ -7,9 +7,11 @@ use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
+use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AuthController
@@ -18,7 +20,7 @@ class AuthController
     {
         $return_url = $request->get('return_url');
         $authorize_urls = $this->createAuthorizeUrls($app['auth.enabled'], $app['url_generator'], $return_url);
-        return $app->render('login.twig', $authorize_urls);
+        return $app['twig']->render('login.twig', $authorize_urls);
     }
 
     private function createAuthorizeUrls(array $auth_enabled, UrlGeneratorInterface $url_generator, ?string $return_url): array
@@ -32,7 +34,7 @@ class AuthController
             $azure_authorize_url = $url_generator->generate('oauth2_authorize', [
                 'provider' => AzureClient::PROVIDER_NAME,
             ]);
-            $azure_authorize_url .= '?return_url=' . $return_url;
+            $azure_authorize_url .= '?return_url=' . urlencode($return_url);
             $twig_params['azure_authorize_url'] = $azure_authorize_url;
         }
 
@@ -40,7 +42,7 @@ class AuthController
             $password_authorize_url = $url_generator->generate('default_authorize', [
                 'auth_type' => PasswordAuthenticator::AUTH_TYPE,
             ]);
-            $password_authorize_url .= '?return_url=' . $return_url;
+            $password_authorize_url .= '?return_url=' . urlencode($return_url);
             $twig_params['password_authorize_url'] = $password_authorize_url;
         }
 
@@ -48,7 +50,7 @@ class AuthController
             $test_authorize_url = $url_generator->generate('default_authorize', [
                 'auth_type' => TestAuthenticator::AUTH_TYPE,
             ]);
-            $test_authorize_url .= '?return_url=' . $return_url;
+            $test_authorize_url .= '?return_url=' . urlencode($return_url);
             $twig_params['test_authorize_url'] = $test_authorize_url;
         }
 
@@ -99,12 +101,16 @@ class AuthController
         /** @var OAuth2Authenticator $auth */
         $auth = $app['auth.oauth2.authenticator'];
 
-        $user_id = $auth->signIn($request);
+        try {
+            $user_id = $auth->signIn($request);
+        } catch (InvalidStateException $e) {
+            return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
         // TODO: add an user model if not exists.
 
-        $home_url = $app['url_generator']->generate('home');
-        $return_url = $request->get('return_url', $home_url);
+        $return_url = $auth->getReturnUrl($app['url_generator']->generate('home'));
+        $auth->setReturnUrl(null);
         return new RedirectResponse($return_url);
     }
 }

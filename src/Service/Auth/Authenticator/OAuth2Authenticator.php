@@ -53,7 +53,7 @@ class OAuth2Authenticator extends BaseAuthenticator
         if (empty($access_token)) {
             $refresh_token = $this->session->get(self::KEY_REFRESH_TOKEN);
             if (empty($refresh_token)) {
-                throw new NoCredentialException('no token exist');
+                throw new NoCredentialException('no token exists');
             } else {
                 $access_token = $this->createCredentialWithRefreshToken($refresh_token);
             }

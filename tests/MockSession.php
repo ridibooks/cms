@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Ridibooks\Cms\Tests;
 
@@ -15,7 +16,7 @@ class MockSession implements SessionStorageInterface
 
     public function get(string $key): ?string
     {
-        return $this->data[$key];
+        return $this->data[$key] ?? null;
     }
 
     public function set(string $key, ?string $value)

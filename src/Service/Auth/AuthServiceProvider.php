@@ -45,13 +45,13 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
             return new Session\CookieSessionStorage($cookie_keys);
         };
 
-        $app['auth.authenticator'] = function (Container $app): BaseAuthenticator {
+        $app['auth.authenticator'] = $app->factory(function (Container $app): ?BaseAuthenticator {
             /** @var Session\SessionStorageInterface $session */
             $session = $app['auth.session'];
             $auth_type = $session->get(BaseAuthenticator::KEY_AUTH_TYPE);
 
-            return $app['auth.' . $auth_type . '.authenticator'];
-        };
+            return $app['auth.' . $auth_type . '.authenticator'] ?? null;
+        });
 
         // OAuth2 authenticators
         $app['auth.oauth2.clients'] = [
@@ -83,7 +83,7 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
         $app['auth.test.authenticator'] = function (Container $app) {
             $test_option = array_replace([
                 'test_user_id' => 'admin',
-            ], $app['auth.options']['test']);
+            ], $app['auth.options']['test'] ?? []);
 
             return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
         };
