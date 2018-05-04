@@ -16,7 +16,6 @@ class OAuth2AuthenticatorTest extends TestCase
         'redirectUri' => 'https://admin.ridibooks.com/login-azure',
     ];
 
-
     private $token_response = [
         "access_token" => "eyJ0eXAiOiJ",
         "token_type" => "Bearer",

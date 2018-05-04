@@ -10,7 +10,6 @@ use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
-use Ridibooks\Cms\Service\Auth\Session;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 
@@ -20,7 +19,7 @@ class AuthServiceProvider implements ServiceProviderInterface, BootableProviderI
     {
         $app['auth.options'] = [];
 
-        $app['auth.enabled'] = [
+        $app['auth.enabled'] = $app['auth.enabled'] ?? [
             OAuth2Authenticator::AUTH_TYPE,
             PasswordAuthenticator::AUTH_TYPE,
             TestAuthenticator::AUTH_TYPE,
