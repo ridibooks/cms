@@ -22,6 +22,7 @@ $app->register(new CapsuleServiceProvider(), [
 $app->register(new SentryServiceProvider(), [
     SentryServiceProvider::SENTRY_OPTIONS => $app[SentryServiceProvider::SENTRY_OPTIONS]
 ]);
+$app[SentryServiceProvider::SENTRY]->install();
 
 $app->register(new MonologServiceProvider(), [
     'monolog.name' => 'CMS',
