@@ -43,7 +43,7 @@ $app->register(new Service\ThriftServiceProvider(), [
     },
 ]);
 
-$app->register(new Service\Auth\AuthServiceProvider(), [
+$app->register(new Service\Auth\AuthenticationServiceProvider(), [
     'auth.options' => $config['auth.options'],
     'auth.oauth2.clients' => function (CmsApplication $app) {
         return [

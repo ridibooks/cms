@@ -13,7 +13,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 
-class AuthServiceProvider implements ServiceProviderInterface, BootableProviderInterface
+class AuthenticationServiceProvider implements ServiceProviderInterface, BootableProviderInterface
 {
     public function register(Container $app)
     {

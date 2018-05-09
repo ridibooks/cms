@@ -9,7 +9,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
-use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
 class AuthServiceProviderTest extends TestCase
@@ -17,7 +17,7 @@ class AuthServiceProviderTest extends TestCase
     public function testRegister()
     {
         $app = new Container();
-        $app->register(new AuthServiceProvider(), [
+        $app->register(new AuthenticationServiceProvider(), [
             'auth.enabled' => [
                 OAuth2Authenticator::AUTH_TYPE,
                 PasswordAuthenticator::AUTH_TYPE,

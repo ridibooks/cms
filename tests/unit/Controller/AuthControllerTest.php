@@ -8,7 +8,7 @@ use Ridibooks\Cms\Controller\AuthController;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
-use Ridibooks\Cms\Service\Auth\AuthServiceProvider;
+use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Tests\MockOAuth2Client;
 use Silex\Application;
@@ -43,7 +43,7 @@ class AuthControllerTest extends TestCase
         });
 
         $app->register(new RoutingServiceProvider());
-        $app->register(new AuthServiceProvider(), [
+        $app->register(new AuthenticationServiceProvider(), [
             'auth.oauth2.clients' => function () {
                 return [
                     AzureClient::PROVIDER_NAME => new MockOAuth2Client(true),
