@@ -15,11 +15,12 @@ if (is_readable(__DIR__ . '/../.env')) {
 $request = Request::createFromGlobals();
 if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
     $hostname = $request->getHost();
-    $pattern = '/^admin\.(\w+)(\.platform)?\.dev\.ridi\.io$/';
+    $pattern = '/^(admin|cms)\.(\w+)(\.platform)?\.dev\.ridi\.io$/';
 
-    // 'admin.{test_id}.dev.io' or 'admin.{test_id}.platform.dev.io'
+    // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io',
+    // 'cms.{test_id}.dev.io' or 'cms.{test_id}.platform.dev.io'
     if (preg_match($pattern, $hostname, $matches)) {
-        $_ENV['TEST_ID'] = $matches[1];
+        $_ENV['TEST_ID'] = $matches[2];
     }
 }
 
