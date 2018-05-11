@@ -61,6 +61,13 @@
     <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap-fileinput/css/fileinput.min.css">
     <link rel="stylesheet" href="{{ BOWER_PATH }}/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 
+    <style>
+      html {
+        font-size: 16px;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ridi/cms-ui@0.3.1/dist/cms-ui.var.js"></script>
     <script type="text/javascript" src="{{ BOWER_PATH }}/requirejs/require.js"></script>
     <script>
       requirejs.config({
@@ -191,6 +198,21 @@
   <div class="{{ ENV_NAME }}_environment_ribbon">{{ ENV_NAME }}</div>
 {% endif %}
 
+<div id="menu_container"></div>
+
+<script>
+  (function renderMenu() {
+    var menuComponent = CmsUi.Menu;
+    var menuProps = {
+      items: {{ menus|json_encode|raw }}
+    };
+    var menuElement = CmsUi.createElement(menuComponent, menuProps);
+    var menuContainer = document.getElementById('menu_container');
+
+    CmsUi.render(menuElement, menuContainer);
+  })();
+</script>
+
 <div class="container-fluid marginBottom30 marginTop20">
   {# Internet Explorer 브라우저로 접속시 경고 출력 #}
   <div hidden class="col-xs-push-8" id="js_ie_alert" style="position: fixed; z-index: 10; opacity: 0.75;">
@@ -202,10 +224,7 @@
   </div>
 
   <div class="row">
-    <div class="col-xs-12 col-lg-2">
-      {% include '/comm/left_menu_new.twig' %}
-    </div>
-    <div class="col-xs-12 col-lg-10">
+    <div class="col-xs-12">
       <ul>
         <li><h3>{{ block('title') }}</h3></li>
         {% if purpose %}
