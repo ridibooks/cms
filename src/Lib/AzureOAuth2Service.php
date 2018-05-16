@@ -25,6 +25,10 @@ class AzureOAuth2Service
         $this->resource = $azure_config['resource'];
         $this->api_version = $azure_config['api_version'];
 
+        if (empty($this->redirect_uri)) {
+             $this->redirect_uri = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $azure_config['redirect_path'];
+        }
+
         $guzzle_config = array_merge(['verify' => false], $guzzle_config);
         $this->http = new Client($guzzle_config);
     }
