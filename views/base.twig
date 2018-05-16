@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{{ title }}{% endblock %} - Ridibooks CMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  {% if BASE_HREF %}
+    <base href="//{{ BASE_HREF }}"/>
+  {% endif %}
+
+  <style>
+    .DEV_environment_ribbon, .STAGING_environment_ribbon {
+      position: fixed;
+      left: -30px;
+      top: 10px;
+      z-index: 99999;
+      width: 100px;
+      height: 24px;
+      margin: 0;
+      padding: 0;
+      line-height: 25px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0;
+
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+
+      box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+      -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+      -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, .3);
+    }
+
+    .DEV_environment_ribbon {
+      background: #5fce0c;
+    }
+
+    .STAGING_environment_ribbon {
+      background: #e74c3c;
+      font-size: 11px;
+    }
+  </style>
+
+  {% block style %}
+  {% endblock %}
+
+  {% block head %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/admin/admin.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/select2/select2.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/select2-bootstrap-css/select2-bootstrap.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/cms-bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}/css/jquery.monthpicker-0.1.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/bootstrap-fileinput/css/fileinput.min.css">
+    <link rel="stylesheet" href="{{ BOWER_PATH }}/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+
+    <style>
+      html {
+        font-size: 16px;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ridi/cms-ui@0.3.1/dist/cms-ui.var.js"></script>
+    <script type="text/javascript" src="{{ BOWER_PATH }}/requirejs/require.js"></script>
+    <script>
+      requirejs.config({
+        waitSeconds: 14,
+        {% if JS_LAST_MODIFIED_TIMESTAMP %}
+          urlArgs: 't={{ JS_LAST_MODIFIED_TIMESTAMP }}',
+        {% endif %}
+        paths: {
+          'jquery': '{{ BOWER_PATH }}/jquery/dist/jquery.min',
+          // 1.11 부터는 AMD 지원, 스크립트 파일이 아닌 폴더를 지정
+          'jquery-ui': '{{ BOWER_PATH }}/jquery-ui/ui',
+
+          // jquery.fileupload에서 아래 이름으로 하드코딩되어 있어서
+          'jquery.ui.widget': '{{ BOWER_PATH }}/jquery-ui/ui/widget',
+
+          'jquery.fileupload': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload',
+          'jquery.fileupload-process': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload-process',
+          'jquery.fileupload-validate': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.fileupload-validate',
+          'jquery.iframe-transport': '{{ BOWER_PATH }}/jquery-file-upload/js/jquery.iframe-transport',
+
+          'bootstrap': '{{ BOWER_PATH }}/bootstrap/dist/js/bootstrap.min',
+          'bootstrap.datepicker': '{{ BOWER_PATH }}/bootstrap-datepicker/js/bootstrap-datepicker',
+          'bootstrap.datetimepicker': '{{ BOWER_PATH }}/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker',
+          'bootstrap.lightbox': '{{ BOWER_PATH }}/ekko-lightbox/dist/ekko-lightbox',
+          'bootstrap.datatables': '{{ BOWER_PATH }}/datatables/media/js/dataTables.bootstrap',
+          'bootstrap.fileinput': '{{ BOWER_PATH }}/bootstrap-fileinput/js/fileinput.min',
+          'bootstrap-select': '{{ STATIC_URL }}/bower_components/bootstrap-select/dist/js/bootstrap-select',
+
+          'datatables.net': '{{ BOWER_PATH }}/datatables/media/js/jquery.dataTables',
+          'select2': '{{ BOWER_PATH }}/select2/select2',
+          'moment': '{{ BOWER_PATH }}/moment/moment',
+          'ckeditor': '{{ BOWER_PATH }}/ckeditor/ckeditor',
+          'stickyTableHeaders': '{{ BOWER_PATH }}/StickyTableHeaders/js/jquery.stickytableheaders',
+          'highlight': '{{ BOWER_PATH }}/jquery-highlight/jquery.highlight',
+          'ace': '{{ BOWER_PATH }}/ace-builds/src',
+          'spin': '{{ BOWER_PATH }}/spin.js/spin',
+          'jquery-form': '{{ BOWER_PATH }}/jquery-form/jquery.form',
+          'jquery.attrajax': '{{ BOWER_PATH }}/jquery.attrajax/jquery.attrajax',
+          'jquery.tmpl': '{{ STATIC_URL }}/js/jquery.tmpl.min',
+          'tinyMCE': '{{ BOWER_PATH }}/tinymce/tinymce.min',
+          'lazyload': '{{ BOWER_PATH }}/vanilla-lazyload/dist/lazyload.min',
+
+          'atagToDownloadTable': '{{ STATIC_URL }}/js/jquery.atag.to.download.table',
+          'monthpicker': '{{ STATIC_URL }}/js/jquery.monthpicker-0.1',
+
+          'shortcut': '{{ STATIC_URL }}/lib/shortcut',
+
+          'admin': '{{ STATIC_URL }}/js/admin',
+
+          'comm': '{{ STATIC_URL }}/js/comm',
+          'publisher': '{{ STATIC_URL }}/js/publisher',
+          'super': '{{ STATIC_URL }}/js/super',
+          'logiform': '{{ STATIC_URL }}/lib/logiform/custom_logiform',
+          'jquery.resizableColumns': '{{ BOWER_PATH }}/jquery-resizable-columns/dist/jquery.resizableColumns.min'
+        },
+        shim: {
+          "bootstrap": ["jquery"],
+          "bootstrap.datepicker": ["jquery"],
+          "bootstrap.datatables": ["datatables.net"],
+          "bootstrap.fileinput": ["bootstrap"],
+          'bootstrap-select': ['jquery'],
+
+          "jquery.attrajax": ["jquery", 'jquery-form', "jquery.tmpl"],
+          "datatables.net": ["jquery"],
+          "jquery-form": ["jquery"],
+          "monthpicker": ["jquery"],
+          "select2": ["jquery"],
+          "stickyTableHeaders": ["jquery"],
+          "atagToDownloadTable": ["jquery"],
+          'jquery.tmpl': ['jquery'],
+          'tinyMCE': {
+            exports: 'tinyMCE',
+            init: function () {
+              this.tinyMCE.DOM.events.domLoaded = true;
+              return this.tinyMCE;
+            }
+          },
+
+          'logiform': ['jquery', 'bootstrap-select'],
+          'jquery.resizableColumns': ['jquery']
+        }
+      });
+
+      requirejs(["jquery", "comm/common", "select2", "bootstrap"], function ($, common) {
+        {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+        common.showAlertIfIe();
+
+        $(function () {
+          var menu_select = $(".menu_select");
+          menu_select.select2({
+            placeholder: "메뉴를 검색하세요"
+          });
+
+          menu_select.on("select2-selecting", function (event) {
+            window.location.href = event.choice.id;
+          });
+
+          var collapseList = $('li.active').closest('ul');
+          collapseList.addClass('in');
+        });
+      });
+
+      requirejs(['jquery', 'bootstrap.datatables'], function ($) {
+        $('*[datatable]').dataTable({"bPaginate": false});
+      });
+
+      requirejs(["jquery", "comm/format.util"], function ($, format) {
+        // 테이블 내 숫자 관련 cell formatting
+        $(".js_digit_cell").each(function (c, obj) {
+          $(obj).css({"text-align": "right"}).text(format.priceFormatting($(obj).text()));
+        });
+      });
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-10567409-14', 'auto');
+      ga('send', 'pageview');
+    </script>
+  {% endblock %}
+</head>
+<body>
+
+{% if ENV_NAME and ENV_NAME != 'REAL' %}
+  <div class="{{ ENV_NAME }}_environment_ribbon">{{ ENV_NAME }}</div>
+{% endif %}
+
+<div id="menu_container"></div>
+
+<script>
+  (function renderMenu() {
+    var menuComponent = CmsUi.Menu;
+    var menuProps = {
+      items: {{ menus|json_encode|raw }}
+    };
+    var menuElement = CmsUi.createElement(menuComponent, menuProps);
+    var menuContainer = document.getElementById('menu_container');
+
+    CmsUi.render(menuElement, menuContainer);
+  })();
+</script>
+
+<div class="container-fluid marginBottom30 marginTop20">
+  {# Internet Explorer 브라우저로 접속시 경고 출력 #}
+  <div hidden class="col-xs-push-8" id="js_ie_alert" style="position: fixed; z-index: 10; opacity: 0.75;">
+    <div class="alert alert-danger">
+      <strong>경고!</strong> Internet Explorer 에서는 일부 기능이 정상적으로 작동하지 않을 수 있습니다. <a
+        href="https://www.google.co.kr/chrome/browser/desktop/" class="alert-link">Chrome 브라우저</a>를 사용해주세요.
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <ul>
+        <li><h3>{{ block('title') }}</h3></li>
+        {% if purpose %}
+        <li>사용목적: {% block purpose %}{% endblock %}</li>
+        {% endif %}
+        {% if usage %}
+        <li>사용방법: {% block usage %}{% endblock %}</li>
+        {% endif %}
+      </ul>
+      <hr>
+
+      {% for type, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+
+      {% block body %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+
+{% block script %}
+{% endblock %}
+</body>
+</html>
