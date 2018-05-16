@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Tests;
+namespace Ridibooks\Cms\Tests\Mock;
 
 use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\OAuth2ClientInterface;

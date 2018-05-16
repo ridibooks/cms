@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\AuthMiddleware;
-use Ridibooks\Cms\Tests\MockAuthenticator;
+use Ridibooks\Cms\Tests\Mock\MockAuthenticator;
 use Silex\Application;
 use Silex\Provider\RoutingServiceProvider;
 use Symfony\Component\HttpFoundation\Request;

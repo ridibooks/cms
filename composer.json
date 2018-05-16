@@ -29,7 +29,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Ridibooks\\Cms\\Tests\\": "tests"
+      "Ridibooks\\Cms\\Tests\\": "tests/unit"
     }
   },
   "scripts": {

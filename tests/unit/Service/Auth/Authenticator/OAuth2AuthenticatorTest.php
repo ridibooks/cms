@@ -9,8 +9,8 @@ use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
-use Ridibooks\Cms\Tests\MockOAuth2Client;
-use Ridibooks\Cms\Tests\MockSession;
+use Ridibooks\Cms\Tests\Mock\MockOAuth2Client;
+use Ridibooks\Cms\Tests\Mock\MockSession;
 use Symfony\Component\HttpFoundation\Request;
 
 class OAuth2AuthenticatorTest extends TestCase

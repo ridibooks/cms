@@ -5,6 +5,7 @@ namespace Ridibooks\Cms\Tests;
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
+use Ridibooks\Cms\Tests\Mock\MockSession;
 
 class OAuth2AuthenticatorTest extends TestCase
 {
