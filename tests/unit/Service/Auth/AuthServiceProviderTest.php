@@ -68,15 +68,15 @@ class AuthServiceProviderTest extends TestCase
             $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\OAuth2\Client\OAuth2ClientInterface', $client);
         }
 
-        $this->assertArrayHasKey('auth.oauth2.cookie_keys', $app);
+        $this->assertArrayHasKey('auth.cookie.oauth2', $app);
+        $this->assertArrayHasKey('auth.authenticator.oauth2', $app);
+        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator', $app['auth.authenticator.oauth2']);
 
-        $this->assertArrayHasKey('auth.oauth2.authenticator', $app);
-        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator', $app['auth.oauth2.authenticator']);
+        $this->assertArrayHasKey('auth.authenticator.password', $app);
+        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator', $app['auth.authenticator.password']);
 
-        $this->assertArrayHasKey('auth.password.authenticator', $app);
-        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator', $app['auth.password.authenticator']);
-
-        $this->assertArrayHasKey('auth.test.authenticator', $app);
-        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator', $app['auth.test.authenticator']);
+        $this->assertArrayHasKey('auth.cookie.test', $app);
+        $this->assertArrayHasKey('auth.authenticator.test', $app);
+        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator', $app['auth.authenticator.test']);
     }
 }

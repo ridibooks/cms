@@ -73,7 +73,7 @@ class AuthController
     public function authorize(Request $request, Application $app, string $auth_type)
     {
         /** @var BaseAuthenticator $auth */
-        $auth = $app['auth.' . $auth_type . '.authenticator'];
+        $auth = $app['auth.authenticator.' . $auth_type];
         $auth->signIn($request);
 
         $home_url = $app['url_generator']->generate('home');
@@ -88,7 +88,7 @@ class AuthController
         $scope = $request->get('scope');
 
         /** @var OAuth2Authenticator $auth */
-        $auth = $app['auth.oauth2.authenticator'];
+        $auth = $app['auth.authenticator.oauth2'];
         $auth->setProvider($provider);
         $auth->setReturnUrl($return_url);
 
@@ -99,10 +99,10 @@ class AuthController
     public function callbackFromOAuth2(Request $request, Application $app)
     {
         /** @var OAuth2Authenticator $auth */
-        $auth = $app['auth.oauth2.authenticator'];
+        $auth = $app['auth.authenticator.oauth2'];
 
         try {
-            $user_id = $auth->signIn($request);
+            $auth->signIn($request);
         } catch (InvalidStateException $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

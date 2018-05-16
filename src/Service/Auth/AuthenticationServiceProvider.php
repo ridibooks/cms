@@ -37,8 +37,8 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             ];
 
             foreach ($enabled as $enabled_type) {
-                if (isset($app['auth.' . $enabled_type . '.cookie_keys'])) {
-                    $cookie_keys = array_merge($cookie_keys, $app['auth.' . $enabled_type . '.cookie_keys']);
+                if (isset($app['auth.cookie.' . $enabled_type])) {
+                    $cookie_keys = array_merge($cookie_keys, $app['auth.cookie.' . $enabled_type]);
                 }
             }
 
@@ -50,7 +50,7 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             $session = $app['auth.session'];
             $auth_type = $session->get(BaseAuthenticator::KEY_AUTH_TYPE);
 
-            return $app['auth.' . $auth_type . '.authenticator'] ?? null;
+            return $app['auth.authenticator.' . $auth_type] ?? null;
         });
 
         // OAuth2 authenticators
@@ -58,7 +58,7 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             // 'oauth2 provider name' => ${Auth\OAuth2ClientInterface object}
         ];
 
-        $app['auth.oauth2.cookie_keys'] = [
+        $app['auth.cookie.oauth2'] = [
             OAuth2Authenticator::KEY_PROVIDER => 'oauth2_provider',
             OAuth2Authenticator::KEY_ACCESS_TOKEN => 'oauth2_access_token',
             OAuth2Authenticator::KEY_REFRESH_TOKEN => 'oauth2_refresh_token',
@@ -66,21 +66,21 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
         ];
 
-        $app['auth.oauth2.authenticator'] = function (Container $app) {
+        $app['auth.authenticator.oauth2'] = function (Container $app) {
             return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients']);
         };
 
         // Password authenticators
-        $app['auth.password.authenticator'] = function (Container $app) {
+        $app['auth.authenticator.password'] = function (Container $app) {
             return new PasswordAuthenticator($app['auth.session']);
         };
 
         // Test authenticators
-        $app['auth.test.cookie_keys'] = [
+        $app['auth.cookie.test'] = [
             TestAuthenticator::KEY_USER_ID => 'test_user_id',
         ];
 
-        $app['auth.test.authenticator'] = function (Container $app) {
+        $app['auth.authenticator.test'] = function (Container $app) {
             $test_option = array_replace([
                 'test_user_id' => 'admin',
             ], $app['auth.options']['test'] ?? []);
