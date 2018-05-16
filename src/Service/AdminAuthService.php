@@ -3,7 +3,7 @@
 namespace Ridibooks\Cms\Service;
 
 use Pimple\Container;
-use Ridibooks\Cms\Lib\AzureOAuth2Service;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
 use Ridibooks\Cms\Thrift\Errors\NoTokenException;
@@ -129,25 +129,15 @@ class AdminAuthService extends Container
             ]);
         }
 
-        /** @var AzureOAuth2Service $azure */
-        $azure = new AzureOAuth2Service([
+        $azure = new AzureClient([
             'tenent' => $_ENV['AZURE_TENENT'] ?? '',
-            'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
-            'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
-            'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
-            'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-            'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
+            'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
+            'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
+            'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+            'resource' => $_ENV['AZURE_RESOURCE'],
         ]);
 
-        $token_resource = $azure->introspectToken($token);
-        if (isset($token_resource['error'])) {
-            throw new MalformedTokenException([
-                'code' => ErrorCode::BAD_REQUEST,
-                'message' => '잘못된 토큰입니다.',
-            ]);
-        }
-
-        return  $token_resource['user_id'];
+        return $azure->getResourceOwner($token);
     }
 
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
