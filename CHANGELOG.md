@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.1.12] - 2018-05-03
+### Changed
+- Update test server URL for platform team | f7658f4
+- Replace menu component with CMS UI (#61)
+
+### Fixed
+- Fix invalid test assert | 39c62eb
+- Fix sentry not working (#60)
+
 ## [v2.1.11] - 2018-05-03
 ### Fixed
 - Fix invoking error in `getHashesFromMenus`
