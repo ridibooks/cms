@@ -21,12 +21,13 @@ class AzureOAuth2Service
         $this->tenent = $azure_config['tenent'];
         $this->client_id = $azure_config['client_id'];
         $this->client_secret = $azure_config['client_secret'];
-        $this->redirect_uri = $azure_config['redirect_uri'];
         $this->resource = $azure_config['resource'];
         $this->api_version = $azure_config['api_version'];
 
-        if (empty($this->redirect_uri)) {
-             $this->redirect_uri = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $azure_config['redirect_path'];
+        if (!empty($azure_config['redirect_path'])) {
+            $this->redirect_uri = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $azure_config['redirect_path'];
+        } else {
+            $this->redirect_uri = $azure_config['redirect_uri'];
         }
 
         $guzzle_config = array_merge(['verify' => false], $guzzle_config);

@@ -74,12 +74,12 @@ class LoginService
         int $access_expires_on, string $login_id): Response
     {
         $is_secure = empty($_ENV['TEST_SECURED_DISABLE']) ? true : false;
-        $request_domain = $_SERVER['HTTP_HOST'];
-        $token_domain = str_replace(self::AUTH_SUBDOMAIN, '', $request_domain);
+        $auth_domain = $_SERVER['HTTP_HOST'];
+        $service_domain = str_replace(self::AUTH_SUBDOMAIN, '', $auth_domain);
 
-        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', $token_domain, $is_secure);
-        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, time() + self::REFRESH_TOKEN_EXPIRES_SEC, '/', $request_domain, $is_secure);
-        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', $token_domain, $is_secure);
+        $access_cookie = new Cookie(self::TOKEN_COOKIE_NAME, $access_token, $access_expires_on, '/', $service_domain, $is_secure);
+        $login_id_cookie = new Cookie(self::ADMIN_ID_COOKIE_NAME, $login_id, $access_expires_on, '/', $service_domain, $is_secure);
+        $refresh_cookie = new Cookie(self::REFRESH_COOKIE_NAME, $refresh_token, time() + self::REFRESH_TOKEN_EXPIRES_SEC, '/', $auth_domain, $is_secure);
 
         $response = RedirectResponse::create($return_url);
         $response->headers->setCookie($access_cookie);
@@ -97,13 +97,13 @@ class LoginService
     {
         $is_secure = empty($_ENV['TEST_SECURED_DISABLE']) ? true : false;
 
-        $request_domain = $_SERVER['HTTP_HOST'];
-        $token_domain = str_replace(self::AUTH_SUBDOMAIN, '', $request_domain);
+        $auth_domain = $_SERVER['HTTP_HOST'];
+        $service_domain = str_replace(self::AUTH_SUBDOMAIN, '', $auth_domain);
 
         $response = RedirectResponse::create($return_url);
-        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME, '/', $token_domain, $is_secure);
-        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME, '/', $token_domain, $is_secure);
-        $response->headers->clearCookie(self::REFRESH_COOKIE_NAME, '/', $request_domain, $is_secure);
+        $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME, '/', $service_domain, $is_secure);
+        $response->headers->clearCookie(self::TOKEN_COOKIE_NAME, '/', $service_domain, $is_secure);
+        $response->headers->clearCookie(self::REFRESH_COOKIE_NAME, '/', $auth_domain, $is_secure);
         return $response;
     }
 
