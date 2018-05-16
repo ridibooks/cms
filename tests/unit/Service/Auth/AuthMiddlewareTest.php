@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Ridibooks\Cms\Tests\Service\Auth;
 
 use PHPUnit\Framework\TestCase;
+use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\AuthMiddleware;
-use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Tests\MockAuthenticator;
 use Silex\Application;
 use Silex\Provider\RoutingServiceProvider;

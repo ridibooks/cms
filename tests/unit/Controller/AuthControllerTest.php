@@ -5,10 +5,10 @@ namespace Ridibooks\Cms\Tests\Controller;
 
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Controller\AuthController;
+use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
-use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Tests\MockOAuth2Client;
 use Silex\Application;
