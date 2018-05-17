@@ -11,6 +11,7 @@ $config = [
         'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
         'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
         'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+        'redirect_path' => $_ENV['AZURE_REDIRECT_PATH'] ?? '',
         'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
     ],
     'capsule.connections' => [

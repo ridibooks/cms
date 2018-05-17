@@ -28,9 +28,11 @@ class AuthController
         ], $response);
     }
 
-    public function logout(Application $app)
+    public function logout(Request $request, Application $app)
     {
-        return LoginService::handleLogout($app['url_generator']->generate('login'));
+        $return_url = $request->get('return_url', $app['url_generator']->generate('login'));
+
+        return LoginService::handleLogout($return_url);
     }
 
     private function buildAuthenticationEndpoint(Application $app)
