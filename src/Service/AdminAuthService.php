@@ -112,7 +112,7 @@ class AdminAuthService extends Container
      * @throws NoTokenException
      * @throws MalformedTokenException
      */
-    private function introspectToken($token)
+    public function introspectToken($token)
     {
         if (empty($token)) {
             throw new NoTokenException([
