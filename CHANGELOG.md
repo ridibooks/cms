@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
-- Add a new API `introspectToken`
 
-## [v2.1.12] - 2018-05-03
+## [v2.1.13] - 2018-05-18
+### Added
+- Add a new API `introspectToken` (#64)
+- Use auth subdomain (#62)
+
+## [v2.1.12] - 2018-05-16
 ### Changed
 - Update test server URL for platform team | f7658f4
 - Replace menu component with CMS UI (#61)
