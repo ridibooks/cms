@@ -11,6 +11,7 @@ use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
 use Ridibooks\Cms\Thrift\Errors\NoTokenException;
 use Ridibooks\Cms\Thrift\Errors\SystemException;
 use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
+use Ridibooks\Cms\Thrift\AdminAuth\TokenClaim;
 
 class AdminAuthThrift implements AdminAuthServiceIf
 {
@@ -77,6 +78,6 @@ class AdminAuthThrift implements AdminAuthServiceIf
      {
          $admin_id = $this->server->introspectToken($token);
 
-         return new AccessToken(['admin_id' => $admin_id]);
+         return new TokenClaim(['admin_id' => $admin_id]);
      }
 }
