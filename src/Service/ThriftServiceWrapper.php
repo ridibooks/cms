@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Service;
 
 use Psr\Log\LoggerInterface;

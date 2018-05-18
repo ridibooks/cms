@@ -5,6 +5,7 @@ namespace Ridibooks\Cms\Thrift;
 use Ridibooks\Cms\Service\AdminAuthService;
 use Ridibooks\Cms\Thrift\AdminAuth\AdminAuthServiceIf;
 use Ridibooks\Cms\Thrift\AdminAuth\AdminMenu;
+use Ridibooks\Cms\Thrift\AdminAuth\TokenClaim;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
 use Ridibooks\Cms\Thrift\Errors\NoTokenException;
@@ -43,6 +44,7 @@ class AdminAuthThrift implements AdminAuthServiceIf
     public function getAdminMenu($adminId)
     {
         $menus = $this->server->getAdminMenu($adminId);
+
         return array_map(function ($menu) {
             return new AdminMenu($menu);
         }, $menus);
@@ -66,5 +68,16 @@ class AdminAuthThrift implements AdminAuthServiceIf
     public function authorizeByTag($token, array $tags)
     {
         $this->server->authorizeByTag($token, $tags);
+    }
+
+    /**
+     * @throws NoTokenException
+     * @throws MalformedTokenException
+     */
+    public function introspectToken($token)
+    {
+        $admin_id = $this->server->introspectToken($token);
+
+        return new TokenClaim(['admin_id' => $admin_id]);
     }
 }

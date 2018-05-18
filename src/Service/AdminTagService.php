@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminTag;
@@ -38,10 +39,11 @@ class AdminTagService implements AdminTagServiceIf
         $admin_service = new AdminMenuService();
         $menus = $admin_service->getMenus($menu_ids);
         $menus = ThriftService::convertMenuCollectionToArray($menus);
-        $urls = array_map(function($menu) {
+        $urls = array_map(function ($menu) {
             return $menu['menu_url'] ?? '';
         }, $menus);
         $auth_service = new AdminAuthService();
+
         return $auth_service->getHashesFromMenus($check_url, $urls);
     }
 
@@ -53,6 +55,7 @@ class AdminTagService implements AdminTagServiceIf
         if (empty($tag)) {
             return new ThriftAdminTag();
         }
+
         return new ThriftAdminTag($tag->toArray());
     }
 

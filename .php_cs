@@ -25,6 +25,7 @@ return PhpCsFixer\Config::create()
         'ordered_imports' => true,
         // 3. optional rules
         'indentation_type' => false,  // 탭을 사용할 경우에는 false negative 발생
+        'yoda_style' => false,
     ])
     ->setFinder($finder)
 ;

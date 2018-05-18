@@ -44,6 +44,7 @@ class AuthController
             $azure = $app['azure'];
             $end_point = $azure->getAuthenticationEndPoint();
         }
+
         return $end_point;
     }
 
@@ -52,6 +53,7 @@ class AuthController
         $login_path = $app['url_generator']->generate('login');
         $home_path = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_path);
+
         return LoginService::handleAuthorize($return_url, $login_path, $app['azure'], $app['logger']);
     }
 
@@ -73,6 +75,7 @@ class AuthController
         }
 
         $response->headers->clearCookie(self::RETURN_URL_COOKIE_NAME);
+
         return $response;
     }
 
@@ -92,6 +95,7 @@ class AuthController
             $azure = new AzureOAuth2Service($app['azure.options']);
             $token_resource = $azure->introspectToken($token);
         }
+
         return JsonResponse::create($token_resource,
             isset($token_resource['error']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK);
     }
@@ -105,6 +109,7 @@ class AuthController
             return RedirectResponse::create("/login?return_url=$return_url");
         }
         $azure = new AzureOAuth2Service($app['azure.options']);
+
         return LoginService::refreshToken($return_url, $refresh_token, $azure);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Service;
 
 use Illuminate\Database\Capsule\Manager as DB;
@@ -15,6 +16,7 @@ class AdminUserService implements AdminUserServiceIf
     public function getAllAdminUserArray(): array
     {
         $users = AdminUser::select(['id', 'name'])->where('is_use', 1)->get();
+
         return $users->map(function ($user) {
             return new ThriftAdminUser($user->toArray());
         })->all();
@@ -27,6 +29,7 @@ class AdminUserService implements AdminUserServiceIf
         if (!$user) {
             return new ThriftAdminUser();
         }
+
         return new ThriftAdminUser($user->toArray());
     }
 
@@ -80,6 +83,7 @@ class AdminUserService implements AdminUserServiceIf
         usort($menus, function ($left, $right) {
             $left_order = $left['menu_order'] ?? 0;
             $right_order = $right['menu_order'] ?? 0;
+
             return $left_order - $right_order;
         });
 
@@ -195,6 +199,7 @@ class AdminUserService implements AdminUserServiceIf
                 $unique[$id] = $menu;
             }
         }
+
         return $unique;
     }
 }

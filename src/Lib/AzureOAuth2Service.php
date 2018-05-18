@@ -80,6 +80,7 @@ class AzureOAuth2Service
     public function getTokens(string $code): array
     {
         $token_resource = self::requestToken($code);
+
         return self::parseTokenReource($token_resource);
     }
 

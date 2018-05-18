@@ -45,6 +45,7 @@ class AdminAuthService extends Container
     {
         $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];
+
             return $menu['menu_deep'] == 0 && strlen($url) == 0;
         }, $menus);
 
@@ -112,7 +113,7 @@ class AdminAuthService extends Container
      * @throws NoTokenException
      * @throws MalformedTokenException
      */
-    private function introspectToken($token)
+    public function introspectToken($token)
     {
         if (empty($token)) {
             throw new NoTokenException([
@@ -177,6 +178,7 @@ class AdminAuthService extends Container
         if (!empty(array_intersect($user_tags, $required_tags))) {
             return true;
         }
+
         return false;
     }
 
@@ -189,6 +191,7 @@ class AdminAuthService extends Container
         if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
             return true;
         }
+
         return false;
     }
 
@@ -239,7 +242,7 @@ class AdminAuthService extends Container
         if (!$this->isValidUser($admin_id)) {
             return false;
         }
-        
+
         if ($this->isWhiteListUrl($check_url)) {
             return true;
         }
@@ -260,6 +263,7 @@ class AdminAuthService extends Container
     private function parseUrlAuth(string $url): array
     {
         $tokens = preg_split('/#/', $url);
+
         return [
             'url' => $tokens[0] ?? null,
             'hash' => $tokens[1] ?? null,
@@ -278,6 +282,7 @@ class AdminAuthService extends Container
         if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
             return true;
         }
+
         return false;
     }
 
@@ -296,6 +301,7 @@ class AdminAuthService extends Container
         } elseif ($auth == $check_hash) {
             return true;
         }
+
         return false;
     }
 

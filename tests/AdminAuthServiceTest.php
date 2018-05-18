@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service;
 
+use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser;
 use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
-use PHPUnit\Framework\TestCase;
 
 class AdminAuthServiceTest extends TestCase
 {
@@ -126,12 +126,12 @@ class AdminAuthServiceTest extends TestCase
         $this->auth_service['tag_service']->method('findTagsByName')
             ->will($this->onConsecutiveCalls(
                 [2, 3],
-                [3, 4] # fail case
+                [3, 4] // fail case
             ));
 
         $this->assertNull($this->auth_service->authorizeByTag('test', ['test']));
 
-        # Fail case
+        // Fail case
         $this->expectException(UnauthorizedException::class);
         $this->auth_service->authorizeByTag('test', ['test']);
     }
