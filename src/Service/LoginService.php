@@ -26,6 +26,7 @@ class LoginService
         self::addUserIfNotExists($test_id, $test_id);
 
         $refresh_expires_on = time() + self::REFRESH_TOKEN_EXPIRES_SEC;
+
         return self::createLoginResponse(
             $return_url,
             'test',
@@ -52,6 +53,7 @@ class LoginService
         self::addUserIfNotExists($resource['user_id'], $resource['user_name']);
 
         $access_expires_on = $tokens['expires_on'];
+
         return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, $resource['user_id']);
     }
 
@@ -85,6 +87,7 @@ class LoginService
         $response->headers->setCookie($access_cookie);
         $response->headers->setCookie($refresh_cookie);
         $response->headers->setCookie($login_id_cookie);
+
         return $response;
     }
 
@@ -104,6 +107,7 @@ class LoginService
         $response->headers->clearCookie(self::ADMIN_ID_COOKIE_NAME, '/', $service_domain, $is_secure);
         $response->headers->clearCookie(self::TOKEN_COOKIE_NAME, '/', $service_domain, $is_secure);
         $response->headers->clearCookie(self::REFRESH_COOKIE_NAME, '/', $auth_domain, $is_secure);
+
         return $response;
     }
 
@@ -148,6 +152,7 @@ class LoginService
         self::addUserIfNotExists($resource['user_id'], $resource['user_name']);
 
         $access_expires_on = $tokens['expires_on'];
+
         return self::createLoginResponse($return_url, $access_token, $refresh_token, $access_expires_on, $resource['user_id']);
     }
 

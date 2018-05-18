@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Thrift;
 
 use Ridibooks\Cms\Service\AdminUserService;

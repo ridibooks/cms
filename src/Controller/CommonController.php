@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Controller;
 
 use Ridibooks\Cms\Service\AdminUserService;
@@ -43,10 +44,12 @@ class CommonController
         if (!$user_info->id) {
             $me_path = $app['url_generator']->generate('me');
             $login_path = $app['url_generator']->generate('login');
+
             return $app->redirect($login_path . '?return_url=' . urlencode($me_path));
         }
 
         $user_info = ThriftService::convertUserToArray($user_info);
+
         return $app->render('me.twig', ['user_info' => $user_info]);
     }
 
@@ -74,6 +77,7 @@ class CommonController
         }
 
         $sub_request = Request::create($app['url_generator']->generate('me'));
+
         return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ridibooks\Cms\Service;
 
 use Ridibooks\Cms\Model\AdminMenu;
@@ -12,6 +13,7 @@ class AdminMenuService implements AdminMenuServiceIf
     public function getMenuList($is_use = null): array
     {
         $menus = $this->queryMenus($is_use);
+
         return $menus->map(function ($menu) {
             return new ThriftAdminMenu($menu);
         })->all();
@@ -54,6 +56,7 @@ class AdminMenuService implements AdminMenuServiceIf
     public function getAllMenuAjax(): array
     {
         $menus = AdminMenuAjax::all();
+
         return $menus->map(function ($menu) {
             return new ThriftAdminMenuAjax($menu->toArray());
         })->all();
@@ -62,6 +65,7 @@ class AdminMenuService implements AdminMenuServiceIf
     public function getMenus(array $menu_ids): array
     {
         $menus = AdminMenu::findMany($menu_ids);
+
         return $menus->map(function ($menu) {
             return new ThriftAdminMenu($menu->toArray());
         })->all();
@@ -108,6 +112,7 @@ class AdminMenuService implements AdminMenuServiceIf
         $menu_users = $menu->users->where('is_use', 1)->pluck('id')->all();
 
         $user_ids = array_unique(array_merge($tags_users, $menu_users));
+
         return $user_ids;
     }
 }
