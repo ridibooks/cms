@@ -31,10 +31,10 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getRootMenus($column = null): array
+    public function getParentMenus($column = null): array
     {
         $menus = AdminMenu::query()
-            ->where('menu_deep', 0)
+            ->whereRaw('TRIM(menu_url) = ?', '#')
             ->orderBy('menu_order')
             ->get();
 

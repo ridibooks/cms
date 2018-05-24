@@ -84,7 +84,7 @@ class AdminAuthServiceTest extends TestCase
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
 
-    public function testHideEmptyRootMenus()
+    public function testHideEmptyParentMenus()
     {
         $menus = [
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
@@ -94,7 +94,7 @@ class AdminAuthServiceTest extends TestCase
         ];
 
         $auth_service = new AdminAuthService();
-        $result = $auth_service->hideEmptyRootMenus($menus);
+        $result = $auth_service->hideEmptyParentMenus($menus);
         $this->assertEquals([
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
             ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],

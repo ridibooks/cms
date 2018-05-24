@@ -29,7 +29,7 @@ class AdminAuthService extends Container
             $menus = $this['user_service']->getAllMenus($user_id);
         }
 
-        $menus = $this->hideEmptyRootMenus($menus);
+        $menus = $this->hideEmptyParentMenus($menus);
 
         $admin_menus = [];
         foreach ($menus as $menu) {
@@ -41,12 +41,12 @@ class AdminAuthService extends Container
         return $admin_menus;
     }
 
-    public function hideEmptyRootMenus(array $menus): array
+    public function hideEmptyParentMenus(array $menus): array
     {
         $topMenuFlags = array_map(function ($menu) {
             $url = self::parseUrlAuth($menu['menu_url'])['url'];
 
-            return $menu['menu_deep'] == 0 && strlen($url) == 0;
+            return strlen($url) == 0;
         }, $menus);
 
         $topMenuFlags[] = true; // For tail check
