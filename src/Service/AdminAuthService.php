@@ -43,17 +43,28 @@ class AdminAuthService extends Container
 
     public function hideEmptyParentMenus(array $menus): array
     {
-        $topMenuFlags = array_map(function ($menu) {
-            $url = self::parseUrlAuth($menu['menu_url'])['url'];
+        $isParentMenu = function ($menu) {
+            $url = $this->parseUrlAuth($menu['menu_url'])['url'];
 
             return strlen($url) == 0;
-        }, $menus);
+        };
 
-        $topMenuFlags[] = true; // For tail check
-        for ($i = 0; $i < count($menus); ++$i) {
-            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
-                $menus[$i]['is_show'] = false;
+        for ($i = count($menus) - 1; $i >= 0; $i--) {
+            if (!$isParentMenu($menus[$i])) {
+                continue;
             }
+
+            if (!isset($menus[$i + 1])) {
+                $menus[$i]['is_show'] = false;
+                continue;
+            }
+
+            if ($menus[$i + 1]['menu_deep'] <= $menus[$i]['menu_deep']) {
+                $menus[$i]['is_show'] = false;
+                continue;
+            }
+
+            $menus[$i]['is_show'] = $menus[$i + 1]['is_show'];
         }
 
         return $menus;
