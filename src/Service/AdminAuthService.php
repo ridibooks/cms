@@ -43,28 +43,65 @@ class AdminAuthService extends Container
 
     public function hideEmptyParentMenus(array $menus): array
     {
-        $isParentMenu = function ($menu) {
+        $isParentMenu = function (&$menu) {
             $url = $this->parseUrlAuth($menu['menu_url'])['url'];
 
-            return strlen($url) == 0;
+            return strlen($url) === 0;
         };
 
-        for ($i = count($menus) - 1; $i >= 0; $i--) {
-            if (!$isParentMenu($menus[$i])) {
-                continue;
+        $buildMenuIndexTrees = function (&$menus) use (&$isParentMenu) {
+            $root = (object)['menu_deep' => -1, 'children' => []];
+            $parents = [$root];
+
+            for ($i = 0; $i < count($menus); $i++) {
+                $menu = $menus[$i];
+
+                $node = (object)[
+                    'menu_index' => $i,
+                    'menu_deep' => $menu['menu_deep'],
+                    'children' => [],
+                ];
+
+                while ($parents[count($parents) - 1]->menu_deep >= $node->menu_deep) {
+                    array_pop($parents);
+                }
+                $parent = $parents[count($parents) - 1];
+
+                $parent->children[] = $node;
+
+                if (!isset($menus[$i + 1])) {
+                    break;
+                }
+
+                $nextMenu = $menus[$i + 1];
+
+                if ($isParentMenu($menu) && $nextMenu['menu_deep'] > $node->menu_deep) {
+                    $parents[] = $node;
+                }
             }
 
-            if (!isset($menus[$i + 1])) {
-                $menus[$i]['is_show'] = false;
-                continue;
+            return $root->children;
+        };
+
+        $hideEmptyParent = function (&$node) use (&$menus, &$hideEmptyParent, &$isParentMenu) {
+            $menu = &$menus[$node->menu_index];
+
+            if (!$isParentMenu($menu)) {
+                return;
             }
 
-            if ($menus[$i + 1]['menu_deep'] <= $menus[$i]['menu_deep']) {
-                $menus[$i]['is_show'] = false;
-                continue;
+            $menu['is_show'] = false;
+            foreach ($node->children as $childNode) {
+                $hideEmptyParent($childNode);
+                $childMenu = $menus[$childNode->menu_index];
+                $menu['is_show'] |= $childMenu['is_show'];
             }
+        };
 
-            $menus[$i]['is_show'] = $menus[$i + 1]['is_show'];
+        $nodes = $buildMenuIndexTrees($menus);
+
+        foreach ($nodes as $node) {
+            $hideEmptyParent($node);
         }
 
         return $menus;

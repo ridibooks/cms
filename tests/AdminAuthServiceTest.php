@@ -107,26 +107,30 @@ class AdminAuthServiceTest extends TestCase
         $menus = [
             ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
             ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => true],
         ];
         $result = $auth_service->hideEmptyParentMenus($menus);
         $this->assertEquals([
             ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
             ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
-            ['id' => 3, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => false],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => false],
         ], $result);
 
         // Test non-empty parent menus
         $menus = [
             ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
             ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
         ];
         $result = $auth_service->hideEmptyParentMenus($menus);
         $this->assertEquals([
             ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
+            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
         ], $result);
     }
 
