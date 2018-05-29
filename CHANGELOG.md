@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.14] - 2018-05-29
+### Fixed
+- Fix cms-ui menu scrolling bug (#67)
+
 ## [v2.1.13] - 2018-05-18
 ### Added
 - Add a new API `introspectToken` (#64)
