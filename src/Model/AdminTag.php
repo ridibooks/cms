@@ -31,6 +31,16 @@ class AdminTag extends Model
         );
     }
 
+    public function groups()
+    {
+        return $this->belongsToMany(
+            AdminGroup::class,
+            'tb_admin2_group_tag',
+            'tag_id',
+            'group_id'
+        );
+    }
+
     public function menus()
     {
         return $this->belongsToMany(
