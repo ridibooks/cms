@@ -49,59 +49,61 @@ class AdminAuthService extends Container
             return strlen($url) === 0;
         };
 
-        $buildMenuIndexTrees = function (&$menus) use (&$isParentMenu) {
-            $root = (object)['menu_deep' => -1, 'children' => []];
-            $parents = [$root];
+        $buildMenuTrees = function (&$menus) use (&$isParentMenu) {
+            $rootNode = (object)[
+                'menu' => ['menu_deep' => -1, 'menu_url' => '#'],
+                'children' => [],
+            ];
+
+            $parentStack = [$rootNode];
 
             for ($i = 0; $i < count($menus); $i++) {
-                $menu = $menus[$i];
-
                 $node = (object)[
-                    'menu_index' => $i,
-                    'menu_deep' => $menu['menu_deep'],
+                    'menu' => &$menus[$i],
                     'children' => [],
                 ];
 
-                while ($parents[count($parents) - 1]->menu_deep >= $node->menu_deep) {
-                    array_pop($parents);
-                }
-                $parent = $parents[count($parents) - 1];
+                $parent = (function () use ($parentStack, $node) {
+                    while (end($parentStack)->menu['menu_deep'] >= $node->menu['menu_deep']) {
+                        array_pop($parentStack);
+                    }
+                    return end($parentStack);
+                })();
 
                 $parent->children[] = $node;
+
+                if (!$isParentMenu($node->menu)) {
+                    continue;
+                }
 
                 if (!isset($menus[$i + 1])) {
                     break;
                 }
 
-                $nextMenu = $menus[$i + 1];
-
-                if ($isParentMenu($menu) && $nextMenu['menu_deep'] > $node->menu_deep) {
-                    $parents[] = $node;
+                if ($menus[$i + 1]['menu_deep'] > $node->menu['menu_deep']) {
+                    $parentStack[] = $node;
                 }
             }
 
-            return $root->children;
+            return $rootNode->children;
         };
 
-        $hideEmptyParent = function (&$node) use (&$menus, &$hideEmptyParent, &$isParentMenu) {
-            $menu = &$menus[$node->menu_index];
-
-            if (!$isParentMenu($menu)) {
+        $hideEmptyParentMenus = function (&$node) use (&$hideEmptyParentMenus, &$isParentMenu) {
+            if (!$isParentMenu($node->menu)) {
                 return;
             }
 
-            $menu['is_show'] = false;
+            $node->menu['is_show'] = false;
             foreach ($node->children as $childNode) {
-                $hideEmptyParent($childNode);
-                $childMenu = $menus[$childNode->menu_index];
-                $menu['is_show'] |= $childMenu['is_show'];
+                $hideEmptyParentMenus($childNode);
+                $node->menu['is_show'] |= $childNode->menu['is_show'];
             }
         };
 
-        $nodes = $buildMenuIndexTrees($menus);
+        $nodes = $buildMenuTrees($menus);
 
         foreach ($nodes as $node) {
-            $hideEmptyParent($node);
+            $hideEmptyParentMenus($node);
         }
 
         return $menus;
