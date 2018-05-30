@@ -121,7 +121,7 @@ class AdminAuthServiceTest extends TestCase
     {
         $this->auth_service['user_service']->method('getUser')
             ->willReturn(new AdminUser(['id' => 'test', 'is_use' => true]));
-        $this->auth_service['user_service']->method('getAdminUserTag')
+        $this->auth_service['user_service']->method('getAdminUserAllTag')
             ->willReturn([1, 2]);
         $this->auth_service['tag_service']->method('findTagsByName')
             ->will($this->onConsecutiveCalls(
@@ -136,7 +136,7 @@ class AdminAuthServiceTest extends TestCase
         $this->auth_service->authorizeByTag('test', ['test']);
     }
 
-    public function testAuthorizeFailIfUserIsInvalid()
+    public function testAuthorizeFailWithInvalidUser()
     {
         $this->auth_service['user_service']->method('getUser')
             ->willReturn(new AdminUser(['id' => 'test', 'is_use' => false]));
