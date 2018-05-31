@@ -10,7 +10,7 @@ class AddGroup extends AbstractMigration
             ->addColumn('name', 'string', ['length' => 32])
             ->addColumn('is_use', 'boolean')
             ->addColumn('creator', 'string', ['length' => 32])
-            ->addIndex('name')
+            ->addIndex('name', [ 'unique' => true ])
             ->addTimestamps()
             ->create();
 

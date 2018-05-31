@@ -4,7 +4,7 @@ use Phinx\Migration\AbstractMigration;
 
 class AddGroupView extends AbstractMigration
 {
-    private $VIEW_NAME = 'vw_admin2_user_tag_group_joined';
+    private $VIEW_NAME = 'v_admin2_user_tag_group_joined';
 
     public function up()
     {

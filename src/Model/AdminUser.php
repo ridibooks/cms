@@ -37,7 +37,7 @@ class AdminUser extends Model
     {
         return $this->belongsToMany(
             AdminTag::class,
-            'vw_admin2_user_tag_group_joined',
+            'v_admin2_user_tag_group_joined',
             'user_id',
             'tag_id'
         );
