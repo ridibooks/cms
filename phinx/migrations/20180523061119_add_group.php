@@ -19,7 +19,6 @@ class AddGroup extends AbstractMigration
             ->addColumn('user_id', 'string', ['length' => 32])
             ->addForeignKey('group_id', 'tb_admin2_group', 'id') 
             ->addForeignKey('user_id', 'tb_admin2_user', 'id') 
-            ->addIndex('user_id')
             ->create();
 
         $this->table('tb_admin2_group_tag')
@@ -27,7 +26,6 @@ class AddGroup extends AbstractMigration
             ->addColumn('tag_id', 'integer')
             ->addForeignKey('group_id', 'tb_admin2_group', 'id') 
             ->addForeignKey('tag_id', 'tb_admin2_tag', 'id') 
-            ->addIndex('tag_id')
             ->create();
     }
 }
