@@ -50,12 +50,12 @@ class AdminAuthService extends Container
         };
 
         $buildMenuTrees = function ($menus) use (&$isParentMenu) {
-            $rootNode = (object)[
+            $root_node = (object)[
                 'menu' => ['menu_deep' => -1, 'menu_url' => '#'],
                 'children' => [],
             ];
 
-            $parentStack = [$rootNode];
+            $parent_stack = [$root_node];
 
             for ($i = 0; $i < count($menus); $i++) {
                 $node = (object)[
@@ -63,11 +63,11 @@ class AdminAuthService extends Container
                     'children' => [],
                 ];
 
-                $parent = (function () use ($parentStack, $node) {
-                    while (end($parentStack)->menu['menu_deep'] >= $node->menu['menu_deep']) {
-                        array_pop($parentStack);
+                $parent = (function () use ($parent_stack, $node) {
+                    while (end($parent_stack)->menu['menu_deep'] >= $node->menu['menu_deep']) {
+                        array_pop($parent_stack);
                     }
-                    return end($parentStack);
+                    return end($parent_stack);
                 })();
 
                 $parent->children[] = $node;
@@ -81,11 +81,11 @@ class AdminAuthService extends Container
                 }
 
                 if ($menus[$i + 1]['menu_deep'] > $node->menu['menu_deep']) {
-                    $parentStack[] = $node;
+                    $parent_stack[] = $node;
                 }
             }
 
-            return $rootNode->children;
+            return $root_node->children;
         };
 
         $flattenMenuTrees = function ($nodes) use (&$flattenMenuTrees) {
@@ -101,35 +101,35 @@ class AdminAuthService extends Container
         };
 
         $hideEmptyParentMenus = function ($nodes) use (&$hideEmptyParentMenus, &$isParentMenu) {
-            $newNodes = [];
+            $new_nodes = [];
 
             foreach ($nodes as $node) {
                 if (!$isParentMenu($node->menu)) {
-                    $newNodes[] = $node;
+                    $new_nodes[] = $node;
                     continue;
                 }
 
-                $isShow = false;
+                $is_show = false;
                 $children = $hideEmptyParentMenus($node->children);
 
                 foreach ($children as $childNode) {
-                    $isShow |= $childNode->menu['is_show'];
+                    $is_show |= $childNode->menu['is_show'];
                 }
 
-                $newNodes[] = (object)[
-                    'menu' => array_merge($node->menu, ['is_show' => $isShow]),
+                $new_nodes[] = (object)[
+                    'menu' => array_merge($node->menu, ['is_show' => $is_show]),
                     'children' => $children,
                 ];
             }
 
-            return $newNodes;
+            return $new_nodes;
         };
 
         $nodes = $buildMenuTrees($menus);
-        $newNodes = $hideEmptyParentMenus($nodes);
-        $newMenus = $flattenMenuTrees($newNodes);
+        $new_nodes = $hideEmptyParentMenus($nodes);
+        $new_menus = $flattenMenuTrees($new_nodes);
 
-        return $newMenus;
+        return $new_menus;
     }
 
     /**
