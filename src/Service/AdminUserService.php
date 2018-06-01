@@ -160,8 +160,8 @@ class AdminUserService implements AdminUserServiceIf
         $user_tag_menus = DB::select('select tb_admin2_menu.*
             from tb_admin2_menu
             join tb_admin2_tag_menu on tb_admin2_tag_menu.menu_id = tb_admin2_menu.id
-            join tb_admin2_user_tag on tb_admin2_user_tag.tag_id = tb_admin2_tag_menu.tag_id
-            where tb_admin2_user_tag.user_id = :user', ['user' => $user]);
+            join v_admin2_user_tag_group_joined on v_admin2_user_tag_group_joined.tag_id = tb_admin2_tag_menu.tag_id
+            where v_admin2_user_tag_group_joined.user_id = :user', ['user' => $user]);
 
         // menu -> user
         $user_menus = DB::select('select tb_admin2_menu.*
@@ -184,8 +184,8 @@ class AdminUserService implements AdminUserServiceIf
             from tb_admin2_menu_ajax
             join tb_admin2_menu on tb_admin2_menu_ajax.menu_id = tb_admin2_menu.id
             join tb_admin2_tag_menu on tb_admin2_tag_menu.menu_id = tb_admin2_menu.id
-            join tb_admin2_user_tag on tb_admin2_user_tag.tag_id = tb_admin2_tag_menu.tag_id
-            where tb_admin2_user_tag.user_id = :user', ['user' => $user]);
+            join v_admin2_user_tag_group_joined on v_admin2_user_tag_group_joined.tag_id = tb_admin2_tag_menu.tag_id
+            where v_admin2_user_tag_group_joined.user_id = :user', ['user' => $user]);
 
         // ajax -> menu -> user
         $user_menu_ajax_list = DB::select('select *

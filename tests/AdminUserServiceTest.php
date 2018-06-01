@@ -22,6 +22,13 @@ class AdminUserServiceTest extends TestCase
         $this->assertNotEmpty($menus);
     }
 
+    public function testGetAllMenusIncludesTagsOverGroup()
+    {
+        $user_service = new AdminUserService();
+        $menus = $user_service->getAllMenus('admin', 'menu_title');
+        $this->assertContains('Group 테스트', $menus);
+    }
+
     public function testGetAllMenuAjaxList()
     {
         $user_service = new AdminUserService();
