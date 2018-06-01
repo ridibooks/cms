@@ -44,6 +44,17 @@ class AdminUserService implements AdminUserServiceIf
         return $user->tags->pluck('id')->all();
     }
 
+    public function getAdminUserAllTag($user_id): array
+    {
+        /** @var AdminUser $user */
+        $user = AdminUser::find($user_id);
+        if (!$user) {
+            return [];
+        }
+
+        return $user->tags_group_joined->pluck('id')->all();
+    }
+
     public function getAdminUserMenu($user_id, $column = 'id'): array
     {
         /** @var AdminUser $user */

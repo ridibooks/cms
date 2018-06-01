@@ -172,7 +172,7 @@ class AdminAuthService extends Container
             return false;
         }
 
-        $user_tags = $this['user_service']->getAdminUserTag($admin_id);
+        $user_tags = $this['user_service']->getAdminUserAllTag($admin_id);
         $required_tags = $this['tag_service']->findTagsByName($tag_names);
 
         if (!empty(array_intersect($user_tags, $required_tags))) {

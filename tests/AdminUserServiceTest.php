@@ -28,4 +28,11 @@ class AdminUserServiceTest extends TestCase
         $ajax_list = $user_service->getAllMenuAjaxList('admin', 'ajax_url');
         $this->assertNotEmpty($ajax_list);
     }
+
+    public function testGetAdminUserAllTagIncludesTagsFromUserGroup()
+    {
+        $user_service = new AdminUserService();
+        $this->assertEquals([1], $user_service->getAdminUserTag('admin'));
+        $this->assertEquals([1, 2], $user_service->getAdminUserAllTag('admin'));
+    }
 }
