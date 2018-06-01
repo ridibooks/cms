@@ -43,13 +43,7 @@ class AdminAuthService extends Container
 
     public function hideEmptyParentMenus(array $menus): array
     {
-        $isParentMenu = function ($menu) {
-            $url = $this->parseUrlAuth($menu['menu_url'])['url'];
-
-            return strlen($url) === 0;
-        };
-
-        $buildMenuTrees = function ($menus) use (&$isParentMenu) {
+        $buildMenuTrees = function ($menus) {
             $root_node = (object)[
                 'menu' => ['menu_deep' => -1, 'menu_url' => '#'],
                 'children' => [],
@@ -72,7 +66,7 @@ class AdminAuthService extends Container
 
                 $parent->children[] = $node;
 
-                if (!$isParentMenu($node->menu)) {
+                if (!AdminMenuService::isParentMenu($node->menu)) {
                     continue;
                 }
 
@@ -100,11 +94,11 @@ class AdminAuthService extends Container
             return $menus;
         };
 
-        $hideEmptyParentMenus = function ($nodes) use (&$hideEmptyParentMenus, &$isParentMenu) {
+        $hideEmptyParentMenus = function ($nodes) use (&$hideEmptyParentMenus) {
             $new_nodes = [];
 
             foreach ($nodes as $node) {
-                if (!$isParentMenu($node->menu)) {
+                if (!AdminMenuService::isParentMenu($node->menu)) {
                     $new_nodes[] = $node;
                     continue;
                 }
