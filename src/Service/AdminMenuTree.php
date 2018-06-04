@@ -57,4 +57,14 @@ class AdminMenuTree
         $this->menu = $menu;
         $this->children = array_merge($this->children, $children);
     }
+
+    public function getMenu()
+    {
+        return $this->menu;
+    }
+
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
 }

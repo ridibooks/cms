@@ -43,85 +43,34 @@ class AdminAuthService extends Container
 
     public function hideEmptyParentMenus(array $menus): array
     {
-        $buildMenuTrees = function ($menus) {
-            $root_node = (object)[
-                'menu' => ['menu_deep' => -1, 'menu_url' => '#'],
-                'children' => [],
-            ];
-
-            $parent_stack = [$root_node];
-
-            for ($i = 0; $i < count($menus); $i++) {
-                $node = (object)[
-                    'menu' => $menus[$i],
-                    'children' => [],
-                ];
-
-                $parent = (function () use ($parent_stack, $node) {
-                    while (end($parent_stack)->menu['menu_deep'] >= $node->menu['menu_deep']) {
-                        array_pop($parent_stack);
-                    }
-                    return end($parent_stack);
-                })();
-
-                $parent->children[] = $node;
-
-                if (!AdminMenuService::isParentMenu($node->menu)) {
-                    continue;
-                }
-
-                if (!isset($menus[$i + 1])) {
-                    break;
-                }
-
-                if ($menus[$i + 1]['menu_deep'] > $node->menu['menu_deep']) {
-                    $parent_stack[] = $node;
-                }
-            }
-
-            return $root_node->children;
-        };
-
-        $flattenMenuTrees = function ($nodes) use (&$flattenMenuTrees) {
-            $menus = [];
-            foreach ($nodes as $node) {
-                $menus = array_merge(
-                    $menus,
-                    [$node->menu],
-                    $flattenMenuTrees($node->children)
-                );
-            }
-            return $menus;
-        };
-
         $hideEmptyParentMenus = function ($nodes) use (&$hideEmptyParentMenus) {
             $new_nodes = [];
 
             foreach ($nodes as $node) {
-                if (!AdminMenuService::isParentMenu($node->menu)) {
+                if (!AdminMenuService::isParentMenu($node->getMenu())) {
                     $new_nodes[] = $node;
                     continue;
                 }
 
                 $is_show = false;
-                $children = $hideEmptyParentMenus($node->children);
+                $children = $hideEmptyParentMenus($node->getChildren());
 
                 foreach ($children as $childNode) {
-                    $is_show |= $childNode->menu['is_show'];
+                    $is_show |= $childNode->getMenu()['is_show'];
                 }
 
-                $new_nodes[] = (object)[
-                    'menu' => array_merge($node->menu, ['is_show' => $is_show]),
-                    'children' => $children,
-                ];
+                $new_nodes[] = new AdminMenuTree(
+                    array_merge($node->getMenu(), ['is_show' => $is_show]),
+                    $children
+                );
             }
 
             return $new_nodes;
         };
 
-        $nodes = $buildMenuTrees($menus);
+        $nodes = AdminMenuTree::buildTrees($menus);
         $new_nodes = $hideEmptyParentMenus($nodes);
-        $new_menus = $flattenMenuTrees($new_nodes);
+        $new_menus =AdminMenuTree::flattenTrees($new_nodes);
 
         return $new_menus;
     }
