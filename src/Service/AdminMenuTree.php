@@ -53,6 +53,22 @@ class AdminMenuTree
         return $menus;
     }
 
+    public static function filterTrees(array $trees, callable $match): array {
+        $filtered_nodes = [];
+
+        foreach ($trees as $node) {
+            $filtered_children = AdminMenuTree::filterTrees($node->getChildren(), $match);
+
+            $node_with_filtered_children = new AdminMenuTree($node->getMenu(), $filtered_children);
+
+            if ($match($node_with_filtered_children)) {
+                $filtered_nodes[] = $node_with_filtered_children;
+            }
+        }
+
+        return $filtered_nodes;
+    }
+
     public function __construct($menu, $children = []) {
         $this->menu = $menu;
         $this->children = array_merge($this->children, $children);

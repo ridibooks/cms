@@ -55,4 +55,52 @@ class AdminMenuTreeTest extends TestCase
             ['id' => 7, 'menu_deep' => 0, 'menu_url' => '#'],
         ], $menus);
     }
+
+    public function testFilterTrees() {
+        $trees = [
+            new AdminMenuTree(['id' => 1, 'is_show' => true]),
+            new AdminMenuTree(['id' => 2, 'is_show' => false]),
+            new AdminMenuTree(['id' => 3, 'is_show' => true]),
+            new AdminMenuTree(['id' => 4, 'is_show' => false]),
+            new AdminMenuTree(['id' => 5, 'is_show' => true]),
+        ];
+        $filtered_trees = AdminMenuTree::filterTrees($trees, function ($node) {
+            return $node->getMenu()['is_show'];
+        });
+        $this->assertEquals([
+            new AdminMenuTree(['id' => 1, 'is_show' => true]),
+            new AdminMenuTree(['id' => 3, 'is_show' => true]),
+            new AdminMenuTree(['id' => 5, 'is_show' => true]),
+        ], $filtered_trees);
+
+        // Test whether if the children are filtered first and the result is passed to match function
+        $trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#', 'is_show' => true], [
+                new AdminMenuTree(['id' => 2, 'menu_url' => '#', 'is_show' => true], [
+                    new AdminMenuTree(['id' => 3, 'menu_url' => '/', 'is_show' => false]),
+                ]),
+            ]),
+            new AdminMenuTree(['id' => 4, 'menu_url' => '#', 'is_show' => true], [
+                new AdminMenuTree(['id' => 5, 'menu_url' => '#', 'is_show' => true], [
+                    new AdminMenuTree(['id' => 6, 'menu_url' => '/', 'is_show' => true]),
+                ]),
+            ]),
+        ];
+        $filtered_trees = AdminMenuTree::filterTrees($trees, function ($node) {
+            $menu = $node->getMenu();
+
+            if ($menu['menu_url'] === '#') {
+                return !empty($node->getChildren());
+            }
+
+            return $menu['is_show'];
+        });
+        $this->assertEquals([
+            new AdminMenuTree(['id' => 4, 'menu_url' => '#', 'is_show' => true], [
+                new AdminMenuTree(['id' => 5, 'menu_url' => '#', 'is_show' => true], [
+                    new AdminMenuTree(['id' => 6, 'menu_url' => '/', 'is_show' => true]),
+                ]),
+            ]),
+        ], $filtered_trees);
+    }
 }
