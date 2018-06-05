@@ -84,7 +84,7 @@ class AdminAuthServiceTest extends TestCase
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
 
-    public function testHideEmptyParentMenus()
+    public function testRemoveEmptyParentMenus()
     {
         $auth_service = new AdminAuthService();
 
@@ -95,12 +95,10 @@ class AdminAuthServiceTest extends TestCase
             ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
             ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
         ];
-        $result = $auth_service->hideEmptyParentMenus($menus);
+        $result = $auth_service->removeEmptyParentMenus($menus);
         $this->assertEquals([
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
             ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
             ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
         ], $result);
 
         // Test empty parent menus
@@ -110,13 +108,8 @@ class AdminAuthServiceTest extends TestCase
             ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
             ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => true],
         ];
-        $result = $auth_service->hideEmptyParentMenus($menus);
-        $this->assertEquals([
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => false],
-        ], $result);
+        $result = $auth_service->removeEmptyParentMenus($menus);
+        $this->assertEquals([], $result);
 
         // Test non-empty parent menus
         $menus = [
@@ -125,10 +118,9 @@ class AdminAuthServiceTest extends TestCase
             ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
             ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
         ];
-        $result = $auth_service->hideEmptyParentMenus($menus);
+        $result = $auth_service->removeEmptyParentMenus($menus);
         $this->assertEquals([
             ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => false],
             ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
             ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
         ], $result);

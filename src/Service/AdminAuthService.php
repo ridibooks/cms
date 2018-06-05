@@ -29,7 +29,7 @@ class AdminAuthService extends Container
             $menus = $this['user_service']->getAllMenus($user_id);
         }
 
-        $menus = $this->hideEmptyParentMenus($menus);
+        $menus = $this->removeEmptyParentMenus($menus);
 
         $admin_menus = [];
         foreach ($menus as $menu) {
@@ -41,38 +41,21 @@ class AdminAuthService extends Container
         return $admin_menus;
     }
 
-    public function hideEmptyParentMenus(array $menus): array
+    public function removeEmptyParentMenus(array $menus): array
     {
-        $hideEmptyParentMenus = function ($nodes) use (&$hideEmptyParentMenus) {
-            $new_nodes = [];
+        $nodes = AdminMenuTree::buildTrees($menus);
+        $filtered_nodes = AdminMenuTree::filterTrees($nodes, function ($node) {
+            $menu = $node->getMenu();
 
-            foreach ($nodes as $node) {
-                if (!AdminMenuService::isParentMenu($node->getMenu())) {
-                    $new_nodes[] = $node;
-                    continue;
-                }
-
-                $is_show = false;
-                $children = $hideEmptyParentMenus($node->getChildren());
-
-                foreach ($children as $childNode) {
-                    $is_show |= $childNode->getMenu()['is_show'];
-                }
-
-                $new_nodes[] = new AdminMenuTree(
-                    array_merge($node->getMenu(), ['is_show' => $is_show]),
-                    $children
-                );
+            if (AdminMenuService::isParentMenu($menu)) {
+                return !empty($node->getChildren());
             }
 
-            return $new_nodes;
-        };
+            return true;
+        });
+        $filtered_menus = AdminMenuTree::flattenTrees($filtered_nodes);
 
-        $nodes = AdminMenuTree::buildTrees($menus);
-        $new_nodes = $hideEmptyParentMenus($nodes);
-        $new_menus =AdminMenuTree::flattenTrees($new_nodes);
-
-        return $new_menus;
+        return $filtered_menus;
     }
 
     /**
