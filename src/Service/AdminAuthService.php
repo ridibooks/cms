@@ -29,16 +29,27 @@ class AdminAuthService extends Container
             $menus = $this['user_service']->getAllMenus($user_id);
         }
 
+        $menus = $this->removeForbiddenMenus($menus);
         $menus = $this->removeEmptyParentMenus($menus);
 
         $admin_menus = [];
         foreach ($menus as $menu) {
-            if ($menu['is_use'] == 1 && $menu['is_show'] == 1) {
-                $admin_menus[$menu['id']] = $menu;
-            }
+            $admin_menus[$menu['id']] = $menu;
         }
 
         return $admin_menus;
+    }
+
+    public function removeForbiddenMenus(array $menus): array
+    {
+        $nodes = AdminMenuTree::buildTrees($menus);
+        $filtered_nodes = AdminMenuTree::filterTreesPostOrder($nodes, function ($node) {
+            $menu = $node->getMenu();
+            return $menu['is_use'] == 1 && $menu['is_show'] == 1;
+        });
+        $filtered_menus = AdminMenuTree::flattenTrees($filtered_nodes);
+
+        return $filtered_menus;
     }
 
     public function removeEmptyParentMenus(array $menus): array

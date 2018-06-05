@@ -84,6 +84,34 @@ class AdminAuthServiceTest extends TestCase
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
 
+    public function testRemoveForbiddenMenus()
+    {
+        $auth_service = new AdminAuthService();
+
+        $menus = [
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => false],
+            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => true],
+            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => false],
+            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+        ];
+        $result = $auth_service->removeForbiddenMenus($menus);
+        $this->assertEquals([
+            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+        ], $result);
+
+        $menus = [
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => false],
+            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
+            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+            ['id' => 4, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
+        ];
+        $result = $auth_service->removeForbiddenMenus($menus);
+        $this->assertEquals([
+            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+            ['id' => 4, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
+        ], $result);
+    }
+
     public function testRemoveEmptyParentMenus()
     {
         $auth_service = new AdminAuthService();
