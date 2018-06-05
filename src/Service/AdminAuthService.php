@@ -44,7 +44,7 @@ class AdminAuthService extends Container
     public function removeEmptyParentMenus(array $menus): array
     {
         $nodes = AdminMenuTree::buildTrees($menus);
-        $filtered_nodes = AdminMenuTree::filterTrees($nodes, function ($node) {
+        $filtered_nodes = AdminMenuTree::filterTreesPostOrder($nodes, function ($node) {
             $menu = $node->getMenu();
 
             if (AdminMenuService::isParentMenu($menu)) {

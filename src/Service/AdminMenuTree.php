@@ -53,11 +53,11 @@ class AdminMenuTree
         return $menus;
     }
 
-    public static function filterTrees(array $trees, callable $match): array {
+    public static function filterTreesPostOrder(array $trees, callable $match): array {
         $filtered_nodes = [];
 
         foreach ($trees as $node) {
-            $filtered_children = AdminMenuTree::filterTrees($node->getChildren(), $match);
+            $filtered_children = AdminMenuTree::filterTreesPostOrder($node->getChildren(), $match);
 
             $node_with_filtered_children = new AdminMenuTree($node->getMenu(), $filtered_children);
 

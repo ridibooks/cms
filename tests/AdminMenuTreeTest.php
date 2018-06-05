@@ -56,7 +56,7 @@ class AdminMenuTreeTest extends TestCase
         ], $menus);
     }
 
-    public function testFilterTrees() {
+    public function testFilterTreesPostOrder() {
         $trees = [
             new AdminMenuTree(['id' => 1, 'is_show' => true]),
             new AdminMenuTree(['id' => 2, 'is_show' => false]),
@@ -64,7 +64,7 @@ class AdminMenuTreeTest extends TestCase
             new AdminMenuTree(['id' => 4, 'is_show' => false]),
             new AdminMenuTree(['id' => 5, 'is_show' => true]),
         ];
-        $filtered_trees = AdminMenuTree::filterTrees($trees, function ($node) {
+        $filtered_trees = AdminMenuTree::filterTreesPostOrder($trees, function ($node) {
             return $node->getMenu()['is_show'];
         });
         $this->assertEquals([
@@ -86,7 +86,7 @@ class AdminMenuTreeTest extends TestCase
                 ]),
             ]),
         ];
-        $filtered_trees = AdminMenuTree::filterTrees($trees, function ($node) {
+        $filtered_trees = AdminMenuTree::filterTreesPostOrder($trees, function ($node) {
             $menu = $node->getMenu();
 
             if ($menu['menu_url'] === '#') {
