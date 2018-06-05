@@ -29,33 +29,32 @@ class AdminAuthService extends Container
             $menus = $this['user_service']->getAllMenus($user_id);
         }
 
-        $menus = $this->removeForbiddenMenus($menus);
-        $menus = $this->removeEmptyParentMenus($menus);
+        $menu_trees = AdminMenuTree::buildTrees($menus);
+
+        $menu_trees = $this->removeForbiddenMenus($menu_trees);
+        $menu_trees = $this->removeEmptyParentMenus($menu_trees);
+
+        $filtered_menus = AdminMenuTree::flattenTrees($menu_trees);
 
         $admin_menus = [];
-        foreach ($menus as $menu) {
+        foreach ($filtered_menus as $menu) {
             $admin_menus[$menu['id']] = $menu;
         }
 
         return $admin_menus;
     }
 
-    public function removeForbiddenMenus(array $menus): array
+    public function removeForbiddenMenus(array $menu_trees): array
     {
-        $nodes = AdminMenuTree::buildTrees($menus);
-        $filtered_nodes = AdminMenuTree::filterTreesPostOrder($nodes, function ($node) {
+        return AdminMenuTree::filterTreesPostOrder($menu_trees, function ($node) {
             $menu = $node->getMenu();
             return $menu['is_use'] == 1 && $menu['is_show'] == 1;
         });
-        $filtered_menus = AdminMenuTree::flattenTrees($filtered_nodes);
-
-        return $filtered_menus;
     }
 
-    public function removeEmptyParentMenus(array $menus): array
+    public function removeEmptyParentMenus(array $menu_trees): array
     {
-        $nodes = AdminMenuTree::buildTrees($menus);
-        $filtered_nodes = AdminMenuTree::filterTreesPostOrder($nodes, function ($node) {
+        return AdminMenuTree::filterTreesPostOrder($menu_trees, function ($node) {
             $menu = $node->getMenu();
 
             if (AdminMenuService::isParentMenu($menu)) {
@@ -64,9 +63,6 @@ class AdminAuthService extends Container
 
             return true;
         });
-        $filtered_menus = AdminMenuTree::flattenTrees($filtered_nodes);
-
-        return $filtered_menus;
     }
 
     /**

@@ -88,27 +88,30 @@ class AdminAuthServiceTest extends TestCase
     {
         $auth_service = new AdminAuthService();
 
-        $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => false],
-            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => false],
-            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'is_use' => false, 'is_show' => false]),
+            new AdminMenuTree(['id' => 2, 'is_use' => false, 'is_show' => true]),
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => false]),
+            new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
         ];
-        $result = $auth_service->removeForbiddenMenus($menus);
+        $result = $auth_service->removeForbiddenMenus($menu_trees);
         $this->assertEquals([
-            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
+            new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
         ], $result);
 
-        $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => false, 'is_show' => false],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'is_use' => false, 'is_show' => false], [
+                new AdminMenuTree(['id' => 2, 'is_use' => true, 'is_show' => true]),
+            ]),
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => true], [
+                new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+            ]),
         ];
-        $result = $auth_service->removeForbiddenMenus($menus);
+        $result = $auth_service->removeForbiddenMenus($menu_trees);
         $this->assertEquals([
-            ['id' => 3, 'menu_deep' => 0, 'menu_url' => '#', 'is_use' => true, 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 1, 'menu_url' => '/', 'is_use' => true, 'is_show' => true],
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => true], [
+                new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+            ]),
         ], $result);
     }
 
@@ -117,40 +120,48 @@ class AdminAuthServiceTest extends TestCase
         $auth_service = new AdminAuthService();
 
         // Test empty root menus
-        $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/'],
-            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#'],
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#']),
+            new AdminMenuTree(['id' => 2, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '/']),
+            ]),
+            new AdminMenuTree(['id' => 4, 'menu_url' => '#']),
         ];
-        $result = $auth_service->removeEmptyParentMenus($menus);
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
         $this->assertEquals([
-            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/'],
+            new AdminMenuTree(['id' => 2, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '/']),
+            ]),
         ], $result);
 
         // Test empty parent menus
-        $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#'],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#'],
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 2, 'menu_url' => '#']),
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '#']),
+                ]),
+            ]),
         ];
-        $result = $auth_service->removeEmptyParentMenus($menus);
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
         $this->assertEquals([], $result);
 
         // Test non-empty parent menus
-        $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#'],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/'],
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 2, 'menu_url' => '#']),
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '/']),
+                ]),
+            ]),
         ];
-        $result = $auth_service->removeEmptyParentMenus($menus);
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
         $this->assertEquals([
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/'],
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '/']),
+                ]),
+            ]),
         ], $result);
     }
 
