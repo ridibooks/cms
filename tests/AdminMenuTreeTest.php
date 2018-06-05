@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Ridibooks\Cms\Service\AdminMenuTree;
 use PHPUnit\Framework\TestCase;
+use Ridibooks\Cms\Service\AdminMenuTree;
 
 class AdminMenuTreeTest extends TestCase
 {
@@ -56,7 +56,8 @@ class AdminMenuTreeTest extends TestCase
         ], $menus);
     }
 
-    public function testFilterTreesPostOrder() {
+    public function testFilterTreesPostOrder()
+    {
         $trees = [
             new AdminMenuTree(['id' => 1, 'is_show' => true]),
             new AdminMenuTree(['id' => 2, 'is_show' => false]),

@@ -48,6 +48,7 @@ class AdminAuthService extends Container
     {
         return AdminMenuTree::filterTreesPostOrder($menu_trees, function ($node) {
             $menu = $node->getMenu();
+
             return $menu['is_use'] == 1 && $menu['is_show'] == 1;
         });
     }

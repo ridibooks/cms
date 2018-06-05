@@ -10,7 +10,8 @@ use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 
 class AdminMenuService implements AdminMenuServiceIf
 {
-    public static function isParentMenu($menu): bool {
+    public static function isParentMenu($menu): bool
+    {
         $tokens = preg_split('/#/', $menu['menu_url']);
 
         return !$tokens[0];
