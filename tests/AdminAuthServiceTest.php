@@ -118,39 +118,39 @@ class AdminAuthServiceTest extends TestCase
 
         // Test empty root menus
         $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/'],
+            ['id' => 4, 'menu_deep' => 0, 'menu_url' => '#'],
         ];
         $result = $auth_service->removeEmptyParentMenus($menus);
         $this->assertEquals([
-            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
+            ['id' => 2, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '/'],
         ], $result);
 
         // Test empty parent menus
         $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#', 'is_show' => true],
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#'],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '#'],
         ];
         $result = $auth_service->removeEmptyParentMenus($menus);
         $this->assertEquals([], $result);
 
         // Test non-empty parent menus
         $menus = [
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 2, 'menu_deep' => 1, 'menu_url' => '#'],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/'],
         ];
         $result = $auth_service->removeEmptyParentMenus($menus);
         $this->assertEquals([
-            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#', 'is_show' => true],
-            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/', 'is_show' => true],
+            ['id' => 1, 'menu_deep' => 0, 'menu_url' => '#'],
+            ['id' => 3, 'menu_deep' => 1, 'menu_url' => '#'],
+            ['id' => 4, 'menu_deep' => 2, 'menu_url' => '/'],
         ], $result);
     }
 
