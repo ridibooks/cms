@@ -84,22 +84,84 @@ class AdminAuthServiceTest extends TestCase
         $this->assertEquals(['EDIT_세트도서'], $hashs);
     }
 
-    public function testHideEmptyRootMenus()
+    public function testRemoveForbiddenMenus()
     {
-        $menus = [
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-        ];
-
         $auth_service = new AdminAuthService();
-        $result = $auth_service->hideEmptyRootMenus($menus);
+
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'is_use' => false, 'is_show' => false]),
+            new AdminMenuTree(['id' => 2, 'is_use' => false, 'is_show' => true]),
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => false]),
+            new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+        ];
+        $result = $auth_service->removeForbiddenMenus($menu_trees);
         $this->assertEquals([
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => true],
-            ['menu_deep' => 1, 'menu_url' => '/', 'is_show' => true],
-            ['menu_deep' => 0, 'menu_url' => '#', 'is_show' => false],
+            new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+        ], $result);
+
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'is_use' => false, 'is_show' => false], [
+                new AdminMenuTree(['id' => 2, 'is_use' => true, 'is_show' => true]),
+            ]),
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => true], [
+                new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+            ]),
+        ];
+        $result = $auth_service->removeForbiddenMenus($menu_trees);
+        $this->assertEquals([
+            new AdminMenuTree(['id' => 3, 'is_use' => true, 'is_show' => true], [
+                new AdminMenuTree(['id' => 4, 'is_use' => true, 'is_show' => true]),
+            ]),
+        ], $result);
+    }
+
+    public function testRemoveEmptyParentMenus()
+    {
+        $auth_service = new AdminAuthService();
+
+        // Test empty root menus
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#']),
+            new AdminMenuTree(['id' => 2, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '/']),
+            ]),
+            new AdminMenuTree(['id' => 4, 'menu_url' => '#']),
+        ];
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
+        $this->assertEquals([
+            new AdminMenuTree(['id' => 2, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '/']),
+            ]),
+        ], $result);
+
+        // Test empty parent menus
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 2, 'menu_url' => '#']),
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '#']),
+                ]),
+            ]),
+        ];
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
+        $this->assertEquals([], $result);
+
+        // Test non-empty parent menus
+        $menu_trees = [
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 2, 'menu_url' => '#']),
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '/']),
+                ]),
+            ]),
+        ];
+        $result = $auth_service->removeEmptyParentMenus($menu_trees);
+        $this->assertEquals([
+            new AdminMenuTree(['id' => 1, 'menu_url' => '#'], [
+                new AdminMenuTree(['id' => 3, 'menu_url' => '#'], [
+                    new AdminMenuTree(['id' => 4, 'menu_url' => '/']),
+                ]),
+            ]),
         ], $result);
     }
 

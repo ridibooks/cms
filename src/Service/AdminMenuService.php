@@ -10,6 +10,13 @@ use Ridibooks\Cms\Thrift\AdminMenu\AdminMenuServiceIf;
 
 class AdminMenuService implements AdminMenuServiceIf
 {
+    public static function isParentMenu($menu): bool
+    {
+        $tokens = preg_split('/#/', $menu['menu_url']);
+
+        return !$tokens[0];
+    }
+
     public function getMenuList($is_use = null): array
     {
         $menus = $this->queryMenus($is_use);
@@ -31,11 +38,11 @@ class AdminMenuService implements AdminMenuServiceIf
         })->all();
     }
 
-    public function getRootMenus($column = null): array
+    public function getParentMenus($column = null): array
     {
         $menus = AdminMenu::query()
-            ->where('menu_deep', 0)
             ->orderBy('menu_order')
+            ->whereRaw('TRIM(menu_url) = ?', '#')
             ->get();
 
         return $menus->map(function ($menu) use ($column) {

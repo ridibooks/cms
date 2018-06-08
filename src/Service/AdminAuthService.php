@@ -29,34 +29,41 @@ class AdminAuthService extends Container
             $menus = $this['user_service']->getAllMenus($user_id);
         }
 
-        $menus = $this->hideEmptyRootMenus($menus);
+        $menu_trees = AdminMenuTree::buildTrees($menus);
+
+        $menu_trees = $this->removeForbiddenMenus($menu_trees);
+        $menu_trees = $this->removeEmptyParentMenus($menu_trees);
+
+        $filtered_menus = AdminMenuTree::flattenTrees($menu_trees);
 
         $admin_menus = [];
-        foreach ($menus as $menu) {
-            if ($menu['is_use'] == 1 && $menu['is_show'] == 1) {
-                $admin_menus[$menu['id']] = $menu;
-            }
+        foreach ($filtered_menus as $menu) {
+            $admin_menus[$menu['id']] = $menu;
         }
 
         return $admin_menus;
     }
 
-    public function hideEmptyRootMenus(array $menus): array
+    public function removeForbiddenMenus(array $menu_trees): array
     {
-        $topMenuFlags = array_map(function ($menu) {
-            $url = self::parseUrlAuth($menu['menu_url'])['url'];
+        return AdminMenuTree::filterTreesPostOrder($menu_trees, function ($node) {
+            $menu = $node->getMenu();
 
-            return $menu['menu_deep'] == 0 && strlen($url) == 0;
-        }, $menus);
+            return $menu['is_use'] == 1 && $menu['is_show'] == 1;
+        });
+    }
 
-        $topMenuFlags[] = true; // For tail check
-        for ($i = 0; $i < count($menus); ++$i) {
-            if ($topMenuFlags[$i] && $topMenuFlags[$i + 1]) {
-                $menus[$i]['is_show'] = false;
+    public function removeEmptyParentMenus(array $menu_trees): array
+    {
+        return AdminMenuTree::filterTreesPostOrder($menu_trees, function ($node) {
+            $menu = $node->getMenu();
+
+            if (AdminMenuService::isParentMenu($menu)) {
+                return !empty($node->getChildren());
             }
-        }
 
-        return $menus;
+            return true;
+        });
     }
 
     /**

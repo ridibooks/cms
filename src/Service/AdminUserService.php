@@ -87,10 +87,10 @@ class AdminUserService implements AdminUserServiceIf
     public function getAllMenus($user_id, $column = null): array
     {
         $menuService = new AdminMenuService();
-        $rootMenus = $menuService->getRootMenus($column);
+        $parent_menus = $menuService->getParentMenus($column);
         $userMenus = $this->selectUserMenus($user_id, $column);
 
-        $menus = array_merge($rootMenus, $userMenus);
+        $menus = array_merge($parent_menus, $userMenus);
         usort($menus, function ($left, $right) {
             $left_order = $left['menu_order'] ?? 0;
             $right_order = $right['menu_order'] ?? 0;
