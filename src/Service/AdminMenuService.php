@@ -42,10 +42,8 @@ class AdminMenuService implements AdminMenuServiceIf
     {
         $menus = AdminMenu::query()
             ->orderBy('menu_order')
-            ->get()
-            ->filter(function ($menu) {
-                return AdminMenuService::isParentMenu($menu);
-            });
+            ->whereRaw('TRIM(menu_url) = ?', '#')
+            ->get();
 
         return $menus->map(function ($menu) use ($column) {
             return isset($column) ? $menu->{$column} : $menu->toArray();
