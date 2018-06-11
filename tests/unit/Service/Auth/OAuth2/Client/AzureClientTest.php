@@ -10,8 +10,8 @@ class AzureClientTest extends TestCase
 {
     public function testGetAuthorizationUrlUsesRequestDomainIfRedirectPathSet()
     {
-        $_SERVER[REQUEST_SCHEME] = 'http';
-        $_SERVER[HTTP_HOST] = 'test.domain.com';
+        $_SERVER['REQUEST_SCHEME'] = 'http';
+        $_SERVER['HTTP_HOST'] = 'test.domain.com';
 
         $client = new AzureClient([
             'tenent' => 'tenent',
