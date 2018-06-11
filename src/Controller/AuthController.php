@@ -63,7 +63,9 @@ class AuthController
 
         /** @var BaseAuthenticator $auth */
         $auth = $app['auth.authenticator'];
-        $auth->signOut();
+        if (isset($auth)) {
+            $auth->signOut();
+        }
 
         $return_url = $request->get('return_url', $login_url);
 
