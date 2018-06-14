@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Ridibooks\Cms\Tests\Service\Auth\Authenticator;
 
 use PHPUnit\Framework\TestCase;
-use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
@@ -138,9 +137,6 @@ class OAuth2AuthenticatorTest extends TestCase
         $actual = $this->authenticator->getUserId($access_token);
 
         $this->assertEquals($expected, $actual);
-
-        $backward_compatibility = $this->session->get(LoginService::ADMIN_ID_COOKIE_NAME); // TODO: Remove this
-        $this->assertEquals($backward_compatibility, $actual);
     }
 
     public function testSignInWith()

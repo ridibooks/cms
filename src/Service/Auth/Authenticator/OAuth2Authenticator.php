@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
-use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\OAuth2ClientInterface;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
@@ -15,7 +14,7 @@ class OAuth2Authenticator extends BaseAuthenticator
     const AUTH_TYPE = 'oauth2';
 
     const KEY_PROVIDER = 'KEY_PROVIDER';
-    const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
+    const KEY_ACCESS_TOKEN = BaseAuthenticator::KEY_ACCESS_TOKEN;
     const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
     const KEY_STATE = 'KEY_STATE';
     const KEY_RETURN_URL = 'KEY_RETURN_URL';
@@ -76,8 +75,6 @@ class OAuth2Authenticator extends BaseAuthenticator
         $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token);
         $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token);
 
-        $this->session->set(LoginService::TOKEN_COOKIE_NAME, $credential->access_token); // TODO: Remove this
-
         return $credential->access_token;
     }
 
@@ -88,6 +85,7 @@ class OAuth2Authenticator extends BaseAuthenticator
 
         $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token);
         $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token);
+
         return $credential->access_token;
     }
 
@@ -102,7 +100,7 @@ class OAuth2Authenticator extends BaseAuthenticator
         $client = $this->getOAuth2Client();
         $user_id = $client->getResourceOwner($access_token);
 
-        $this->session->set(LoginService::ADMIN_ID_COOKIE_NAME, $user_id); // TODO: Remove this
+        $this->session->set(self::KEY_USER_ID, $user_id);
 
         return $user_id;
     }

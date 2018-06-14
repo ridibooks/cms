@@ -109,7 +109,7 @@ class AdminUserService implements AdminUserServiceIf
     public function updateMyInfo($name, $team, $is_use, $passwd = ''): bool
     {
         /** @var AdminUser $admin */
-        $me = AdminUser::find(LoginService::GetAdminID());
+        $me = AdminUser::find($app['auth.authenticator']->getUserId());
         if (!$me) {
             return false;
         }

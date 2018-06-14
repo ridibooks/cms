@@ -5,7 +5,6 @@ namespace Ridibooks\Cms\Service\Auth;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
@@ -30,10 +29,8 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
             $cookie_keys = [
                 BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type',
-
-                // TODO: Remove these
-                LoginService::TOKEN_COOKIE_NAME => LoginService::TOKEN_COOKIE_NAME,
-                LoginService::ADMIN_ID_COOKIE_NAME => LoginService::ADMIN_ID_COOKIE_NAME
+                BaseAuthenticator::KEY_ACCESS_TOKEN => 'cms-token',
+                BaseAuthenticator::KEY_USER_ID => 'admin-id',
             ];
 
             foreach ($enabled as $enabled_type) {
@@ -60,7 +57,6 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         $app['auth.cookie.oauth2'] = [
             OAuth2Authenticator::KEY_PROVIDER => 'oauth2_provider',
-            OAuth2Authenticator::KEY_ACCESS_TOKEN => 'cms-token',
             OAuth2Authenticator::KEY_REFRESH_TOKEN => 'cms-refresh',
             OAuth2Authenticator::KEY_STATE => 'oauth2_state',
             OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
@@ -76,16 +72,12 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
         };
 
         // Test authenticators
-        $app['auth.cookie.test'] = [
-            TestAuthenticator::KEY_USER_ID => 'test_user_id',
-        ];
-
         $app['auth.authenticator.test'] = function (Container $app) {
             $test_option = array_replace([
-                'test_user_id' => 'admin',
+                'admin-id' => 'admin',
             ], $app['auth.options']['test'] ?? []);
 
-            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
+            return new TestAuthenticator($app['auth.session'], $test_option['admin-id']);
         };
     }
 

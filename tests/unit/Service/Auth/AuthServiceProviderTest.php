@@ -75,7 +75,6 @@ class AuthServiceProviderTest extends TestCase
         $this->assertArrayHasKey('auth.authenticator.password', $app);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator', $app['auth.authenticator.password']);
 
-        $this->assertArrayHasKey('auth.cookie.test', $app);
         $this->assertArrayHasKey('auth.authenticator.test', $app);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator', $app['auth.authenticator.test']);
     }
