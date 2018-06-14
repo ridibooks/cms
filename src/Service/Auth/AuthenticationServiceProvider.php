@@ -60,8 +60,8 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         $app['auth.cookie.oauth2'] = [
             OAuth2Authenticator::KEY_PROVIDER => 'oauth2_provider',
-            OAuth2Authenticator::KEY_ACCESS_TOKEN => 'oauth2_access_token',
-            OAuth2Authenticator::KEY_REFRESH_TOKEN => 'oauth2_refresh_token',
+            OAuth2Authenticator::KEY_ACCESS_TOKEN => 'cms-token',
+            OAuth2Authenticator::KEY_REFRESH_TOKEN => 'cms-refresh',
             OAuth2Authenticator::KEY_STATE => 'oauth2_state',
             OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
         ];
