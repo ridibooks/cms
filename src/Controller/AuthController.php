@@ -83,15 +83,16 @@ class AuthController
         return new RedirectResponse($return_url);
     }
 
-    public function authorizeWithOAuth2(Request $request, Application $app, string $provider)
+    public function authorizeWithOAuth2(Request $request, Application $app, ?string $provider)
     {
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
         $scope = $request->get('scope');
+        $default_provider = 'azure';
 
         /** @var OAuth2Authenticator $auth */
         $auth = $app['auth.authenticator.oauth2'];
-        $auth->setProvider($provider);
+        $auth->setProvider($provider ?? $default_provider);
         $auth->setReturnUrl($return_url);
 
         $authorization_url = $auth->getAuthorizationUrl($scope);

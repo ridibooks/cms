@@ -18,6 +18,8 @@ $auth_controller->get('/auth/{auth_type}/authorize', [$auth, 'authorize'])->bind
 
 // Possible value for ${provider} is only 'azure' now
 $auth_controller->get('/auth/oauth2/{provider}/authorize', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_authorize');
+// For Backward compatibility. (SDK v2.3.3 or below)
+$auth_controller->get('/authorize', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_authorize');
 
 $auth_controller->get('/auth/oauth2/callback', [$auth, 'callbackFromOAuth2'])->bind('oauth2_callback');
 
