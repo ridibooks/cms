@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Controller;
 
+use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
@@ -105,12 +106,13 @@ class AuthController
         $auth = $app['auth.authenticator.oauth2'];
 
         try {
-            $auth->signIn($request);
+            $user_id = $auth->signIn($request);
         } catch (InvalidStateException $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        // TODO: add an user model if not exists.
+        $user_service = new AdminUserService();
+        $user_service->addUserIfNotExists($user_id);
 
         $return_url = $auth->getReturnUrl($app['url_generator']->generate('home'));
         $auth->setReturnUrl(null);

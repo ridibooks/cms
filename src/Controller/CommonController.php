@@ -62,7 +62,8 @@ class CommonController
                 $passwd = $new_passwd;
             }
             $user_service = new AdminUserService();
-            $user_service->updateMyInfo($name, $team, $is_use, $passwd);
+            $user_id = $request->attributes->get('user_id');
+            $user_service->updateMyInfo($user_id, $name, $team, $is_use, $passwd);
             $app->addFlashInfo('성공적으로 수정하였습니다.');
         } catch (\Exception $e) {
             $app->addFlashError($e->getMessage());
