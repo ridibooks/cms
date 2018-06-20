@@ -82,6 +82,9 @@ class AzureClient implements OAuth2ClientInterface
         $this->azure->validateAccessToken($access_token);
     }
 
+    /**
+     * @throws \RuntimeException
+     */
     public function getResourceOwner(string $access_token)
     {
         $token_claims = $this->azure->validateAccessToken($access_token);

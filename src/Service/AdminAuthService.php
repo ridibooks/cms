@@ -8,6 +8,7 @@ use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
 use Ridibooks\Cms\Thrift\Errors\NoTokenException;
 use Ridibooks\Cms\Thrift\Errors\UnauthorizedException;
+use SebastianBergmann\Timer\RuntimeException;
 
 /**권한 설정 Service
  * @deprecated
@@ -137,7 +138,17 @@ class AdminAuthService extends Container
             'resource' => $_ENV['AZURE_RESOURCE'],
         ]);
 
-        return $azure->getResourceOwner($token);
+        try {
+            $user = $azure->getResourceOwner($token);
+        } catch (\RuntimeException $e) {
+            error_log('throw');
+            throw new MalformedTokenException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        return $user;
     }
 
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool

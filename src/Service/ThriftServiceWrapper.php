@@ -23,29 +23,14 @@ class ThriftServiceWrapper
         $this->log_level = $log_level;
     }
 
-    /**
-     * @throws SystemException
-     */
     public function __call($name, $arguments)
     {
-        try {
-            if (isset($this->logger)) {
-                $msg = sprintf('Thrift calling %s::%s(%s)', $this->service_class, $name, $this->printArguments($arguments));
-                $this->logger->log($this->log_level, $msg);
-            }
-
-            return call_user_func_array([$this->service, $name], $arguments);
-        } catch (TException $e) {
-            throw new SystemException([
-                'code' => ErrorCode::INTERNAL_SERVER_ERROR,
-                'message' => $e->getMessage()
-            ]);
-        } catch (\Exception $e) {
-            throw new SystemException([
-                'code' => ErrorCode::INTERNAL_SERVER_ERROR,
-                'message' => $e->getMessage()
-            ]);
+        if (isset($this->logger)) {
+            $msg = sprintf('Thrift calling %s::%s(%s)', $this->service_class, $name, $this->printArguments($arguments));
+            $this->logger->log($this->log_level, $msg);
         }
+
+        return call_user_func_array([$this->service, $name], $arguments);
     }
 
     private function printArguments(array $arguments): string
