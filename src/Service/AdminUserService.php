@@ -107,9 +107,10 @@ class AdminUserService implements AdminUserServiceIf
         return $this->selectUserAjaxList($user_id, $column);
     }
 
+    // TODO: not matched with AdminUserServiceIf::updateMyInfo
     public function updateMyInfo($user_id, $name, $team, $is_use, $passwd = ''): bool
     {
-        /** @var AdminUser $admin */
+        /** @var AdminUser $me */
         $me = AdminUser::find($user_id);
         if (!$me) {
             return false;

@@ -4,9 +4,6 @@ namespace Ridibooks\Cms\Service;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Ridibooks\Cms\Thrift\Errors\ErrorCode;
-use Ridibooks\Cms\Thrift\Errors\SystemException;
-use Thrift\Exception\TException;
 
 class ThriftServiceWrapper
 {

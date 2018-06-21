@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Ridibooks\Cms\Service\Auth\OAuth2\Client;
 
 use PHPUnit\Framework\TestCase;
-use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
 class AzureClientTest extends TestCase
 {
