@@ -4,6 +4,9 @@ namespace Ridibooks\Cms\Service;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Ridibooks\Cms\Thrift\Errors\ErrorCode;
+use Ridibooks\Cms\Thrift\Errors\SystemException;
+use Thrift\Exception\TException;
 
 class ThriftServiceWrapper
 {
@@ -20,14 +23,27 @@ class ThriftServiceWrapper
         $this->log_level = $log_level;
     }
 
+    /**
+     * @throws SystemException
+     * @throws TException
+     */
     public function __call($name, $arguments)
     {
-        if (isset($this->logger)) {
-            $msg = sprintf('Thrift calling %s::%s(%s)', $this->service_class, $name, $this->printArguments($arguments));
-            $this->logger->log($this->log_level, $msg);
-        }
+        try {
+            if (isset($this->logger)) {
+                $msg = sprintf('Thrift calling %s::%s(%s)', $this->service_class, $name, $this->printArguments($arguments));
+                $this->logger->log($this->log_level, $msg);
+            }
 
-        return call_user_func_array([$this->service, $name], $arguments);
+            return call_user_func_array([$this->service, $name], $arguments);
+        } catch (TException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            throw new SystemException([
+                'code' => ErrorCode::INTERNAL_SERVER_ERROR,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     private function printArguments(array $arguments): string
