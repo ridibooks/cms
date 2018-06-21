@@ -8,6 +8,7 @@ use Ridibooks\Cms\Controller\AuthController;
 use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Tests\Mock\MockOAuth2Client;
@@ -46,6 +47,11 @@ class AuthControllerTest extends TestCase
 
         $app->register(new RoutingServiceProvider());
         $app->register(new AuthenticationServiceProvider(), [
+            'auth.options' => [
+                'test' => [
+                    'test_user_id' => 'admin',
+                ],
+            ],
             'auth.oauth2.clients' => function () {
                 return [
                     AzureClient::PROVIDER_NAME => new MockOAuth2Client(true),
@@ -117,7 +123,17 @@ class AuthControllerTest extends TestCase
         $this->assertNull($session->get(OAuth2Authenticator::KEY_REFRESH_TOKEN));
     }
 
-    public function testAuthorize()
+    public function testLogoutWhenNotLogined()
+    {
+        $request = Request::create('/logout', 'GET', []);
+
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
+        $this->assertEquals($this->app['url_generator']->generate('login'), $response->headers->get('location'));
+    }
+
+    public function testAuthorizeWithTest()
     {
         $return_url = '/some/return/url';
 
@@ -132,6 +148,24 @@ class AuthControllerTest extends TestCase
 
         $session = $this->app['auth.session'];
         $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), TestAuthenticator::AUTH_TYPE);
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_USER_ID), 'admin');
+    }
+
+    public function testAuthorizeWithPassword()
+    {
+        $return_url = '/some/return/url';
+
+        $request = Request::create('/' . PasswordAuthenticator::AUTH_TYPE . '/authorize?return_url=' . $return_url, 'GET', [], [
+            'auth_type' => PasswordAuthenticator::AUTH_TYPE,
+        ]);
+
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
+        $this->assertEquals($return_url, $response->headers->get('location'));
+
+        $session = $this->app['auth.session'];
+        $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), PasswordAuthenticator::AUTH_TYPE);
     }
 
     public function testAuthorizeWithOAuth2()

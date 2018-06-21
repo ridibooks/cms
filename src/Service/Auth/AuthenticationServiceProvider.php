@@ -29,8 +29,6 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
             $cookie_keys = [
                 BaseAuthenticator::KEY_AUTH_TYPE => 'auth_type',
-                BaseAuthenticator::KEY_ACCESS_TOKEN => 'cms-token',
-                BaseAuthenticator::KEY_USER_ID => 'admin-id',
             ];
 
             foreach ($enabled as $enabled_type) {
@@ -57,7 +55,9 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         $app['auth.cookie.oauth2'] = [
             OAuth2Authenticator::KEY_PROVIDER => 'oauth2_provider',
+            OAuth2Authenticator::KEY_ACCESS_TOKEN => 'cms-token',
             OAuth2Authenticator::KEY_REFRESH_TOKEN => 'cms-refresh',
+            OAuth2Authenticator::KEY_USER_ID => 'admin-id', // TODO: Should be removed (backward compatibility)
             OAuth2Authenticator::KEY_STATE => 'oauth2_state',
             OAuth2Authenticator::KEY_RETURN_URL => 'oauth2_return_url',
         ];
@@ -73,11 +73,8 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         // Test authenticators
         $app['auth.authenticator.test'] = function (Container $app) {
-            $test_option = array_replace([
-                'admin-id' => 'admin',
-            ], $app['auth.options']['test'] ?? []);
-
-            return new TestAuthenticator($app['auth.session'], $test_option['admin-id']);
+            $test_option = $app['auth.options']['test'] ?? [];
+            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
         };
     }
 

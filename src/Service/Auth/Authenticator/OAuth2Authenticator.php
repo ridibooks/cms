@@ -13,8 +13,9 @@ class OAuth2Authenticator extends BaseAuthenticator
 {
     const AUTH_TYPE = 'oauth2';
 
+    const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
+    const KEY_USER_ID = 'KEY_USER_ID';
     const KEY_PROVIDER = 'KEY_PROVIDER';
-    const KEY_ACCESS_TOKEN = BaseAuthenticator::KEY_ACCESS_TOKEN;
     const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
     const KEY_STATE = 'KEY_STATE';
     const KEY_RETURN_URL = 'KEY_RETURN_URL';

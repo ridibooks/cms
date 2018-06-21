@@ -10,10 +10,6 @@ abstract class BaseAuthenticator
 {
     const KEY_AUTH_TYPE = 'KEY_AUTH_TYPE';
 
-    // TODO: Required by cms-sdk, should be removed in the sdk first.
-    const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
-    const KEY_USER_ID = 'KEY_USER_ID';
-
     private $auth_type;
 
     protected $session;

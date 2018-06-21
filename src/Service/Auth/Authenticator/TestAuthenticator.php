@@ -17,6 +17,9 @@ class TestAuthenticator extends BaseAuthenticator
     {
         parent::__construct(self::AUTH_TYPE, $session);
         $this->test_user_id = $test_user_id;
+        if (empty($this->test_user_id)) {
+            $this->test_user_id = 'admin';
+        }
     }
 
     /**
@@ -24,8 +27,9 @@ class TestAuthenticator extends BaseAuthenticator
      */
     public function createCredential(Request $request)
     {
-        $this->session->set(BaseAuthenticator::KEY_USER_ID, $this->test_user_id);
-        $this->session->set(BaseAuthenticator::KEY_ACCESS_TOKEN, 'test');
+        // TODO: Should be removed (backward compatibility)
+        $this->session->set(OAuth2Authenticator::KEY_USER_ID, $this->test_user_id);
+        $this->session->set(OAuth2Authenticator::KEY_ACCESS_TOKEN, 'test');
 
         return $this->test_user_id;
     }

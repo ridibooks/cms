@@ -17,14 +17,17 @@ class PasswordAuthenticator extends BaseAuthenticator
 
     public function createCredential(Request $request)
     {
-        $user_id = $request->get('user_id');
-        $user_password = $request->get('password');
+        // TODO: Remove default param
+        $user_id = $request->get('user_id', 'test');
+        $user_password = $request->get('user_password', 'test');
 
-        $this->session->set(BaseAuthenticator::KEY_USER_ID, $user_id);
+        // TODO: Should be removed (backward compatibility)
+        $this->session->set(OAuth2Authenticator::KEY_USER_ID, $user_id);
+        $this->session->set(OAuth2Authenticator::KEY_ACCESS_TOKEN, 'password');
 
         return [
             'user_id' => $user_id,
-            'password' => $user_password,
+            'user_password' => $user_password,
         ];
     }
 
