@@ -15,9 +15,9 @@ class AdminMenuThrift implements AdminMenuServiceIf
         $this->server = $server;
     }
 
-    public function getMenuList($isUse)
+    public function getMenuList($is_use)
     {
-        return $this->server->getMenuList($isUse);
+        return $this->server->getMenuList($is_use);
     }
 
     public function getAllMenuList()
@@ -30,18 +30,18 @@ class AdminMenuThrift implements AdminMenuServiceIf
         return $this->server->getAllMenuAjax();
     }
 
-    public function getMenus(array $menuIds)
+    public function getMenus(array $menu_ids)
     {
-        return $this->server->getMenus($menuIds);
+        return $this->server->getMenus($menu_ids);
     }
 
-    public function getAdminIdsByMenuId($menuId)
+    public function getAdminIdsByMenuId($menu_id)
     {
-        return $this->server->getAdminIdsByMenuId($menuId);
+        return $this->server->getAdminIdsByMenuId($menu_id);
     }
 
-    public function getAllUserIds($menuId)
+    public function getAllUserIds($menu_id)
     {
-        return $this->server->getAllUserIds($menuId);
+        return $this->server->getAllUserIds($menu_id);
     }
 }
