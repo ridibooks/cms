@@ -6,6 +6,7 @@ namespace Ridibooks\Cms\Tests;
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\AdminAuthService;
 use Ridibooks\Cms\Service\AdminMenuService;
+use Ridibooks\Cms\Service\AdminMenuTree;
 use Ridibooks\Cms\Service\AdminTagService;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser;

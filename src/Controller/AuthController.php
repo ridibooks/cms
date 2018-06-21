@@ -110,11 +110,16 @@ class AuthController
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $user_service = new AdminUserService();
-        $user_service->addUserIfNotExists($user_id);
+        $this->addUserIfNotExists($user_id);
 
         $return_url = $auth->getReturnUrl($app['url_generator']->generate('home'));
         $auth->setReturnUrl(null);
         return new RedirectResponse($return_url);
+    }
+
+    public function addUserIfNotExists(string $user_id)
+    {
+        $user_service = new AdminUserService();
+        $user_service->addUserIfNotExists($user_id);
     }
 }

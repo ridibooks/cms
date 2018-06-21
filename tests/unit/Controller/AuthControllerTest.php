@@ -27,7 +27,9 @@ class AuthControllerTest extends TestCase
 
     public function setUp()
     {
-        $this->controller = new AuthController();
+        $this->controller = $this->getMockBuilder('Ridibooks\Cms\Controller\AuthController')
+            ->setMethods(['addUserIfNotExists'])
+            ->getMock();
 
         $app = new Application([
             'debug' => true,
