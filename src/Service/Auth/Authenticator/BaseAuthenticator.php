@@ -20,6 +20,12 @@ abstract class BaseAuthenticator
         $this->auth_type = $auth_type;
         $this->session = $session;
         $this->options = $options;
+        if (!isset($this->options['session.policy'])) {
+            $this->options['session.policy'] = [
+                'service' => [],
+                'auth' => [],
+            ];
+        }
     }
 
     public function signIn(Request $request): string

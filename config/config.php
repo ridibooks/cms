@@ -20,8 +20,8 @@ if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
 
 // Create a dynamic redirect uri based on request domain.
 if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
-    $https = strcasecmp($_SERVER["HTTP_X_FORWARDED_PROTO"], 'https') == 0
-        || strcasecmp($_SERVER["REQUEST_SCHEME"], 'https') == 0;
+    $https = strcasecmp($_SERVER["HTTP_X_FORWARDED_PROTO"] ?? '', 'https') == 0
+        || strcasecmp($_SERVER["REQUEST_SCHEME"] ?? '', 'https') == 0;
     $scheme = $https ? 'https' : 'http';
     $_ENV['AZURE_REDIRECT_URI'] = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_ENV['AZURE_REDIRECT_PATH'];
 }
