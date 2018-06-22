@@ -45,6 +45,28 @@ class CookieSessionStorageTest extends TestCase
         $this->assertNull($this->session->get('KEY_NOT_AVAILABLE'));
     }
 
+    public function testSetWithOptions()
+    {
+        $this->session->set('KEY_SET', 'some_new_value', [
+            'domain' => 'domain.com',
+            'path' => '/test',
+            'expires_on' => 100,
+            'secure' => true,
+        ]);
+
+        $request = Request::create('/some/resource');
+        $response = Response::create('some response');
+        $this->session->writeCookie($request, $response);
+
+        $cookie = $response->headers->getCookies()[0];
+        $this->assertEquals('key_set', $cookie->getname());
+        $this->assertEquals('some_new_value', $cookie->getValue());
+        $this->assertEquals('domain.com', $cookie->getDomain());
+        $this->assertEquals('/test', $cookie->getPath());
+        $this->assertEquals(100, $cookie->getExpiresTime());
+        $this->assertEquals(true, $cookie->isSecure());
+    }
+
     public function testClearAll()
     {
         $this->session->clearAll();

@@ -10,9 +10,9 @@ class PasswordAuthenticator extends BaseAuthenticator
 {
     const AUTH_TYPE = 'password';
 
-    public function __construct(SessionStorageInterface $session)
+    public function __construct(SessionStorageInterface $session, ?array $options = [])
     {
-        parent::__construct(self::AUTH_TYPE, $session);
+        parent::__construct(self::AUTH_TYPE, $session, $options);
     }
 
     public function createCredential(Request $request)
@@ -22,8 +22,8 @@ class PasswordAuthenticator extends BaseAuthenticator
         $user_password = $request->get('user_password', 'test');
 
         // TODO: Should be removed (backward compatibility)
-        $this->session->set(OAuth2Authenticator::KEY_USER_ID, $user_id);
-        $this->session->set(OAuth2Authenticator::KEY_ACCESS_TOKEN, 'password');
+        $this->session->set(OAuth2Authenticator::KEY_USER_ID, $user_id, $this->options['session.policy']['service']);
+        $this->session->set(OAuth2Authenticator::KEY_ACCESS_TOKEN, 'password', $this->options['session.policy']['service']);
 
         return [
             'user_id' => $user_id,
@@ -45,5 +45,8 @@ class PasswordAuthenticator extends BaseAuthenticator
 
     public function removeCredential()
     {
+        // TODO: Should be removed (backward compatibility)
+        $this->session->clear(OAuth2Authenticator::KEY_USER_ID, $this->options['session.policy']['service']);
+        $this->session->clear(OAuth2Authenticator::KEY_ACCESS_TOKEN, $this->options['session.policy']['service']);
     }
 }

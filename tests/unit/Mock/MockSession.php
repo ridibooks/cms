@@ -19,9 +19,14 @@ class MockSession implements SessionStorageInterface
         return $this->data[$key] ?? null;
     }
 
-    public function set(string $key, ?string $value)
+    public function set(string $key, ?string $value, ?array $options = [])
     {
         $this->data[$key] = $value;
+    }
+
+    public function clear(string $key, ?array $options = [])
+    {
+        $this->data[$key] = null;
     }
 
     public function clearAll()

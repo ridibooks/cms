@@ -40,6 +40,13 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             return new Session\CookieSessionStorage($cookie_keys);
         };
 
+        $app['auth.session.policy'] = $app->factory(function (Container $app) {
+            return new CookieSessionPolicyForAuthSubdomain(
+                // TODO(devgrapher): Global variables should not be used here.
+                $_SERVER['HTTP_HOST']
+            );
+        });
+
         $app['auth.authenticator'] = $app->factory(function (Container $app): ?BaseAuthenticator {
             /** @var Session\SessionStorageInterface $session */
             $session = $app['auth.session'];
@@ -63,18 +70,24 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
         ];
 
         $app['auth.authenticator.oauth2'] = function (Container $app) {
-            return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients']);
+            return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients'], [
+                'session.policy' => $app['auth.session.policy']->getCookieOptions(),
+            ]);
         };
 
         // Password authenticators
         $app['auth.authenticator.password'] = function (Container $app) {
-            return new PasswordAuthenticator($app['auth.session']);
+            return new PasswordAuthenticator($app['auth.session'], [
+                'session.policy' => $app['auth.session.policy']->getCookieOptions(),
+            ]);
         };
 
         // Test authenticators
         $app['auth.authenticator.test'] = function (Container $app) {
             $test_option = $app['auth.options']['test'] ?? [];
-            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
+            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id'], [
+                'session.policy' => $app['auth.session.policy']->getCookieOptions(),
+            ]);
         };
     }
 

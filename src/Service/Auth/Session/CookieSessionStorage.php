@@ -25,15 +25,36 @@ class CookieSessionStorage implements SessionStorageInterface
 
     public function get(string $key_name): ?string
     {
-        $values = array_merge($this->origin, $this->modified);
+        $modified_values = array_map(function($properties) {
+            return $properties['value'];
+        }, $this->modified);
+
+        $values = array_merge($this->origin, $modified_values);
         return $values[$key_name] ?? null;
     }
 
-    public function set(string $key_name, ?string $value)
+    public function set(string $key_name, ?string $value, ?array $options = [])
     {
         if (array_key_exists($key_name, $this->origin)) {
-            $this->modified[$key_name] = $value;
+            $properties = [
+                'value' => $value,
+                'domain' => $options['domain'] ?? null,
+                'path' => $options['path'] ?? '/',
+                'expires_on' => $options['expires_on'] ?? 0,
+                'secure' => $options['secure'] ?? false,
+            ];
+            $this->modified[$key_name] = $properties;
         }
+    }
+
+    public function clear(string $key_name, ?array $options = [])
+    {
+        self::set($key_name, null, [
+            'domain' => $options['domain'] ?? null,
+            'path' => $options['path'] ?? '/',
+            'expires_on' => 1,
+            'secure' => $options['secure'] ?? false,
+        ]);
     }
 
     public function clearAll()
@@ -55,12 +76,19 @@ class CookieSessionStorage implements SessionStorageInterface
 
     public function writeCookie(Request $request, Response $response)
     {
-        foreach ($this->modified as $key_name => $value) {
+        foreach ($this->modified as $key_name => $properties) {
             $key = $this->cookie_keys[$key_name];
-            if (empty($value)) {
+            if (empty($properties)) {
                 $response->headers->clearCookie($key);
             } else {
-                $cookie = new Cookie($key, $value);
+                $cookie = new Cookie(
+                    $key,
+                    $properties['value'],
+                    $properties['expires_on'] ?? 0,
+                    $properties['path'] ?? '/',
+                    $properties['domain'],
+                    $properties['secure'] ?? false
+                    );
                 $response->headers->setCookie($cookie);
             }
         }

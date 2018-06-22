@@ -22,9 +22,9 @@ class OAuth2Authenticator extends BaseAuthenticator
 
     private $clients;
 
-    public function __construct(SessionStorageInterface $session, array $clients)
+    public function __construct(SessionStorageInterface $session, array $clients, ?array $options = [])
     {
-        parent::__construct(self::AUTH_TYPE, $session);
+        parent::__construct(self::AUTH_TYPE, $session, $options);
 
         $this->clients = $clients;
     }
@@ -32,7 +32,7 @@ class OAuth2Authenticator extends BaseAuthenticator
     public function getAuthorizationUrl(?string $scope): string
     {
         $state = $this->createRandomState();
-        $this->session->set(self::KEY_STATE, $state);
+        $this->session->set(self::KEY_STATE, $state, $this->options['session.policy']['auth']);
 
         $client = $this->getOAuth2Client();
         return $client->getAuthorizationUrl($scope, $state);
@@ -69,12 +69,12 @@ class OAuth2Authenticator extends BaseAuthenticator
             throw new InvalidStateException('state is not matched');
         }
 
-        $this->session->set(self::KEY_STATE, null);
+        $this->session->set(self::KEY_STATE, null, $this->options['session.policy']['auth']);
 
         $client = $this->getOAuth2Client();
         $credential = $client->getTokenWithAuthorizationGrant($code);
-        $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token);
-        $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token);
+        $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token, $this->options['session.policy']['service']);
+        $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token, $this->options['session.policy']['auth']);
 
         return $credential->access_token;
     }
@@ -84,8 +84,8 @@ class OAuth2Authenticator extends BaseAuthenticator
         $client = $this->getOAuth2Client();
         $credential = $client->getTokenWithRefreshGrant($refresh_token);
 
-        $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token);
-        $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token);
+        $this->session->set(self::KEY_ACCESS_TOKEN, $credential->access_token, $this->options['session.policy']['service']);
+        $this->session->set(self::KEY_REFRESH_TOKEN, $credential->refresh_token, $this->options['session.policy']['auth']);
 
         return $credential->access_token;
     }
@@ -96,12 +96,21 @@ class OAuth2Authenticator extends BaseAuthenticator
         $client->validateToken($access_token);
     }
 
+    public function removeCredential()
+    {
+        $this->session->clear(self::KEY_ACCESS_TOKEN, $this->options['session.policy']['service']);
+        $this->session->clear(self::KEY_REFRESH_TOKEN, $this->options['session.policy']['auth']);
+        $this->session->clear(self::KEY_USER_ID, $this->options['session.policy']['service']);
+        $this->session->clear(self::KEY_PROVIDER, $this->options['session.policy']['service']);
+        $this->session->clear(self::KEY_STATE, $this->options['session.policy']['auth']);
+    }
+
     public function getUserId($access_token): string
     {
         $client = $this->getOAuth2Client();
         $user_id = $client->getResourceOwner($access_token);
 
-        $this->session->set(self::KEY_USER_ID, $user_id);
+        $this->session->set(self::KEY_USER_ID, $user_id, $this->options['session.policy']['service']);
 
         return $user_id;
     }
@@ -124,7 +133,7 @@ class OAuth2Authenticator extends BaseAuthenticator
 
     public function setProvider(?string $provider)
     {
-        $this->session->set(self::KEY_PROVIDER, $provider);
+        $this->session->set(self::KEY_PROVIDER, $provider, $this->options['session.policy']['service']);
     }
 
     public function getReturnUrl(?string $default = null): ?string
