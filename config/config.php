@@ -18,6 +18,14 @@ if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
     $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
 }
 
+// Create a dynamic redirect uri based on request domain.
+if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
+    $https = strcasecmp($_SERVER["HTTP_X_FORWARDED_PROTO"], 'https') == 0
+        || strcasecmp($_SERVER["REQUEST_SCHEME"], 'https') == 0;
+    $scheme = $https ? 'https' : 'http';
+    $_ENV['AZURE_REDIRECT_URI'] = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_ENV['AZURE_REDIRECT_PATH'];
+}
+
 $config = [
     'debug' => $_ENV['DEBUG'],
     'oauth2.options' => [
@@ -26,7 +34,6 @@ $config = [
             'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
             'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
             'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-            'redirectPath' => $_ENV['AZURE_REDIRECT_PATH'] ?? '',
             'resource' => $_ENV['AZURE_RESOURCE'],
         ],
     ],

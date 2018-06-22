@@ -12,29 +12,12 @@ class AzureClient implements OAuth2ClientInterface
 
     /** @var Azure $azure */
     private $azure;
-    private $redirect_path;
-    private $redirect_uri;
 
     public function __construct(array $options)
     {
         $this->azure = new Azure($options);
         $this->azure->tenant = $options['tenent'];
         $this->azure->resource = $options['resource'];
-        $this->redirect_path = $options['redirectPath'] ?? '';
-        $this->redirect_uri = $options['redirectUri'] ?? '';
-    }
-
-    private function getRedirectUri()
-    {
-        // Create a dynamic redirect uri based on request domain.
-        if (!empty($this->redirect_path)) {
-            // TODO(devgrapher): Referring global variables should be avoided.
-            $redirect_uri = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $this->redirect_path;
-        } else {
-            $redirect_uri = $this->redirect_uri;
-        }
-
-        return $redirect_uri;
     }
 
     public function getAuthorizationUrl(string $scope = null, string $state = null): string
@@ -42,7 +25,6 @@ class AzureClient implements OAuth2ClientInterface
         return $this->azure->getAuthorizationUrl([
             'scope' => $scope,
             'state' => $state,
-            'redirect_uri' => $this->getRedirectUri(),
         ]);
     }
 
@@ -51,7 +33,6 @@ class AzureClient implements OAuth2ClientInterface
         /** @var AccessToken $access_token */
         $access_token = $this->azure->getAccessToken('authorization_code', [
             'code' => $code,
-            'redirect_uri' => $this->getRedirectUri(),
         ]);
 
         return new OAuth2Credential(
@@ -65,7 +46,6 @@ class AzureClient implements OAuth2ClientInterface
         /** @var AccessToken $access_token */
         $access_token = $this->azure->getAccessToken('refresh_token', [
             'refresh_token' => $refresh_token,
-            'redirect_uri' => $this->getRedirectUri(),
         ]);
 
         return new OAuth2Credential(
