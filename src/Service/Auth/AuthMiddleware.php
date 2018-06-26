@@ -16,12 +16,12 @@ class AuthMiddleware
                 /** @var BaseAuthenticator $authenticator */
                 $authenticator = $app['auth.authenticator'];
                 if (empty($authenticator)) {
-                    throw new Exception\NoCredentialException();
+                    throw new Exception\NoCredentialException('authenticator load fail');
                 }
 
                 $user_id = $authenticator->signIn($request);
                 if (empty($user_id)) {
-                    throw new Exception\NoCredentialException();
+                    throw new Exception\NoCredentialException('user info load fail');
                 }
             } catch (\Exception $e) {
                 $login_url = $app['url_generator']->generate('login');

@@ -21,7 +21,7 @@ $auth_controller->get('/auth/oauth2/{provider}/authorize', [$auth, 'authorizeWit
 // For Backward compatibility. (SDK v2.3.3 or below)
 $auth_controller->get('/authorize', [$auth, 'authorizeWithOAuth2'])
     ->value('provider', 'azure')
-    ->bind('oauth2_authorize');
+    ->bind('oauth2_authorize_old');
 
 $auth_controller->get('/auth/oauth2/callback', [$auth, 'callbackFromOAuth2'])->bind('oauth2_callback');
 
