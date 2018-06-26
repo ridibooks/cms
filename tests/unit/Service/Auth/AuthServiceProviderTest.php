@@ -17,6 +17,7 @@ class AuthServiceProviderTest extends TestCase
     public function testRegister()
     {
         $app = new Container();
+
         $app->register(new AuthenticationServiceProvider(), [
             'auth.enabled' => [
                 OAuth2Authenticator::AUTH_TYPE,

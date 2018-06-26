@@ -5,18 +5,20 @@ namespace Ridibooks\Cms\Tests\Service\Auth\Session;
 
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\Auth\Session\CookieSessionStorage;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CookieSessionStorageTest extends TestCase
 {
+    /** @var CookieSessionStorage $session */
     private $session;
 
     public function setUp()
     {
         $session = new CookieSessionStorage([
-            'KEY_SET' => 'key_set',
-            'KEY_NOT_SET' => 'key_not_set'
+            'KEY_SET' => ['key' => 'key_set'],
+            'KEY_NOT_SET' => ['key' => 'key_not_set'],
         ]);
 
         $session->readCookie(Request::create('/some/resource', 'GET', [], [
@@ -24,6 +26,35 @@ class CookieSessionStorageTest extends TestCase
         ]));
 
         $this->session = $session;
+    }
+
+    public function testSessionOptions()
+    {
+        $session = new CookieSessionStorage([
+            'KEY_SET' => [
+                'key' => 'key_set',
+                'domain' => 'domain.com',
+                'path' => '/test',
+                'lifetime' => 0,
+                'secure' => true,
+            ],
+        ]);
+
+        $session->set('KEY_SET', 'some_new_value');
+
+        $request = Request::create('/some/resource');
+        $response = Response::create('some response');
+        $session->writeCookie($request, $response);
+
+        /** @var Cookie $cookie */
+        $cookies = $response->headers->getCookies();
+        $cookie = $cookies[0];
+        $this->assertEquals('key_set', $cookie->getname());
+        $this->assertEquals('some_new_value', $cookie->getValue());
+        $this->assertEquals('domain.com', $cookie->getDomain());
+        $this->assertEquals('/test', $cookie->getPath());
+        $this->assertEquals(0, $cookie->getExpiresTime());
+        $this->assertEquals(true, $cookie->isSecure());
     }
 
     public function testGet()
@@ -43,28 +74,6 @@ class CookieSessionStorageTest extends TestCase
 
         $this->session->get('KEY_NOT_AVAILABLE', 'some_value3');
         $this->assertNull($this->session->get('KEY_NOT_AVAILABLE'));
-    }
-
-    public function testSetWithOptions()
-    {
-        $this->session->set('KEY_SET', 'some_new_value', [
-            'domain' => 'domain.com',
-            'path' => '/test',
-            'expires_on' => 100,
-            'secure' => true,
-        ]);
-
-        $request = Request::create('/some/resource');
-        $response = Response::create('some response');
-        $this->session->writeCookie($request, $response);
-
-        $cookie = $response->headers->getCookies()[0];
-        $this->assertEquals('key_set', $cookie->getname());
-        $this->assertEquals('some_new_value', $cookie->getValue());
-        $this->assertEquals('domain.com', $cookie->getDomain());
-        $this->assertEquals('/test', $cookie->getPath());
-        $this->assertEquals(100, $cookie->getExpiresTime());
-        $this->assertEquals(true, $cookie->isSecure());
     }
 
     public function testClearAll()
