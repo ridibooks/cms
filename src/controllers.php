@@ -24,6 +24,9 @@ $auth_controller->get('/authorize', [$auth, 'authorizeWithOAuth2'])
     ->bind('oauth2_authorize_old');
 
 $auth_controller->get('/auth/oauth2/callback', [$auth, 'callbackFromOAuth2'])->bind('oauth2_callback');
+// For Backward compatibility.
+$auth_controller->get('/login-azure', [$auth, 'callbackFromOAuth2'])->bind('oauth2_callback_old');
+
 
 $app->mount('/', $auth_controller);
 
