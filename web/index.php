@@ -14,13 +14,17 @@ if (is_readable(__DIR__ . '/../.env')) {
 // If hostname has a form of dev domain, set test id.
 $request = Request::createFromGlobals();
 if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-    $hostname = $request->getHost();
-    $pattern = '/^(admin|cms)\.(\w+)(\.platform)?\.dev\.ridi\.io$/';
+    $patterns = [
+        '/^admin\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io'
+        '/^cms\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'cms.{test_id}.dev.io' or 'cms.{test_id}.platform.dev.io'
+        '/^admin\.(\w+)\.test\.ridi\.io$/', // 'admin.{test_id}.test.ridi.io'
+    ];
 
-    // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io',
-    // 'cms.{test_id}.dev.io' or 'cms.{test_id}.platform.dev.io'
-    if (preg_match($pattern, $hostname, $matches)) {
-        $_ENV['TEST_ID'] = $matches[2];
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $request->getHost(), $matches)) {
+            $_ENV['TEST_ID'] = $matches[2];
+            break;
+        }
     }
 }
 
