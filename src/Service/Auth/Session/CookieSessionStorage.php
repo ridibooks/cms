@@ -9,52 +9,33 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CookieSessionStorage implements SessionStorageInterface
 {
-    private $cookie_keys;
+    private $cookie_options;
+    private $cookie_default;
 
     private $origin = [];
     private $modified = [];
 
-    public function __construct(array $cookie_keys)
+    public function __construct(array $cookie_options, array $cookie_default = [])
     {
-        $this->cookie_keys = $cookie_keys;
+        $this->cookie_options = $cookie_options;
+        $this->cookie_default = $cookie_default;
 
-        foreach ($cookie_keys as $key_name => $key) {
+        foreach ($cookie_options as $key_name => $option) {
             $this->origin[$key_name] = null;
         }
     }
 
     public function get(string $key_name): ?string
     {
-        $modified_values = array_map(function($properties) {
-            return $properties['value'];
-        }, $this->modified);
-
-        $values = array_merge($this->origin, $modified_values);
+        $values = array_merge($this->origin, $this->modified);
         return $values[$key_name] ?? null;
     }
 
-    public function set(string $key_name, ?string $value, ?array $options = [])
+    public function set(string $key_name, ?string $value)
     {
         if (array_key_exists($key_name, $this->origin)) {
-            $properties = [
-                'value' => $value,
-                'domain' => $options['domain'] ?? null,
-                'path' => $options['path'] ?? '/',
-                'expires_on' => $options['expires_on'] ?? 0,
-                'secure' => $options['secure'] ?? false,
-            ];
-            $this->modified[$key_name] = $properties;
+            $this->modified[$key_name] = $value;
         }
-    }
-
-    public function clear(string $key_name, ?array $options = [])
-    {
-        self::set($key_name, null, [
-            'domain' => $options['domain'] ?? null,
-            'path' => $options['path'] ?? '/',
-            'expires_on' => 1,
-            'secure' => $options['secure'] ?? false,
-        ]);
     }
 
     public function clearAll()
@@ -67,8 +48,8 @@ class CookieSessionStorage implements SessionStorageInterface
     public function readCookie(Request $request)
     {
         $cookies = [];
-        foreach ($this->cookie_keys as $key_name => $key) {
-            $cookies[$key_name] = $request->cookies->get($key);
+        foreach ($this->cookie_options as $key_name => $option) {
+            $cookies[$key_name] = $request->cookies->get($option['key']);
         }
 
         $this->origin = array_merge($this->origin, $cookies);
@@ -76,19 +57,25 @@ class CookieSessionStorage implements SessionStorageInterface
 
     public function writeCookie(Request $request, Response $response)
     {
-        foreach ($this->modified as $key_name => $properties) {
-            $key = $this->cookie_keys[$key_name];
-            if (empty($properties)) {
-                $response->headers->clearCookie($key);
+        foreach ($this->modified as $key_name => $value) {
+            $option = array_merge($this->cookie_default, $this->cookie_options[$key_name]);
+
+            $key = $option['key'];
+            $path = $option['path'] ?? '/';
+            $domain = $option['domain'] ?? null;
+            $secure = $option['secure'] ?? false;
+            $http_only = $option['http_only'] ?? true;
+
+            if (empty($option['lifetime'])) {
+                $expire = 0;
             } else {
-                $cookie = new Cookie(
-                    $key,
-                    $properties['value'],
-                    $properties['expires_on'] ?? 0,
-                    $properties['path'] ?? '/',
-                    $properties['domain'],
-                    $properties['secure'] ?? false
-                    );
+                $expire = time() + $option['lifetime'];
+            }
+
+            if (empty($value)) {
+                $response->headers->clearCookie($key, $path, $domain, $secure, $http_only);
+            } else {
+                $cookie = new Cookie($key, $value, $expire, $path, $domain, $secure);
                 $response->headers->setCookie($cookie);
             }
         }

@@ -15,17 +15,10 @@ abstract class BaseAuthenticator
     protected $session;
     protected $options;
 
-    public function __construct(string $auth_type, SessionStorageInterface $session, ?array $options = [])
+    public function __construct(string $auth_type, SessionStorageInterface $session)
     {
         $this->auth_type = $auth_type;
         $this->session = $session;
-        $this->options = $options;
-        if (!isset($this->options['session.policy'])) {
-            $this->options['session.policy'] = [
-                'service' => [],
-                'auth' => [],
-            ];
-        }
     }
 
     public function signIn(Request $request): string
@@ -34,7 +27,7 @@ abstract class BaseAuthenticator
         $this->validateCredential($credential);
 
         // This is necessary to remember which type of authenticator was used.
-        $this->session->set(self::KEY_AUTH_TYPE, $this->auth_type, $this->options['session.policy']['service']);
+        $this->session->set(self::KEY_AUTH_TYPE, $this->auth_type);
 
         return $this->getUserId($credential);
     }
@@ -42,15 +35,16 @@ abstract class BaseAuthenticator
     public function signOut()
     {
         $this->removeCredential();
-
-        $this->session->clear(self::KEY_AUTH_TYPE, $this->options['session.policy']['service']);
     }
 
     abstract public function createCredential(Request $request);
 
     abstract public function validateCredential($credentials);
 
-    abstract public function removeCredential();
+    public function removeCredential()
+    {
+        $this->session->clearAll();
+    }
 
     abstract public function getUserId($credentials): string;
 }

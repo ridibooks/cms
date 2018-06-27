@@ -32,7 +32,6 @@ class MockAuthenticator extends BaseAuthenticator
 
     public function removeCredential()
     {
-
     }
 
     public function getUserId($mock): string

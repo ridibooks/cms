@@ -7,9 +7,7 @@ interface SessionStorageInterface
 {
     public function get(string $key): ?string;
 
-    public function set(string $key, ?string $value, ?array $options);
-
-    public function clear(string $key_name, ?array $options);
+    public function set(string $key, ?string $value);
 
     public function clearAll();
 }

@@ -5,25 +5,61 @@ namespace Ridibooks\Cms\Tests\Service\Auth\Session;
 
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\Auth\Session\CookieSessionStorage;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CookieSessionStorageTest extends TestCase
 {
+    /** @var CookieSessionStorage $session */
     private $session;
 
     public function setUp()
     {
         $session = new CookieSessionStorage([
-            'KEY_SET' => 'key_set',
-            'KEY_NOT_SET' => 'key_not_set'
+            'KEY_SET' => [
+                'key' => 'key_set',
+                'domain' => 'manual.domain.com',
+                'lifetime' => 0,
+            ],
+            'KEY_NOT_SET' => [
+                'key' => 'key_not_set'
+            ],
+        ], [
+            'domain' => 'default.domain.com',
+            'path' => '/default/path',
+            'secure' => true,
         ]);
 
-        $session->readCookie(Request::create('/some/resource', 'GET', [], [
+        $session->readCookie(Request::create('/default/path', 'GET', [], [
             'key_set' => 'some_value',
         ]));
 
         $this->session = $session;
+    }
+
+    public function testSessionOptions()
+    {
+        $this->session->set('KEY_SET', 'some_new_value');
+
+        $request = Request::create('/default/path');
+        $response = Response::create('some response');
+        $this->session->writeCookie($request, $response);
+
+        /** @var Cookie $cookie */
+        $cookies = $response->headers->getCookies();
+        $cookie = $cookies[0];
+
+        // Assert using values in the option
+        $this->assertEquals('key_set', $cookie->getname());
+        $this->assertEquals('manual.domain.com', $cookie->getDomain());
+        $this->assertEquals(0, $cookie->getExpiresTime());
+
+        // Assert using default values
+        $this->assertEquals('/default/path', $cookie->getPath());
+        $this->assertEquals(true, $cookie->isSecure());
+
+        $this->assertEquals('some_new_value', $cookie->getValue());
     }
 
     public function testGet()
@@ -45,28 +81,6 @@ class CookieSessionStorageTest extends TestCase
         $this->assertNull($this->session->get('KEY_NOT_AVAILABLE'));
     }
 
-    public function testSetWithOptions()
-    {
-        $this->session->set('KEY_SET', 'some_new_value', [
-            'domain' => 'domain.com',
-            'path' => '/test',
-            'expires_on' => 100,
-            'secure' => true,
-        ]);
-
-        $request = Request::create('/some/resource');
-        $response = Response::create('some response');
-        $this->session->writeCookie($request, $response);
-
-        $cookie = $response->headers->getCookies()[0];
-        $this->assertEquals('key_set', $cookie->getname());
-        $this->assertEquals('some_new_value', $cookie->getValue());
-        $this->assertEquals('domain.com', $cookie->getDomain());
-        $this->assertEquals('/test', $cookie->getPath());
-        $this->assertEquals(100, $cookie->getExpiresTime());
-        $this->assertEquals(true, $cookie->isSecure());
-    }
-
     public function testClearAll()
     {
         $this->session->clearAll();
@@ -77,7 +91,7 @@ class CookieSessionStorageTest extends TestCase
 
     public function testReadCookie()
     {
-        $this->session->readCookie(Request::create('/some/resource', 'GET', [], [
+        $this->session->readCookie(Request::create('/default/path', 'GET', [], [
             'key_set' => 'some_special_value',
             'key_not_available' => 'some_value_ignored',
         ]));
@@ -90,14 +104,18 @@ class CookieSessionStorageTest extends TestCase
     {
         $this->session->set('KEY_SET', 'some_new_value');
 
-        $request = Request::create('/some/resource');
+        $request = Request::create('/default/path');
         $response = Response::create('some response');
         $this->session->writeCookie($request, $response);
 
         $cookies = $response->headers->getCookies();
+        /** @var Cookie $cookie */
         foreach ($cookies as $cookie) {
             if ($cookie->getName() === 'key_set') {
                 $this->assertEquals('some_new_value', $cookie->getValue());
+                $this->assertEquals('manual.domain.com', $cookie->getDomain());
+                $this->assertEquals('/default/path', $cookie->getPath());
+                $this->assertEquals(0, $cookie->getExpiresTime());
             }
         }
     }
