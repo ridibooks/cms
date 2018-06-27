@@ -11,23 +11,6 @@ if (is_readable(__DIR__ . '/../.env')) {
     $dotenv->overload();
 }
 
-// If hostname has a form of dev domain, set test id.
-$request = Request::createFromGlobals();
-if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
-    $patterns = [
-        '/^admin\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io'
-        '/^cms\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'cms.{test_id}.dev.io' or 'cms.{test_id}.platform.dev.io'
-        '/^admin\.(\w+)\.test\.ridi\.io$/', // 'admin.{test_id}.test.ridi.io'
-    ];
-
-    foreach ($patterns as $pattern) {
-        if (preg_match($pattern, $request->getHost(), $matches)) {
-            $_ENV['TEST_ID'] = $matches[2];
-            break;
-        }
-    }
-}
-
 $cms_rpc_url = $_ENV['CMS_RPC_URL'] ?? '';
 if (!empty($cms_rpc_url)) {
     ThriftService::setEndPoint($cms_rpc_url);
@@ -37,4 +20,4 @@ $config = require __DIR__ . '/../config/config.php';
 $app = require __DIR__ . '/../src/app.php';
 require __DIR__ . '/../src/controllers.php';
 
-$app->run($request);
+$app->run(Request::createFromGlobals());
