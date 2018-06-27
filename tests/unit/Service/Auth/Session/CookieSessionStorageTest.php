@@ -31,7 +31,7 @@ class CookieSessionStorageTest extends TestCase
             'secure' => true,
         ]);
 
-        $session->readCookie(Request::create('/some/resource', 'GET', [], [
+        $session->readCookie(Request::create('/default/path', 'GET', [], [
             'key_set' => 'some_value',
         ]));
 
@@ -42,7 +42,7 @@ class CookieSessionStorageTest extends TestCase
     {
         $this->session->set('KEY_SET', 'some_new_value');
 
-        $request = Request::create('/some/resource');
+        $request = Request::create('/default/path');
         $response = Response::create('some response');
         $this->session->writeCookie($request, $response);
 
@@ -91,7 +91,7 @@ class CookieSessionStorageTest extends TestCase
 
     public function testReadCookie()
     {
-        $this->session->readCookie(Request::create('/some/resource', 'GET', [], [
+        $this->session->readCookie(Request::create('/default/path', 'GET', [], [
             'key_set' => 'some_special_value',
             'key_not_available' => 'some_value_ignored',
         ]));
@@ -104,14 +104,18 @@ class CookieSessionStorageTest extends TestCase
     {
         $this->session->set('KEY_SET', 'some_new_value');
 
-        $request = Request::create('/some/resource');
+        $request = Request::create('/default/path');
         $response = Response::create('some response');
         $this->session->writeCookie($request, $response);
 
         $cookies = $response->headers->getCookies();
+        /** @var Cookie $cookie */
         foreach ($cookies as $cookie) {
             if ($cookie->getName() === 'key_set') {
                 $this->assertEquals('some_new_value', $cookie->getValue());
+                $this->assertEquals('manual.domain.com', $cookie->getDomain());
+                $this->assertEquals('/default/path', $cookie->getPath());
+                $this->assertEquals(0, $cookie->getExpiresTime());
             }
         }
     }
