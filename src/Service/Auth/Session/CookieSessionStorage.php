@@ -58,7 +58,7 @@ class CookieSessionStorage implements SessionStorageInterface
     public function writeCookie(Request $request, Response $response)
     {
         foreach ($this->modified as $key_name => $value) {
-            $option = array_merge($this->cookie_options[$key_name], $this->cookie_default);
+            $option = array_merge($this->cookie_default, $this->cookie_options[$key_name]);
 
             $key = $option['key'];
             $path = $option['path'] ?? '/';

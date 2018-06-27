@@ -26,6 +26,7 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         //TODO: Remove this after OAuth2 authorization is implemented
         $app['auth.domain_auth_removed'] = str_replace('auth.', '', $_SERVER['HTTP_HOST']);
+        $app['auth.domain'] = $_SERVER['HTTP_HOST'];
 
         $app['auth.cookie.default'] = [
             'path' => '/',
@@ -80,10 +81,12 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             ],
             OAuth2Authenticator::KEY_REFRESH_TOKEN => [
                 'key' => 'cms-refresh',
+                'domain' => $app['auth.domain'],
                 'lifetime' => 60 * 60 * 24 * 30, // 30 days,
             ],
             OAuth2Authenticator::KEY_STATE => [
                 'key' => 'oauth2_state',
+                'domain' => $app['auth.domain'],
                 'lifetime' => 60 * 3, // 3 minutes,
             ],
             OAuth2Authenticator::KEY_RETURN_URL => [
