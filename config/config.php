@@ -1,18 +1,61 @@
 <?php
 
 use Moriony\Silex\Provider\SentryServiceProvider;
+use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
+use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
+
+$auth_enabled = [
+    OAuth2Authenticator::AUTH_TYPE,
+];
+
+if (!empty($_ENV['AUTH_USE_TEST'])) {
+    $auth_enabled[] = TestAuthenticator::AUTH_TYPE;
+}
+
+if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
+    $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
+}
+
+// Create a dynamic redirect uri based on request domain.
+$secure = strcasecmp($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '', 'https') == 0
+    || strcasecmp($_SERVER['REQUEST_SCHEME'] ?? '', 'https') == 0;
+
+if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
+    $_ENV['AZURE_REDIRECT_URI'] = ($secure ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_ENV['AZURE_REDIRECT_PATH'];
+}
 
 $config = [
     'debug' => $_ENV['DEBUG'],
-    'test_id' => $_ENV['TEST_ID'],
-    'azure.options' => [
-        'tenent' => $_ENV['AZURE_TENENT'] ?? '',
-        'client_id' => $_ENV['AZURE_CLIENT_ID'] ?? '',
-        'client_secret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
-        'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
-        'redirect_uri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-        'redirect_path' => $_ENV['AZURE_REDIRECT_PATH'] ?? '',
-        'api_version' => $_ENV['AZURE_API_VERSION'] ?? '',
+    'oauth2.options' => [
+        AzureClient::PROVIDER_NAME => [
+            'tenent' => $_ENV['AZURE_TENENT'] ?? '',
+            'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
+            'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
+            'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
+            'resource' => $_ENV['AZURE_RESOURCE'],
+        ],
+    ],
+
+    //TODO: Remove this after OAuth2 authorization is implemented
+    'auth.is_secure' => $secure,
+
+    'auth.enabled' => $auth_enabled,
+    'auth.options' => [
+
+        // oauth2 authenticator
+        'oauth2' => [
+        ],
+
+        // password authenticator
+        'password' => [
+        ],
+
+        // test authenticator
+        'test' => [
+            'test_user_id' => $_ENV['TEST_ID'],
+        ],
     ],
     'capsule.connections' => [
         'default' => [

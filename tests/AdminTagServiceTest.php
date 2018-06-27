@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Ridibooks\Cms\Service;
+namespace Ridibooks\Cms\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Ridibooks\Cms\Service\AdminTagService;
 
 class AdminTagServiceTest extends TestCase
 {

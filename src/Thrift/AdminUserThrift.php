@@ -20,33 +20,34 @@ class AdminUserThrift implements AdminUserServiceIf
         return $this->server->getAllAdminUserArray();
     }
 
-    public function getUser($userId)
+    public function getUser($user_id)
     {
-        return $this->server->getUser($userId);
+        return $this->server->getUser($user_id);
     }
 
-    public function getAdminUserTag($userId)
+    public function getAdminUserTag($user_id)
     {
-        return $this->server->getAdminUserTag($userId);
+        return $this->server->getAdminUserTag($user_id);
     }
 
-    public function getAdminUserMenu($userId)
+    public function getAdminUserMenu($user_id)
     {
-        return $this->server->getAdminUserMenu($userId);
+        return $this->server->getAdminUserMenu($user_id);
     }
 
-    public function getAllMenuIds($userId)
+    public function getAllMenuIds($user_id)
     {
-        return $this->server->getAllMenuIds($userId);
+        return $this->server->getAllMenuIds($user_id);
     }
 
-    public function updateMyInfo($name, $team, $isUse, $passwd)
+    public function updateMyInfo($name, $team, $is_use, $passwd)
     {
-        return $this->server->updateMyInfo($name, $team, $isUse, $passwd);
+        // TODO: Fix Thfirt client to send user_id
+        return $this->server->updateMyInfo(null, $name, $team, $is_use, $passwd);
     }
 
-    public function updatePassword($userId, $plainPassword)
+    public function updatePassword($user_id, $plain_password)
     {
-        return $this->server->updatePassword($userId, $plainPassword);
+        return $this->server->updatePassword($user_id, $plain_password);
     }
 }

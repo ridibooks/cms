@@ -3,8 +3,6 @@
 namespace Ridibooks\Cms\Controller;
 
 use Ridibooks\Cms\Service\AdminUserService;
-use Ridibooks\Cms\Service\LoginService;
-use Ridibooks\Cms\Thrift\ThriftService;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -37,18 +35,12 @@ class CommonController
         return $app->json((array)$result);
     }
 
-    public function getMyInfo(Application $app)
+    public function getMyInfo(Request $request, Application $app)
     {
+        $user_id = $request->attributes->get('user_id');
+
         $user_service = new AdminUserService();
-        $user_info = $user_service->getUser(LoginService::GetAdminID());
-        if (!$user_info->id) {
-            $me_path = $app['url_generator']->generate('me');
-            $login_path = $app['url_generator']->generate('login');
-
-            return $app->redirect($login_path . '?return_url=' . urlencode($me_path));
-        }
-
-        $user_info = ThriftService::convertUserToArray($user_info);
+        $user_info = $user_service->getUser($user_id);
 
         return $app->render('me.twig', ['user_info' => $user_info]);
     }
@@ -70,7 +62,8 @@ class CommonController
                 $passwd = $new_passwd;
             }
             $user_service = new AdminUserService();
-            $user_service->updateMyInfo($name, $team, $is_use, $passwd);
+            $user_id = $request->attributes->get('user_id');
+            $user_service->updateMyInfo($user_id, $name, $team, $is_use, $passwd);
             $app->addFlashInfo('성공적으로 수정하였습니다.');
         } catch (\Exception $e) {
             $app->addFlashError($e->getMessage());

@@ -23,6 +23,10 @@ class ThriftServiceWrapper
         $this->log_level = $log_level;
     }
 
+    /**
+     * @throws SystemException
+     * @throws TException
+     */
     public function __call($name, $arguments)
     {
         try {

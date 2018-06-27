@@ -7,6 +7,7 @@ use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
+use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminUserService implements AdminUserServiceIf
 {
@@ -106,10 +107,11 @@ class AdminUserService implements AdminUserServiceIf
         return $this->selectUserAjaxList($user_id, $column);
     }
 
-    public function updateMyInfo($name, $team, $is_use, $passwd = ''): bool
+    // TODO: not matched with AdminUserServiceIf::updateMyInfo
+    public function updateMyInfo($user_id, $name, $team, $is_use, $passwd = ''): bool
     {
-        /** @var AdminUser $admin */
-        $me = AdminUser::find(LoginService::GetAdminID());
+        /** @var AdminUser $me */
+        $me = AdminUser::find($user_id);
         if (!$me) {
             return false;
         }
@@ -152,6 +154,20 @@ class AdminUserService implements AdminUserServiceIf
             'team' => $team,
             'is_use' => 1,
         ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function addUserIfNotExists(string $user_id)
+    {
+        $user = $this->getUser($user_id);
+        $user = ThriftService::convertUserToArray($user);
+        if (!$user || !$user['id']) {
+            $this->addNewUser($user_id, '', '');
+        } elseif ($user['is_use'] != '1') {
+            throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
+        }
     }
 
     private function selectUserMenus(string $user, ?string $column = null): array
