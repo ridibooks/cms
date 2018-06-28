@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.17] - 2018-06-28
+### Changed
+- Set trusted proxies
+
 ## [2.1.16] - 2018-06-28
 ### Added
 - Set domain "admin.*.test.ridi.io" enable test
