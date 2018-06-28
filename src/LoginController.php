@@ -109,10 +109,10 @@ class LoginController implements ControllerProviderInterface
             'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'auth_type', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'auth_type', 'oauth2', time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'oauth2_provider', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'oauth2_provider', 'azure', time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
         return $response;
     }
