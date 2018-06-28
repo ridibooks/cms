@@ -5,6 +5,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
+use Symfony\Component\HttpFoundation\Request;
 
 $auth_enabled = [
     OAuth2Authenticator::AUTH_TYPE,
@@ -18,12 +19,26 @@ if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
     $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
 }
 
-// Create a dynamic redirect uri based on request domain.
-$secure = strcasecmp($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '', 'https') == 0
-    || strcasecmp($_SERVER['REQUEST_SCHEME'] ?? '', 'https') == 0;
+// If hostname has a form of dev domain, set test id.
+$request = Request::createFromGlobals();
+if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+    $patterns = [
+        '/^admin\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io'
+        '/^cms\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'cms.{test_id}.dev.io' or 'cms.{test_id}.platform.dev.io'
+        '/^admin\.(\w+)\.test\.ridi\.io$/', // 'admin.{test_id}.test.ridi.io'
+    ];
 
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $request->getHost(), $matches)) {
+            $user_id_for_test_domain = $matches[2];
+            break;
+        }
+    }
+}
+
+// Create a dynamic redirect uri based on request domain.
 if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
-    $_ENV['AZURE_REDIRECT_URI'] = ($secure ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_ENV['AZURE_REDIRECT_PATH'];
+    $_ENV['AZURE_REDIRECT_URI'] = $request->getSchemeAndHttpHost() . $_ENV['AZURE_REDIRECT_PATH'];
 }
 
 $config = [
@@ -39,7 +54,7 @@ $config = [
     ],
 
     //TODO: Remove this after OAuth2 authorization is implemented
-    'auth.is_secure' => $secure,
+    'auth.is_secure' => $request->isSecure(),
 
     'auth.enabled' => $auth_enabled,
     'auth.options' => [
@@ -54,7 +69,7 @@ $config = [
 
         // test authenticator
         'test' => [
-            'test_user_id' => $_ENV['TEST_ID'],
+            'test_user_id' => $user_id_for_test_domain ?? $_ENV['TEST_ID'],
         ],
     ],
     'capsule.connections' => [
