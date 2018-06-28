@@ -108,6 +108,12 @@ class LoginController implements ControllerProviderInterface
         $response->headers->setCookie(new Cookie(
             'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
         ));
+        $response->headers->setCookie(new Cookie(
+            'auth_type', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+        ));
+        $response->headers->setCookie(new Cookie(
+            'oauth2_provider', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+        ));
         return $response;
     }
 
@@ -128,6 +134,8 @@ class LoginController implements ControllerProviderInterface
         $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
         $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
         $response->headers->clearCookie('cms-refresh', '/', null, !$app['debug']);
+        $response->headers->clearCookie('auth_type', '/', null, !$app['debug']);
+        $response->headers->clearCookie('oauth2_provider', '/', null, !$app['debug']);
         return $response;
     }
 }
