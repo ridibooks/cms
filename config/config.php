@@ -19,8 +19,14 @@ if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
     $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
 }
 
-// If hostname has a form of dev domain, set test id.
 $request = Request::createFromGlobals();
+// trust *all* requests
+Request::setTrustedProxies(
+    array('127.0.0.1', $request->server->get('REMOTE_ADDR')),
+    Request::HEADER_X_FORWARDED_ALL
+);
+
+// If hostname has a form of dev domain, set test id.
 if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
     $patterns = [
         '/^admin\.(\w+)(\.platform)?\.dev\.ridi\.io$/', // 'admin.{test_id}.dev.io', 'admin.{test_id}.platform.dev.io'
