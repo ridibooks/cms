@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.16] - 2018-06-28
+### Added
+- Set domain "admin.*.test.ridi.io" enable test
+### Changed
+- Changed authentication related endpoints, /authorize -> /auth/oauth2/oauth/authorize, /login-azure -> /auth/oauth2/callback
+- Refactor authentication logics
+
 ## [2.1.15] - 2018-06-15
 ### Added
 - Add user group for tags (#68, #69)
