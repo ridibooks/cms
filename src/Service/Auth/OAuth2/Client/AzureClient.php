@@ -69,7 +69,11 @@ class AzureClient implements OAuth2ClientInterface
     {
         $token_claims = $this->azure->validateAccessToken($access_token);
 
-        $email = $token_claims['unique_name'];
-        return str_replace('@ridi.com', '', $email);
+        // For some users, azure ID and azure email is differnt. So, request mailNickname explicitly rather than parse id from email.
+        // See https://app.asana.com/0/314089093619591/726274713560091
+        $token_object = new AccessToken(['access_token' => $access_token, 'expires' => $token_claims['exp'] ], $this->azure);
+        $user = $this->azure->get('me?api-version=2013-11-08', $token_object);
+
+        return $user['mailNickname'];
     }
 }
