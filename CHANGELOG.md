@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.18] - 2018-06-29
+### Changed
+- Use 'mailNickName' for azure id instead of 'unique_name'
+
 ## [2.1.17] - 2018-06-28
 ### Changed
 - Set trusted proxies
