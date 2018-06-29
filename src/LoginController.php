@@ -99,20 +99,29 @@ class LoginController implements ControllerProviderInterface
 
         $response = RedirectResponse::create($return_url);
         $response->headers->clearCookie('return_url');
+
+        // Ensure cookies in old domain are unset.
+        $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
+        $response->headers->clearCookie('cms-refresh', '/', null, !$app['debug']);
+
+        // Set cookies in new domain
+        $domain = $request->getHost();
         $response->headers->setCookie(new Cookie(
-            'cms-token', $token, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            // This cookie domain includes sub-domain, such as `.admin.ridibooks.com`, although the domain string doesn't contain the leading dot.
+            'cms-token', $token, time() + (24 * 60 * 60), '/', $domain, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'cms-refresh', $refresh, time() + (30 * 24 * 60 * 60), '/', $domain, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'admin-id', $admin_id, time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'admin-id', $admin_id, time() + (24 * 60 * 60), '/', $domain, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'auth_type', 'oauth2', time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'auth_type', 'oauth2', time() + (24 * 60 * 60), '/', $domain, !$app['debug']
         ));
         $response->headers->setCookie(new Cookie(
-            'oauth2_provider', 'azure', time() + (30 * 24 * 60 * 60), '/', null, !$app['debug']
+            'oauth2_provider', 'azure', time() + (24 * 60 * 60), '/', $domain, !$app['debug']
         ));
         return $response;
     }
@@ -127,15 +136,16 @@ class LoginController implements ControllerProviderInterface
         return $response;
     }
 
-    public function logout(CmsServerApplication $app)
+    public function logout(Request $request, CmsServerApplication $app)
     {
         LoginService::resetSession();
         $response = RedirectResponse::create('/login');
-        $response->headers->clearCookie('admin-id', '/', null, !$app['debug']);
-        $response->headers->clearCookie('cms-token', '/', null, !$app['debug']);
-        $response->headers->clearCookie('cms-refresh', '/', null, !$app['debug']);
-        $response->headers->clearCookie('auth_type', '/', null, !$app['debug']);
-        $response->headers->clearCookie('oauth2_provider', '/', null, !$app['debug']);
+        $domain = $request->getHost();
+        $response->headers->clearCookie('admin-id', '/', $domain, !$app['debug']);
+        $response->headers->clearCookie('cms-token', '/', $domain, !$app['debug']);
+        $response->headers->clearCookie('cms-refresh', '/', $domain, !$app['debug']);
+        $response->headers->clearCookie('auth_type', '/', $domain, !$app['debug']);
+        $response->headers->clearCookie('oauth2_provider', '/', $domain, !$app['debug']);
         return $response;
     }
 }
