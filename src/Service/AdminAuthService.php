@@ -77,11 +77,7 @@ class AdminAuthService extends Container
             return;
         }
 
-        if (!empty($_ENV['TEST_ID'])) {
-            $user_id = $_ENV['TEST_ID'];
-        } else {
-            $user_id = self::introspectToken($token);
-        }
+        $user_id = self::introspectToken($token);
 
         if (!self::checkAuth($methods, $check_url, $user_id)) {
             throw new UnauthorizedException([
@@ -98,11 +94,7 @@ class AdminAuthService extends Container
      */
     public function authorizeByTag(string $token, array $tags)
     {
-        if (!empty($_ENV['TEST_ID'])) {
-            $user_id = $_ENV['TEST_ID'];
-        } else {
-            $user_id = self::introspectToken($token);
-        }
+        $user_id = self::introspectToken($token);
 
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             return;
@@ -122,6 +114,10 @@ class AdminAuthService extends Container
      */
     public function introspectToken($token)
     {
+        if (!empty($_ENV['TEST_ID'])) {
+            return $_ENV['TEST_ID'];
+        }
+
         if (empty($token)) {
             throw new NoTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
