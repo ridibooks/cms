@@ -7,6 +7,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
+use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
 use Silex\Application;
@@ -32,7 +33,7 @@ class AuthController
 
         $twig_params = [];
         if (in_array(OAuth2Authenticator::AUTH_TYPE, $auth_enabled)) {
-            $azure_authorize_url = $url_generator->generate('oauth2_authorize', [
+            $azure_authorize_url = $url_generator->generate('oauth2_code', [
                 'provider' => AzureClient::PROVIDER_NAME,
             ]);
             $azure_authorize_url .= '?return_url=' . urlencode($return_url);
@@ -79,12 +80,14 @@ class AuthController
         $auth = $app['auth.authenticator.' . $auth_type];
         $auth->signIn($request);
 
+        // TODO: When it comes to fail?
+
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
         return new RedirectResponse($return_url);
     }
 
-    public function authorizeWithOAuth2(Request $request, Application $app, ?string $provider)
+    public function getAuthorizationCode(Request $request, Application $app, ?string $provider)
     {
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
@@ -99,21 +102,26 @@ class AuthController
         return new RedirectResponse($authorization_url);
     }
 
-    public function callbackFromOAuth2(Request $request, Application $app)
+    public function authorizeWithOAuth2(Request $request, Application $app)
     {
         /** @var OAuth2Authenticator $auth */
         $auth = $app['auth.authenticator.oauth2'];
 
+        $home_url = $app['url_generator']->generate('home');
+        $return_url = $request->get('return_url', $auth->getReturnUrl() ?? $home_url);
+        $auth->setReturnUrl(null);
+
         try {
             $user_id = $auth->signIn($request);
+        } catch (NoCredentialException $e) {
+            $login_url = $app['url_generator']->generate('login') . '?return_url=' . urlencode($return_url);
+            return new RedirectResponse($login_url);
         } catch (InvalidStateException $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $this->addUserIfNotExists($user_id);
 
-        $return_url = $auth->getReturnUrl($app['url_generator']->generate('home'));
-        $auth->setReturnUrl(null);
         return new RedirectResponse($return_url);
     }
 

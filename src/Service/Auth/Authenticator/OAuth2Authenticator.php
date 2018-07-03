@@ -29,6 +29,7 @@ class OAuth2Authenticator extends BaseAuthenticator
         $this->clients = $clients;
     }
 
+    /** @throws NoCredentialException */
     public function getAuthorizationUrl(?string $scope): string
     {
         $state = $this->createRandomState();
@@ -39,29 +40,34 @@ class OAuth2Authenticator extends BaseAuthenticator
     }
 
     /**
-     * @throws \Exception
+     * @throws InvalidStateException
+     * @throws NoCredentialException
      */
     public function createCredential(Request $request)
     {
         $code = $request->get('code');
-        $state = $request->get('state');
         if (!empty($code)) {
+            $state = $request->get('state');
             return $this->createCredentialWithAuthorizationCode($code, $state);
         }
 
         $access_token = $this->session->get(self::KEY_ACCESS_TOKEN);
-        if (empty($access_token)) {
-            $refresh_token = $this->session->get(self::KEY_REFRESH_TOKEN);
-            if (empty($refresh_token)) {
-                throw new NoCredentialException('no token exists');
-            } else {
-                $access_token = $this->createCredentialWithRefreshToken($refresh_token);
-            }
+        if (!empty($access_token)) {
+            return $access_token;
         }
 
-        return $access_token;
+        $refresh_token = $this->session->get(self::KEY_REFRESH_TOKEN);
+        if (!empty($refresh_token)) {
+            return $this->createCredentialWithRefreshToken($refresh_token);
+        }
+
+        throw new NoCredentialException('no token exists');
     }
 
+    /**
+     * @throws InvalidStateException
+     * @throws NoCredentialException
+     */
     private function createCredentialWithAuthorizationCode(string $code, string $state): string
     {
         $expected_state = $this->session->get(self::KEY_STATE);
@@ -79,6 +85,7 @@ class OAuth2Authenticator extends BaseAuthenticator
         return $credential->access_token;
     }
 
+    /** @throws NoCredentialException */
     private function createCredentialWithRefreshToken(string $refresh_token): string
     {
         $client = $this->getOAuth2Client();
@@ -90,12 +97,14 @@ class OAuth2Authenticator extends BaseAuthenticator
         return $credential->access_token;
     }
 
+    /** @throws NoCredentialException */
     public function validateCredential($access_token)
     {
         $client = $this->getOAuth2Client();
         $client->validateToken($access_token);
     }
 
+    /** @throws NoCredentialException */
     public function getUserId($access_token): string
     {
         $client = $this->getOAuth2Client();
@@ -132,9 +141,9 @@ class OAuth2Authenticator extends BaseAuthenticator
         $this->session->set(self::KEY_PROVIDER, $provider);
     }
 
-    public function getReturnUrl(?string $default = null): ?string
+    public function getReturnUrl(): ?string
     {
-        return $this->session->get(self::KEY_RETURN_URL) ?? $default;
+        return $this->session->get(self::KEY_RETURN_URL);
     }
 
     public function setReturnUrl(?string $return_url)

@@ -73,7 +73,7 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
         $app['auth.cookie.oauth2'] = [
             OAuth2Authenticator::KEY_PROVIDER => [
                 'key' => 'oauth2_provider',
-                'lifetime' => 60 * 60 * 2, // 2 hours,
+                'lifetime' => 60 * 60 * 24 * 30, // 30 days,
             ],
             OAuth2Authenticator::KEY_ACCESS_TOKEN => [
                 'key' => 'cms-token',
