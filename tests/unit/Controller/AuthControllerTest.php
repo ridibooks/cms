@@ -28,6 +28,8 @@ class AuthControllerTest extends TestCase
 
     public function setUp()
     {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+
         $this->controller = $this->getMockBuilder('Ridibooks\Cms\Controller\AuthController')
             ->setMethods(['addUserIfNotExists'])
             ->getMock();
@@ -70,11 +72,13 @@ class AuthControllerTest extends TestCase
             ->value('auth_type', TestAuthenticator::AUTH_TYPE)
             ->bind('default_authorize');
 
-        $app->get('/oauth2/{provider}/authorize', [$this->controller, 'authorizeWithOAuth2'])
-            ->value('provider', AzureClient::PROVIDER_NAME)
+        $app->get('/oauth2/{provider}/code', [$this->controller, 'getAuthorizationCode'])->bind('oauth2_code');
+
+        $app->get('/oauth2/authorize', [$this->controller, 'authorizeWithOAuth2'])
             ->bind('oauth2_authorize');
 
-        $app->get('/oauth2/callback', [$this->controller, 'callbackFromOAuth2']);
+        $app->get('/oauth2/callback', [$this->controller, 'authorizeWithOAuth2'])
+            ->bind('oauth2_callback');
 
         $this->app = $app;
     }
@@ -90,7 +94,7 @@ class AuthControllerTest extends TestCase
 
         $response = $this->app->handle($request);
 
-        $oauth2_authorize_url = $this->app['url_generator']->generate('oauth2_authorize', [
+        $oauth2_authorize_url = $this->app['url_generator']->generate('oauth2_code', [
             'provider' => AzureClient::PROVIDER_NAME,
         ]);
 
@@ -168,12 +172,12 @@ class AuthControllerTest extends TestCase
         $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), PasswordAuthenticator::AUTH_TYPE);
     }
 
-    public function testAuthorizeWithOAuth2()
+    public function testAuthorizeWithOAuth2IfNoTokenExists()
     {
         $scope = 'some_scope';
         $return_url = '/some/return/url';
 
-        $request = Request::create('/oauth2/' . AzureClient::PROVIDER_NAME . '/authorize?scope=' . $scope . '&return_url=' . $return_url, 'GET', [], [
+        $request = Request::create('/oauth2/' . AzureClient::PROVIDER_NAME . '/code?scope=' . $scope . '&return_url=' . $return_url, 'GET', [], [
             'auth_type' => OAuth2Authenticator::AUTH_TYPE,
             'oauth2_provider' => AzureClient::PROVIDER_NAME,
         ]);
@@ -185,13 +189,38 @@ class AuthControllerTest extends TestCase
         $random_state = $session->get(OAuth2Authenticator::KEY_STATE);
 
         // authorization url created by MockOauth2Client
-        $expected_authorize_url = 'authorization url with scope \'' . $scope . '\', and state \'' . $random_state . '\'';
+        $expected_authorize_url = MockOAuth2Client::getMockAuthorizationUrl($scope, $random_state);
         $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
         $this->assertEquals($expected_authorize_url, $response->headers->get('location'));
 
         $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), OAuth2Authenticator::AUTH_TYPE);
         $this->assertEquals($session->get(OAuth2Authenticator::KEY_PROVIDER), AzureClient::PROVIDER_NAME);
         $this->assertEquals($session->get(OAuth2Authenticator::KEY_RETURN_URL), $return_url);
+    }
+
+    public function testAuthorizeWithOAuth2IfRefreshTokenExistsOnly()
+    {
+        $scope = 'some_scope';
+        $return_url = '/some/return/url';
+        $refresh_token = 'some-refresh-token';
+
+        $request = Request::create('/oauth2/authorize?return_url=' . $return_url, 'GET', [], [
+            'auth_type' => OAuth2Authenticator::AUTH_TYPE,
+            'oauth2_provider' => AzureClient::PROVIDER_NAME,
+            'cms-refresh' => $refresh_token,
+        ]);
+
+        $response = $this->app->handle($request);
+
+        $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
+        $this->assertEquals($return_url, $response->headers->get('location'));
+
+        $session = $this->app['auth.session'];
+        $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), OAuth2Authenticator::AUTH_TYPE);
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_PROVIDER), AzureClient::PROVIDER_NAME);
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_ACCESS_TOKEN), MockOAuth2Client::getMockAccessTokenWithRefreshGrant($refresh_token));
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_REFRESH_TOKEN), MockOAuth2Client::getMockRefreshTokenWithRefreshGrant($refresh_token));
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_RETURN_URL), null);
     }
 
     public function testCallbackFromOAuth2()

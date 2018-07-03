@@ -18,21 +18,23 @@ class MockOAuth2Client implements OAuth2ClientInterface
 
     public function getAuthorizationUrl(string $scope = null, string $state = null): string
     {
-        return 'authorization url with scope \'' . $scope . '\', and state \'' . $state . '\'';
+        return self::getMockAuthorizationUrl($scope, $state);
     }
 
     public function getTokenWithAuthorizationGrant(string $code): OAuth2Credential
     {
         return new OAuth2Credential(
-            'access_token from code \'' . $code . '\'',
-            'refresh_token from code \'' . $code . '\'');
+            self::getMockAccessTokenWithAuthorizationGrant($code),
+            self::getMockRefreshTokenWithAuthorizationGrant($code)
+        );
     }
 
     public function getTokenWithRefreshGrant(string $refresh_token): OAuth2Credential
     {
         return new OAuth2Credential(
-            'access_token from refresh_token \'' . $refresh_token . '\'',
-            'refresh_token from refresh_token \'' . $refresh_token . '\'');
+            self::getMockAccessTokenWithRefreshGrant($refresh_token),
+            self::getMockRefreshTokenWithRefreshGrant($refresh_token)
+        );
     }
 
     /** @throws InvalidCredentialException */
@@ -44,6 +46,36 @@ class MockOAuth2Client implements OAuth2ClientInterface
     }
 
     public function getResourceOwner(string $access_token)
+    {
+        return self::getMockResourceOwner($access_token);
+    }
+
+    public static function getMockAuthorizationUrl(string $scope = null, string $state = null): string
+    {
+        return 'authorization url with scope \'' . $scope . '\', and state \'' . $state . '\'';
+    }
+
+    public static function getMockAccessTokenWithAuthorizationGrant(string $code)
+    {
+        return 'access_token from code \'' . $code . '\'';
+    }
+
+    public static function getMockRefreshTokenWithAuthorizationGrant(string $code)
+    {
+        return 'refresh_token from code \'' . $code . '\'';
+    }
+
+    public static function getMockAccessTokenWithRefreshGrant(string $refresh_token)
+    {
+        return 'access_token from refresh_token \'' . $refresh_token . '\'';
+    }
+
+    public static function getMockRefreshTokenWithRefreshGrant(string $refresh_token)
+    {
+        return 'refresh_token from refresh_token \'' . $refresh_token . '\'';
+    }
+
+    public static function getMockResourceOwner(string $access_token)
     {
         return 'resource owner from access_token \'' . $access_token . '\'';
     }
