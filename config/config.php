@@ -36,7 +36,7 @@ if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
 
     foreach ($patterns as $pattern) {
         if (preg_match($pattern, $request->getHost(), $matches)) {
-            $user_id_for_test_domain = $matches[2];
+            $user_id_for_test_domain = $matches[1];
             break;
         }
     }
