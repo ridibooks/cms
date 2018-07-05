@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.19] - 2018-07-04
+### Fixed
+- Fix to refresh token at `/auth/oauth2/authorize` (#78)
+- Fix test server login id error
+- Configure viewport for mobile UI (#77)
+
+### Changed
+- Make test id available in `introspectToken`
+
 ## [2.1.18] - 2018-06-29
 ### Changed
 - Use 'mailNickName' for azure id instead of 'unique_name'

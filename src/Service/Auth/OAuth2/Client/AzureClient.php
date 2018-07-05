@@ -73,6 +73,9 @@ class AzureClient implements OAuth2ClientInterface
         // See https://app.asana.com/0/314089093619591/726274713560091
         $token_object = new AccessToken(['access_token' => $access_token, 'expires' => $token_claims['exp']], $this->azure);
         $user = $this->azure->get('me?api-version=2013-11-08', $token_object);
+        if (empty($user['mailNickname'])) {
+            throw new RuntimeException('Fail to get user info : ' . var_export($user, true));
+        }
 
         return $user['mailNickname'];
     }
