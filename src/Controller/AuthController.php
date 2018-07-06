@@ -113,7 +113,7 @@ class AuthController
 
         try {
             $user_id = $auth->signIn($request);
-        } catch (NoCredentialException $e) {
+        } catch (NoCredentialException | OAuth2Exception $e) {
             $login_url = $app['url_generator']->generate('login') . '?return_url=' . urlencode($return_url);
             return new RedirectResponse($login_url);
         } catch (InvalidStateException $e) {

@@ -36,6 +36,7 @@ class OAuth2Authenticator extends BaseAuthenticator
         $this->session->set(self::KEY_STATE, $state);
 
         $client = $this->getOAuth2Client();
+
         return $client->getAuthorizationUrl($scope, $state);
     }
 
@@ -48,12 +49,8 @@ class OAuth2Authenticator extends BaseAuthenticator
         $code = $request->get('code');
         if (!empty($code)) {
             $state = $request->get('state');
-            return $this->createCredentialWithAuthorizationCode($code, $state ?? "");
-        }
 
-        $access_token = $this->session->get(self::KEY_ACCESS_TOKEN);
-        if (!empty($access_token)) {
-            return $access_token;
+            return $this->createCredentialWithAuthorizationCode($code, $state ?? "");
         }
 
         $refresh_token = $this->session->get(self::KEY_REFRESH_TOKEN);
