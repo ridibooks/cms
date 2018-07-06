@@ -64,13 +64,15 @@ class AzureClient implements OAuth2ClientInterface
     public function validateToken(string $access_token)
     {
         try {
-            $this->azure->validateAccessToken($access_token);
+            $token_claims = $this->azure->validateAccessToken($access_token);
         } catch (RuntimeException
             | InvalidArgumentException
             | UnexpectedValueException
             | \Firebase\JWT\ExpiredException $e) {
             throw new OAuth2Exception($e->getMessage());
         }
+
+        return $token_claims;
     }
 
     /**
