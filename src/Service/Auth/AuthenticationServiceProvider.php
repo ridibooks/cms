@@ -112,6 +112,7 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
         // Test authenticators
         $app['auth.authenticator.test'] = function (Container $app) {
             $test_option = $app['auth.options']['test'] ?? [];
+
             return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
         };
     }

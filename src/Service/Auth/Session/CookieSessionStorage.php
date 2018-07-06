@@ -28,6 +28,7 @@ class CookieSessionStorage implements SessionStorageInterface
     public function get(string $key_name): ?string
     {
         $values = array_merge($this->origin, $this->modified);
+
         return $values[$key_name] ?? null;
     }
 

@@ -44,6 +44,7 @@ class AuthControllerTest extends TestCase
         $app->extend('twig', function (\Twig_Environment $twig) {
             $twig->addGlobal('STATIC_URL', '/static');
             $twig->addGlobal('BOWER_PATH', '/static/bower_components');
+
             return $twig;
         });
 

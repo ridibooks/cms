@@ -22,6 +22,7 @@ class AuthController
     {
         $return_url = $request->get('return_url');
         $authorize_urls = $this->createAuthorizeUrls($app['auth.enabled'], $app['url_generator'], $return_url);
+
         return $app['twig']->render('login.twig', $authorize_urls);
     }
 
@@ -84,6 +85,7 @@ class AuthController
 
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
+
         return new RedirectResponse($return_url);
     }
 
@@ -99,6 +101,7 @@ class AuthController
         $auth->setReturnUrl($return_url);
 
         $authorization_url = $auth->getAuthorizationUrl($scope);
+
         return new RedirectResponse($authorization_url);
     }
 
@@ -115,7 +118,10 @@ class AuthController
             $user_id = $auth->signIn($request);
         } catch (NoCredentialException $e) {
             $login_url = $app['url_generator']->generate('login') . '?return_url=' . urlencode($return_url);
+
             return new RedirectResponse($login_url);
+        } catch (OAuth2Exception $e) {
+            return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (InvalidStateException $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

@@ -2,9 +2,12 @@
 
 namespace Ridibooks\Cms\Service\Auth\OAuth2\Client;
 
+use InvalidArgumentException;
+use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
 use Ridibooks\Cms\Service\Auth\OAuth2\OAuth2Credential;
 use TheNetworg\OAuth2\Client\Provider\Azure;
 use TheNetworg\OAuth2\Client\Token\AccessToken;
+use UnexpectedValueException;
 
 class AzureClient implements OAuth2ClientInterface
 {
@@ -56,18 +59,27 @@ class AzureClient implements OAuth2ClientInterface
 
     /**
      * @throws \Exception
+     * @throws OAuth2Exception
      */
     public function validateToken(string $access_token)
     {
-        $this->azure->validateAccessToken($access_token);
+        try {
+            $this->azure->validateAccessToken($access_token);
+        } catch (RuntimeException
+            | InvalidArgumentException
+            | UnexpectedValueException
+            | \Firebase\JWT\ExpiredException $e) {
+            throw new OAuth2Exception($e->getMessage());
+        }
     }
 
     /**
      * @throws \RuntimeException
+     * @throws OAuth2Exception
      */
     public function getResourceOwner(string $access_token)
     {
-        $token_claims = $this->azure->validateAccessToken($access_token);
+        $token_claims = $this->validateToken($access_token);
 
         // For some users, azure ID and azure email is differnt. So, request mailNickname explicitly rather than parse id from email.
         // See https://app.asana.com/0/314089093619591/726274713560091

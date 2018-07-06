@@ -36,6 +36,7 @@ class ThriftServiceProvider implements ServiceProviderInterface, BootableProvide
         $app['thrift.processor'] = function () {
             return function (Request $request, Application $app) {
                 $output = $app['thrift.server']->process($request->getContent());
+
                 return new Response($output, Response::HTTP_OK, [
                     'Content-Type' => 'application/x-thrift'
                 ]);
