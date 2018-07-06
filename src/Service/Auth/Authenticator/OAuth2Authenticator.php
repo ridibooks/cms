@@ -48,9 +48,9 @@ class OAuth2Authenticator extends BaseAuthenticator
     {
         $code = $request->get('code');
         if (!empty($code)) {
-            $state = $request->get('state');
+            $state = $request->get('state', '');
 
-            return $this->createCredentialWithAuthorizationCode($code, $state ?? "");
+            return $this->createCredentialWithAuthorizationCode($code, $state);
         }
 
         $refresh_token = $this->session->get(self::KEY_REFRESH_TOKEN);

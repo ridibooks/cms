@@ -116,10 +116,12 @@ class AuthController
 
         try {
             $user_id = $auth->signIn($request);
-        } catch (NoCredentialException | OAuth2Exception $e) {
+        } catch (NoCredentialException $e) {
             $login_url = $app['url_generator']->generate('login') . '?return_url=' . urlencode($return_url);
 
             return new RedirectResponse($login_url);
+        } catch (OAuth2Exception $e) {
+            return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (InvalidStateException $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
