@@ -26,6 +26,7 @@ class AuthMiddleware
             } catch (\Exception $e) {
                 $login_url = $app['url_generator']->generate('login');
                 $return_url = $request->getRequestUri();
+
                 return new RedirectResponse($login_url . '?return_url=' . urlencode($return_url));
             }
 
