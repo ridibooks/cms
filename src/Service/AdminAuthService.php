@@ -4,6 +4,7 @@ namespace Ridibooks\Cms\Service;
 
 use Pimple\Container;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
+use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
 use Ridibooks\Cms\Thrift\Errors\ErrorCode;
 use Ridibooks\Cms\Thrift\Errors\MalformedTokenException;
 use Ridibooks\Cms\Thrift\Errors\NoTokenException;
@@ -135,7 +136,7 @@ class AdminAuthService extends Container
 
         try {
             $user = $azure->getResourceOwner($token);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException | OAuth2Exception $e) {
             throw new MalformedTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
                 'message' => $e->getMessage(),

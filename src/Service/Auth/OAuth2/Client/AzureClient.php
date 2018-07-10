@@ -58,7 +58,6 @@ class AzureClient implements OAuth2ClientInterface
     }
 
     /**
-     * @throws \Exception
      * @throws OAuth2Exception
      */
     public function validateToken(string $access_token)
