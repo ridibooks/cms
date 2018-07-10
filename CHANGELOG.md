@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.20] - 2018-07-10
+### Fixed
+- Fix access token expired exception (#80)
+
 ## [2.1.19] - 2018-07-04
 ### Fixed
 - Fix to refresh token at `/auth/oauth2/authorize` (#78)
