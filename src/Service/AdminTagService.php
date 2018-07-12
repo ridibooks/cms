@@ -80,7 +80,7 @@ class AdminTagService implements AdminTagServiceIf
 
     public function findTagsByName(array $tag_names): array
     {
-        $tag = AdminTag::whereIn('name', $tag_names)->first();
+        $tag = AdminTag::whereIn('name', $tag_names);
         if (empty($tag)) {
             return [];
         }

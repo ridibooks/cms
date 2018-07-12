@@ -33,4 +33,12 @@ class AdminTagServiceTest extends TestCase
 
         $this->assertEquals(['EDIT'], array_values($hashes));
     }
+
+    public function testFindTagsByName()
+    {
+        $tag_service = new AdminTagService();
+        $tags = $tag_service->findTagsByName(['권한 관리', '테스트']);
+
+        $this->assertEquals([1, 2], array_values($tags));
+    }
 }
