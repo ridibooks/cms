@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.22] - 2018-07-13
+### Fixed
+- Fix `findTagsByName` not to return all tag ids
+
 ## [2.1.21] - 2018-07-10
 ### Fixed
 - Fix token expired exception on authorize call over thrift
