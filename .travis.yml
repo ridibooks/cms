@@ -52,18 +52,8 @@ jobs:
     if: type = push AND branch IN (1.x, 2.x)
     env:
       - CI_TRIGGER_ENV=dev
-      - CI_TRIGGER_TARGET=cms-v2-restart
-      - CI_TRIGGER_TAG=${TRAVIS_BRANCH}
-    script:
-      - bin/deploy.sh
-
-  # deploy 1.x (prod)
-  - stage: deploy
-    if: tag =~ ^v1\.\d+(\.\d+)?$ # ex) v1.0.0
-    env:
-      - CI_TRIGGER_ENV=prod
       - CI_TRIGGER_TARGET=cms-restart
-      - CI_TRIGGER_TAG=${TRAVIS_TAG}
+      - CI_TRIGGER_TAG=${TRAVIS_BRANCH}
     script:
       - bin/deploy.sh
 
@@ -72,7 +62,7 @@ jobs:
     if: tag =~ ^v2\.\d+(\.\d+)?$ # ex) v2.0.0
     env:
       - CI_TRIGGER_ENV=prod
-      - CI_TRIGGER_TARGET=cms-v2-restart
+      - CI_TRIGGER_TARGET=cms-restart
       - CI_TRIGGER_TAG=${TRAVIS_TAG}
     script:
       - bin/deploy.sh
