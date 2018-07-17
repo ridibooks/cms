@@ -105,7 +105,8 @@ class OAuth2Authenticator extends BaseAuthenticator
     public function getUserId($access_token): string
     {
         $client = $this->getOAuth2Client();
-        $user_id = $client->getResourceOwner($access_token);
+        $user = $client->introspectResourceOwner($access_token);
+        $user_id = $user['id'];
 
         $this->session->set(self::KEY_USER_ID, $user_id);
 

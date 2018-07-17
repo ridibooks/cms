@@ -133,7 +133,8 @@ class OAuth2AuthenticatorTest extends TestCase
     {
         $access_token = 'some_access_token';
         // an access token created by MockOauth2Client
-        $expected = MockOAuth2Client::getMockResourceOwner($access_token);
+        $user = MockOAuth2Client::introspectMockResourceOwner($access_token);
+        $expected = $user['id'];
         $actual = $this->authenticator->getUserId($access_token);
 
         $this->assertEquals($expected, $actual);
@@ -160,7 +161,8 @@ class OAuth2AuthenticatorTest extends TestCase
         $expected_refresh_token = MockOAuth2Client::getMockrefreshTokenWithAuthorizationGrant($code);
         $this->assertEquals($expected_refresh_token, $actual_refresh_token);
 
-        $expected_user_id = MockOAuth2Client::getMockResourceOwner($actual_access_token);
+        $user = MockOAuth2Client::introspectMockResourceOwner($actual_access_token);
+        $expected_user_id = $user['id'];
         // a resource owner created by MockOauth2Client
         $this->assertEquals($expected_user_id, $actual_user_id);
     }

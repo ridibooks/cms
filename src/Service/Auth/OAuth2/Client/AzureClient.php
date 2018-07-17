@@ -78,7 +78,7 @@ class AzureClient implements OAuth2ClientInterface
      * @throws \RuntimeException
      * @throws OAuth2Exception
      */
-    public function getResourceOwner(string $access_token)
+    public function introspectResourceOwner(string $access_token): array
     {
         $token_claims = $this->validateToken($access_token);
 
@@ -90,6 +90,9 @@ class AzureClient implements OAuth2ClientInterface
             throw new RuntimeException('Fail to get user info : ' . var_export($user, true));
         }
 
-        return $user['mailNickname'];
+        return [
+            'id' => $user['mailNickname'],
+            'email' => $token_claims['unique_name'],
+        ];
     }
 }
