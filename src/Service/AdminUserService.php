@@ -159,12 +159,16 @@ class AdminUserService implements AdminUserServiceIf
     /**
      * @throws \Exception
      */
-    public function addUserIfNotExists(string $user_id)
+    public function upsertUser(string $user_info)
     {
-        $user = $this->getUser($user_id);
+        if (empty($user_info['id'])) {
+            throw new \Excption('Invalid user info');
+        }
+
+        $user = $this->getUser($user_info['id']);
         $user = ThriftService::convertUserToArray($user);
         if (!$user || !$user['id']) {
-            $this->addNewUser($user_id, '', '');
+            $this->addNewUser($user_info['id'], '', '');
         } elseif ($user['is_use'] != '1') {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         }

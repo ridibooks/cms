@@ -21,7 +21,7 @@ abstract class BaseAuthenticator
         $this->session = $session;
     }
 
-    public function signIn(Request $request): string
+    public function signIn(Request $request): array
     {
         $credential = $this->createCredential($request);
         $this->validateCredential($credential);
@@ -29,7 +29,7 @@ abstract class BaseAuthenticator
         // This is necessary to remember which type of authenticator was used.
         $this->session->set(self::KEY_AUTH_TYPE, $this->auth_type);
 
-        return $this->getUserId($credential);
+        return $this->getUserInfo($credential);
     }
 
     public function signOut()
@@ -46,5 +46,5 @@ abstract class BaseAuthenticator
         $this->session->clearAll();
     }
 
-    abstract public function getUserId($credentials): string;
+    abstract public function getUserInfo($credentials): array;
 }
