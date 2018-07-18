@@ -134,6 +134,6 @@ class AuthController
     public function addUserIfNotExists(array $user)
     {
         $user_service = new AdminUserService();
-        $user_service->upsertUser($user_id);
+        $user_service->renewUserInfo($user);
     }
 }

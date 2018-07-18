@@ -13,6 +13,7 @@ class AdminUser extends Model
     protected $fillable = [
         'id',
         'passwd',
+        'email',
         'name',
         'team',
         'is_use',

@@ -145,33 +145,31 @@ class AdminUserService implements AdminUserServiceIf
         return true;
     }
 
-    public function addNewUser($user_id, $name, $team)
-    {
-        AdminUser::create([
-            'id' => $user_id,
-            'passwd' => '',
-            'name' => $name,
-            'team' => $team,
-            'is_use' => 1,
-        ]);
-    }
-
     /**
      * @throws \Exception
      */
-    public function upsertUser(string $user_info)
+    public function renewUserInfo(array $user_info): array
     {
         if (empty($user_info['id'])) {
             throw new \Excption('Invalid user info');
         }
 
-        $user = $this->getUser($user_info['id']);
-        $user = ThriftService::convertUserToArray($user);
-        if (!$user || !$user['id']) {
-            $this->addNewUser($user_info['id'], '', '');
-        } elseif ($user['is_use'] != '1') {
+        $user = AdminUser::find($user_info['id']);
+        if (!empty($user) && $user['is_use'] !== 1) {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
+        } else {
+            $user = AdminUser::updateOrCreate([
+                'id' => $user_info['id']
+            ], [
+                'passwd' => $user['passwd'] ?? '',
+                'email' => $user_info['email'] ?? $user['email'] ?? '',
+                'name' => $user_info['name'] ?? $user['name'] ?? '',
+                'team' => $user_info['team'] ?? $user['team'] ?? '',
+                'is_use' => 1,
+            ]);
         }
+
+        return $user->toArray();
     }
 
     private function selectUserMenus(string $user, ?string $column = null): array

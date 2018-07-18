@@ -43,4 +43,24 @@ class AdminUserServiceTest extends TestCase
         $this->assertEquals([1], $user_service->getAdminUserTag('admin'));
         $this->assertEquals([1, 2], $user_service->getAdminUserAllTag('admin'));
     }
+
+    public function testRenewUserInfo()
+    {
+        $user_service = new AdminUserService();
+        $tester = [
+            'id' => 'test',
+            'email' => 'test@email.com',
+            'name' => 'tester',
+        ];
+        $actual = $user_service->renewUserInfo($tester);
+
+        $this->assertEquals($tester['id'], $actual['id']);
+        $this->assertEquals($tester['email'], $actual['email']);
+
+        $actual = $user_service->renewUserInfo(
+            array_merge($tester, ['email' => 'new@email.com'])
+        );
+
+        $this->assertEquals('new@email.com', $actual['email']);
+    }
 }
