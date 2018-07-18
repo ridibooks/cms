@@ -2,24 +2,24 @@
 
 namespace Ridibooks\Cms\Controller;
 
+use Ridibooks\Cms\CmsApplication;
 use Ridibooks\Cms\Service\AdminUserService;
-use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class CommonController
 {
-    public function index(Application $app)
+    public function index(CmsApplication $app)
     {
         return $app->redirect($app['url_generator']->generate('home'));
     }
 
-    public function getWelcomePage(Application $app)
+    public function getWelcomePage(CmsApplication $app)
     {
         return $app->render('welcome.twig');
     }
 
-    public function userList(Application $app)
+    public function userList(CmsApplication $app)
     {
         $result = [];
 
@@ -35,7 +35,7 @@ class CommonController
         return $app->json((array)$result);
     }
 
-    public function getMyInfo(Request $request, Application $app)
+    public function getMyInfo(Request $request, CmsApplication $app)
     {
         $user_id = $request->attributes->get('user_id');
 
@@ -45,7 +45,7 @@ class CommonController
         return $app->render('me.twig', ['user_info' => $user_info]);
     }
 
-    public function updateMyInfo(Application $app, Request $request)
+    public function updateMyInfo(CmsApplication $app, Request $request)
     {
         $name = $request->get('name');
         $team = $request->get('team');

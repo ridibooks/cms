@@ -7,7 +7,6 @@ use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
-use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminUserService implements AdminUserServiceIf
 {
@@ -151,7 +150,7 @@ class AdminUserService implements AdminUserServiceIf
     public function renewUserInfo(array $user_info)
     {
         if (empty($user_info['id'])) {
-            throw new \Excption('Invalid user info');
+            throw new \Exception('Invalid user info');
         }
 
         $user = AdminUser::find($user_info['id']);

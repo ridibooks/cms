@@ -10,6 +10,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
+use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -120,18 +121,16 @@ class AuthController
             $login_url = $app['url_generator']->generate('login') . '?return_url=' . urlencode($return_url);
 
             return new RedirectResponse($login_url);
-        } catch (OAuth2Exception $e) {
-            return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (InvalidStateException $e) {
+        } catch (InvalidStateException | OAuth2Exception $e) {
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $this->addUserIfNotExists($user);
+        $this->renewUserInfo($user);
 
         return new RedirectResponse($return_url);
     }
 
-    public function addUserIfNotExists(array $user)
+    public function renewUserInfo(array $user)
     {
         $user_service = new AdminUserService();
         $user_service->renewUserInfo($user);

@@ -64,7 +64,7 @@ class AzureClient implements OAuth2ClientInterface
     {
         try {
             $token_claims = $this->azure->validateAccessToken($access_token);
-        } catch (RuntimeException
+        } catch (\RuntimeException
             | InvalidArgumentException
             | UnexpectedValueException
             | \Firebase\JWT\ExpiredException $e) {
@@ -87,7 +87,7 @@ class AzureClient implements OAuth2ClientInterface
         $token_object = new AccessToken(['access_token' => $access_token, 'expires' => $token_claims['exp']], $this->azure);
         $user = $this->azure->get('me?api-version=2013-11-08', $token_object);
         if (empty($user['mailNickname'])) {
-            throw new RuntimeException('Fail to get user info : ' . var_export($user, true));
+            throw new \RuntimeException('Fail to get user info : ' . var_export($user, true));
         }
 
         return [

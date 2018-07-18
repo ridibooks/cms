@@ -135,7 +135,7 @@ class AdminAuthService extends Container
         ]);
 
         try {
-            $user = $azure->getResourceOwner($token);
+            $user = $azure->introspectResourceOwner($token);
         } catch (\RuntimeException | OAuth2Exception $e) {
             throw new MalformedTokenException([
                 'code' => ErrorCode::BAD_REQUEST,
@@ -143,7 +143,7 @@ class AdminAuthService extends Container
             ]);
         }
 
-        return $user;
+        return $user['id'];
     }
 
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
