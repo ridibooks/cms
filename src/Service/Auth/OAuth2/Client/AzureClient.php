@@ -92,6 +92,7 @@ class AzureClient implements OAuth2ClientInterface
 
         return [
             'id' => $user['mailNickname'],
+            'name' => $token_claims['name'],
             'email' => $token_claims['unique_name'],
         ];
     }
