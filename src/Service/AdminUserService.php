@@ -148,7 +148,7 @@ class AdminUserService implements AdminUserServiceIf
     /**
      * @throws \Exception
      */
-    public function renewUserInfo(array $user_info): array
+    public function renewUserInfo(array $user_info)
     {
         if (empty($user_info['id'])) {
             throw new \Excption('Invalid user info');
@@ -158,7 +158,7 @@ class AdminUserService implements AdminUserServiceIf
         if (!empty($user) && $user['is_use'] !== 1) {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         } else {
-            $user = AdminUser::updateOrCreate([
+            AdminUser::updateOrCreate([
                 'id' => $user_info['id']
             ], [
                 'passwd' => $user['passwd'] ?? '',
@@ -168,8 +168,6 @@ class AdminUserService implements AdminUserServiceIf
                 'is_use' => 1,
             ]);
         }
-
-        return $user->toArray();
     }
 
     private function selectUserMenus(string $user, ?string $column = null): array
