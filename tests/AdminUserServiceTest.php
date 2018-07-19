@@ -43,7 +43,7 @@ class AdminUserServiceTest extends TestCase
         $this->assertEquals([1, 2], $user_service->getAdminUserAllTag('admin'));
     }
 
-    public function testRenewUserInfo()
+    public function testUpdateOrCreateUser()
     {
         $user_service = new AdminUserService();
         $tester = [
@@ -51,13 +51,13 @@ class AdminUserServiceTest extends TestCase
             'email' => 'test@email.com',
             'name' => 'tester',
         ];
-        $user_service->renewUserInfo($tester);
+        $user_service->updateOrCreateUser($tester);
         $actual = $user_service->getUser('test');
 
         $this->assertEquals($tester['id'], $actual->id);
         $this->assertEquals($tester['email'], $actual->email);
 
-        $actual = $user_service->renewUserInfo(
+        $actual = $user_service->updateOrCreateUser(
             array_merge($tester, ['email' => 'new@email.com'])
         );
         $actual = $user_service->getUser('test');

@@ -125,14 +125,9 @@ class AuthController
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $this->renewUserInfo($user);
+        $user_service = new AdminUserService();
+        $user_service->updateOrCreateUser($user);
 
         return new RedirectResponse($return_url);
-    }
-
-    public function renewUserInfo(array $user)
-    {
-        $user_service = new AdminUserService();
-        $user_service->renewUserInfo($user);
     }
 }

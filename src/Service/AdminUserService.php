@@ -147,23 +147,23 @@ class AdminUserService implements AdminUserServiceIf
     /**
      * @throws \Exception
      */
-    public function renewUserInfo(array $user_info)
+    public function updateOrCreateUser(array $new_values)
     {
-        if (empty($user_info['id'])) {
+        if (empty($new_values['id'])) {
             throw new \Exception('Invalid user info');
         }
 
-        $user = AdminUser::find($user_info['id']);
+        $user = AdminUser::find($new_values['id']);
         if (!empty($user) && $user['is_use'] !== 1) {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
         } else {
             AdminUser::updateOrCreate([
-                'id' => $user_info['id']
+                'id' => $new_values['id']
             ], [
                 'passwd' => $user['passwd'] ?? '',
-                'email' => $user_info['email'] ?? $user['email'] ?? '',
-                'name' => $user_info['name'] ?? $user['name'] ?? '',
-                'team' => $user_info['team'] ?? $user['team'] ?? '',
+                'email' => $new_values['email'] ?? $user['email'] ?? '',
+                'name' => $new_values['name'] ?? $user['name'] ?? '',
+                'team' => $new_values['team'] ?? $user['team'] ?? '',
                 'is_use' => 1,
             ]);
         }

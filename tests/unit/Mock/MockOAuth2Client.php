@@ -77,6 +77,6 @@ class MockOAuth2Client implements OAuth2ClientInterface
 
     public static function introspectMockResourceOwner(string $access_token)
     {
-        return ['id' => $access_token];
+        return ['id' => 'test'];
     }
 }
