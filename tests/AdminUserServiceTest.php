@@ -6,7 +6,6 @@ namespace Ridibooks\Cms\Tests;
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\AdminUserService;
 
-// TODO(devgrapher): temparary test cases. Model classes are statically bound inside. Hard to inject mocks.
 class AdminUserServiceTest extends TestCase
 {
     public function testAllMenuIds()
@@ -42,5 +41,27 @@ class AdminUserServiceTest extends TestCase
         $user_service = new AdminUserService();
         $this->assertEquals([1], $user_service->getAdminUserTag('admin'));
         $this->assertEquals([1, 2], $user_service->getAdminUserAllTag('admin'));
+    }
+
+    public function testUpdateOrCreateUser()
+    {
+        $user_service = new AdminUserService();
+        $tester = [
+            'id' => 'test',
+            'email' => 'test@email.com',
+            'name' => 'tester',
+        ];
+        $user_service->updateOrCreateUser($tester);
+        $actual = $user_service->getUser('test');
+
+        $this->assertEquals($tester['id'], $actual->id);
+        $this->assertEquals($tester['email'], $actual->email);
+
+        $actual = $user_service->updateOrCreateUser(
+            array_merge($tester, ['email' => 'new@email.com'])
+        );
+        $actual = $user_service->getUser('test');
+
+        $this->assertEquals('new@email.com', $actual->email);
     }
 }

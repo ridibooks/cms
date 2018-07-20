@@ -38,9 +38,9 @@ class PasswordAuthenticator extends BaseAuthenticator
         $credential['user_password'];
     }
 
-    public function getUserId($credentials): string
+    public function getUserInfo($credentials): array
     {
-        return $credentials['user_id'];
+        return ['id' => $credentials['user_id']];
     }
 
     public function removeCredential()

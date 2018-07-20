@@ -45,9 +45,9 @@ class MockOAuth2Client implements OAuth2ClientInterface
         }
     }
 
-    public function getResourceOwner(string $access_token)
+    public function introspectResourceOwner(string $access_token): array
     {
-        return self::getMockResourceOwner($access_token);
+        return self::introspectMockResourceOwner($access_token);
     }
 
     public static function getMockAuthorizationUrl(string $scope = null, string $state = null): string
@@ -75,8 +75,8 @@ class MockOAuth2Client implements OAuth2ClientInterface
         return 'refresh_token from refresh_token \'' . $refresh_token . '\'';
     }
 
-    public static function getMockResourceOwner(string $access_token)
+    public static function introspectMockResourceOwner(string $access_token)
     {
-        return 'resource owner from access_token \'' . $access_token . '\'';
+        return ['id' => 'test'];
     }
 }

@@ -39,9 +39,9 @@ class TestAuthenticator extends BaseAuthenticator
         // Do nothing
     }
 
-    public function getUserId($test_user_id): string
+    public function getUserInfo($test_user_id): array
     {
-        return $test_user_id;
+        return ['id' => $test_user_id];
     }
 
     public function removeCredential()

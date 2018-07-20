@@ -26,7 +26,6 @@ class InitCms extends AbstractMigration
             ->addColumn('team', 'string', ['length' => 32, 'collation' => 'utf8_unicode_ci'])
             ->addColumn('is_use', 'boolean')
             ->addColumn('reg_date', 'timestamp')
-            ->addColumn('azure_id', 'string', ['length' => 32, 'default' => ''])
             ->create();
     }
 

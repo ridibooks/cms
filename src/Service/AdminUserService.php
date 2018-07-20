@@ -7,7 +7,6 @@ use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUser as ThriftAdminUser;
 use Ridibooks\Cms\Thrift\AdminUser\AdminUserServiceIf;
-use Ridibooks\Cms\Thrift\ThriftService;
 
 class AdminUserService implements AdminUserServiceIf
 {
@@ -145,28 +144,28 @@ class AdminUserService implements AdminUserServiceIf
         return true;
     }
 
-    public function addNewUser($user_id, $name, $team)
-    {
-        AdminUser::create([
-            'id' => $user_id,
-            'passwd' => '',
-            'name' => $name,
-            'team' => $team,
-            'is_use' => 1,
-        ]);
-    }
-
     /**
      * @throws \Exception
      */
-    public function addUserIfNotExists(string $user_id)
+    public function updateOrCreateUser(array $new_values)
     {
-        $user = $this->getUser($user_id);
-        $user = ThriftService::convertUserToArray($user);
-        if (!$user || !$user['id']) {
-            $this->addNewUser($user_id, '', '');
-        } elseif ($user['is_use'] != '1') {
+        if (empty($new_values['id'])) {
+            throw new \Exception('Invalid user info');
+        }
+
+        $user = AdminUser::find($new_values['id']);
+        if (!empty($user) && $user['is_use'] !== 1) {
             throw new \Exception('사용이 금지된 계정입니다. 관리자에게 문의하세요.');
+        } else {
+            AdminUser::updateOrCreate([
+                'id' => $new_values['id']
+            ], [
+                'passwd' => $user['passwd'] ?? '',
+                'email' => $new_values['email'] ?? $user['email'] ?? '',
+                'name' => $new_values['name'] ?? $user['name'] ?? '',
+                'team' => $new_values['team'] ?? $user['team'] ?? '',
+                'is_use' => 1,
+            ]);
         }
     }
 

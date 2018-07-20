@@ -34,8 +34,8 @@ class MockAuthenticator extends BaseAuthenticator
     {
     }
 
-    public function getUserId($mock): string
+    public function getUserInfo($mock): array
     {
-        return $mock;
+        return ['id' => $mock];
     }
 }

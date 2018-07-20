@@ -15,5 +15,5 @@ interface OAuth2ClientInterface
 
     public function validateToken(string $access_token);
 
-    public function getResourceOwner(string $access_token);
+    public function introspectResourceOwner(string $access_token): array;
 }

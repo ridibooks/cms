@@ -15,7 +15,7 @@ class User extends AbstractSeed
                 'team' => '관리자',
                 'is_use' => 1,
                 'reg_date' => date('Y-m-d H:i:s'),
-                'azure_id' => 'admin',
+                'email' => 'admin@ridi.com',
             ],
         ];
 
