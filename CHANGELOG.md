@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.1.23] - 2018-07-20
+### Fixed
+- Fix 500 at `/authorize` due to `NoCredentialException` when no refresh token given
+### Changed
+- Add email column in user DB  (#84)
+- The return of getUser API includes user email.
+
 ## [2.1.22] - 2018-07-13
 ### Fixed
 - Fix `findTagsByName` not to return all tag ids
