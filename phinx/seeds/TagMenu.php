@@ -32,6 +32,10 @@ class TagMenu extends AbstractSeed
                 'tag_id' => 2,
                 'menu_id' => 7,
             ],
+            [
+                'tag_id' => 1,
+                'menu_id' => 8,
+            ],
         ];
 
         $posts = $this->table('tb_admin2_tag_menu');
