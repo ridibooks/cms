@@ -13,14 +13,13 @@ This is a main server of RIDI CMS service.
 git clone https://github.com/ridi/cms.git
 cd cms
 
-# Write environment variables to .env
-cp .env.template .env
-vim .env
-
 make build       # Build Docker image first
-make up          # Run services with local DB (See docker-compose.yml)
-make test        # Run Test (Need 'make up')
+make up          # Run services (See docker-compose.yml)
+
+make init-db     # Initialize schema of DB container (First time only)
+make test        # Run Test
 make log         # Watch docker-compose logs
+
 make down        # Clean Docker resources
 ```
 

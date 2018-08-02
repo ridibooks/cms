@@ -16,9 +16,15 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
+  # MySQL may already be running on the image.
+  # https://github.com/travis-ci/travis-ci/issues/8089
+  - sudo service mysql stop
+
 script:
   - make build
-  - make up && bin/setup.sh && sleep 30s && make test
+  - make up
+  - sleep 30s && make init-db
+  - sleep 5s && make test
 
 deploy:
   # Push Docker image

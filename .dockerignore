@@ -1,5 +1,5 @@
 .env
 .php_cs.cache
-vendor
 web/static/bower_components
+vendor
 !tests/.env
