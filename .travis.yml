@@ -30,7 +30,7 @@ deploy:
     on:
       tags: true
 
-  # Trigger deploying CI pipeline (prod)
+  # Trigger deploying CI pipeline (dev)
   - provider: script
     script: make deploy-dev
     on:
