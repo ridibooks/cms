@@ -18,7 +18,7 @@ down: ## Clean Docker containers, networks, and volumes.
 	docker-compose down
 
 test: ## Test Docker image. (Need 'make up')
-	docker-compose exec -T web vendor/bin/phpunit
+	docker-compose -f docker-compose.build.yml exec -T web vendor/bin/phpunit
 
 log: ## View Docker logs.
 	docker-compose logs -f
