@@ -57,7 +57,7 @@ class AdminUserServiceTest extends TestCase
         $this->assertEquals($tester['id'], $actual->id);
         $this->assertEquals($tester['email'], $actual->email);
 
-        $actual = $user_service->updateOrCreateUser(
+        $user_service->updateOrCreateUser(
             array_merge($tester, ['email' => 'new@email.com'])
         );
         $actual = $user_service->getUser('test');
