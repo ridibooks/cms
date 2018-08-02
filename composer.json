@@ -34,6 +34,7 @@
   },
   "scripts": {
     "test": "phpunit",
-    "clear": "rm -rf vendor"
+    "phinx-create": "phinx create",
+    "phinx-migrate": "phinx migrate"
   }
 }

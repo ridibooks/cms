@@ -1,22 +1,34 @@
-.PHONY: all dev build composer composer-dev clean
+.PHONY: help build up down test log push deploy
 
-all: build composer
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(lastword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-dev: build compose-dev
+# Common environment variables
+export LOCAL_DOCKER_REPO ?= cms
+export LOCAL_DOCKER_TAG ?= latest
 
-build:
-	bower install --allow-root
+build: ## Build Docker image.
+	docker-compose -f docker-compose.build.yml \
+		build --force-rm
 
-composer:
-	composer install --no-dev --optimize-autoloader
+up: ## Run Docker containers.
+	docker-compose up -d
 
-compose-dev:
-	composer install
+down: ## Clean Docker containers, networks, and volumes.
+	docker-compose down
 
-init-db:
-	bin/setup.sh
+test: ## Test Docker image. (Need 'make up')
+	docker-compose exec -T web vendor/bin/phpunit
 
-clean:
-	rm -rf vendor
-	rm -rf web/static/bower_components
-	rm .env
+log: ## View Docker logs.
+	docker-compose logs -f
+
+push: ## Push image to Docker repo. (via Travis-CI)
+	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} \
+		"${LOCAL_DOCKER_REPO}:${LOCAL_DOCKER_TAG}" ridibooks/cms ${TRAVIS_TAG}
+
+deploy: ## Trigger CI pipeline for deploying (via Travis-CI)
+	bin/deploy.sh prod ${CI_TRIGGER_TOKEN} ${TRAVIS_TAG}
+
+deploy-dev: ## Trigger CI pipeline for deploying to dev environment (via Travis-CI)
+	bin/deploy.sh dev ${CI_TRIGGER_TOKEN} ${TRAVIS_BRANCH}

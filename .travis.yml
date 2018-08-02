@@ -1,68 +1,42 @@
 os: linux
 sudo: false
 dist: trusty
-language: php
-php:
-- '7.1'
+language: generic
 
-cache:
-  directories:
-  - "${HOME}/.cache/composer/files"
-  - "${HOME}/.composer/cache/files"
+before_install:
+  # Docker latest
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
 
-stages:
-- name: test
-- name: push
-- name: deploy
+  # Docker Compose 1.21.1
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.21.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
-jobs:
-  include:
+script:
+  - make build
+  - make test
 
-  - stage: test
-    services:
-      - mysql
-    before_script:
-      - composer install --prefer-dist
-    script:
-      - bin/setup.sh
-      - bin/test.sh
+deploy:
+  # Push Docker image
+  - provider: script
+    skip_cleanup: true
+    script: make push
+    on:
+      tags: true
 
-  # push (dev)
-  - stage: push
-    if: type = push AND branch IN (1.x, 2.x)
-    services:
-      - docker
-    env:
-      - DOCKER_TAG=${TRAVIS_BRANCH}
-    script:
-      - bin/docker_push.sh
+  # Trigger deploying CI pipeline (prod)
+  - provider: script
+    script: make deploy-dev
+    on:
+      branch: 2.x
 
-  # push (prod)
-  - stage: push
-    if: tag =~ ^v\d+\.\d+(\.\d+)?$ # ex) v1.0.0 or v2.0.0
-    services:
-      - docker
-    env:
-      - DOCKER_TAG=${TRAVIS_TAG}
-    script:
-      - bin/docker_push.sh
+  # Trigger deploying CI pipeline (prod)
+  - provider: script
+    script: make deploy
+    on:
+      tags: true
 
-  # deploy 2.x (dev)
-  - stage: deploy
-    if: type = push AND branch IN (1.x, 2.x)
-    env:
-      - CI_TRIGGER_ENV=dev
-      - CI_TRIGGER_TARGET=cms-restart
-      - CI_TRIGGER_TAG=${TRAVIS_BRANCH}
-    script:
-      - bin/deploy.sh
-
-  # deploy 2.x (prod)
-  - stage: deploy
-    if: tag =~ ^v2\.\d+(\.\d+)?$ # ex) v2.0.0
-    env:
-      - CI_TRIGGER_ENV=prod
-      - CI_TRIGGER_TARGET=cms-restart
-      - CI_TRIGGER_TAG=${TRAVIS_TAG}
-    script:
-      - bin/deploy.sh

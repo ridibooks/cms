@@ -1,0 +1,21 @@
+version: '3.6'
+
+services:
+  web:
+    image: ${LOCAL_DOCKER_REPO}:${LOCAL_DOCKER_TAG}
+    volumes:
+      - .:/var/www/html
+    ports:
+      - ${WEB_PORT:-80}:80
+    env_file:
+      - .env
+
+  db:
+    image: mariadb:10.3
+    ports:
+      - ${DB_PORT:-3306}:3306
+    volumes:
+      - ./db/data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: cms
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
