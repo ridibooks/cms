@@ -18,9 +18,7 @@ before_install:
 
 script:
   - make build
-  - make up
-  - bin/setup.sh
-  - sleep 30s; make test
+  - make up && bin/setup.sh && sleep 30s && make test
 
 deploy:
   # Push Docker image
