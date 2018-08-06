@@ -10,10 +10,10 @@ DOCKER_TAG=${3:-latest}
 function print_usage
 {
     echo
-    echo "Usage: deploy.sh <ENVIRONMENT> <CI_TRIGGER_TOKEN> <DOCKER_TAG>"
+    echo "Usage: deploy <ENVIRONMENT> <CI_TRIGGER_TOKEN> <DOCKER_TAG>"
     echo
     echo "Example:"
-    echo "  deploy.sh prod YOUR_CI_TRIGGER_TOKEN 1.0.2"
+    echo "  deploy prod YOUR_CI_TRIGGER_TOKEN 1.0.2"
 }
 
 if [[ -z ${ENVIRONMENT} ]]

@@ -15,10 +15,10 @@ fi
 function print_usage
 {
     echo
-    echo "Usage: build.sh <ENVIRONMENT>"
+    echo "Usage: build <ENVIRONMENT>"
     echo
     echo "Example:"
-    echo "  build.sh prod"
+    echo "  build prod"
 }
 
 function build_composer()

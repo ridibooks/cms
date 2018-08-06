@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   web:
-    image: ${LOCAL_DOCKER_REPO}:${LOCAL_DOCKER_TAG}
+    image: cms
     build:
       context: .
     ports:
@@ -15,7 +15,7 @@ services:
       - builder
 
   builder:
-    image: ${LOCAL_DOCKER_REPO}-builder:${LOCAL_DOCKER_TAG}
+    image: cms-builder
     build:
       context: .
       target: builder

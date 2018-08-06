@@ -13,10 +13,10 @@ DOCKER_TAG_DEFAULT=latest
 function print_usage
 {
     echo
-    echo "Usage: docker_push.sh <DOCKER_USER> <DOCKER_PASS> <TARGET_IMAGE> <DOCKER_REPO_URI> <DOCKER_TAG>"
+    echo "Usage: docker_push <DOCKER_USER> <DOCKER_PASS> <TARGET_IMAGE> <DOCKER_REPO_URI> <DOCKER_TAG>"
     echo
     echo "Example:"
-    echo "  docker_push.sh cms:latest ridibooks/cms 1.0.2"
+    echo "  docker_push cms:latest ridibooks/cms 1.0.2"
 }
 
 function push
@@ -34,7 +34,7 @@ function push
 
 if [[ -z ${TARGET_IMAGE} ]] || [[ -z `docker images -q ${TARGET_IMAGE}` ]]
 then
-    echo "TARGET_IMAGE is wrong. Please check the image existing"
+    echo "TARGET_IMAGE \"${TARGET_IMAGE}\" is wrong. Please check the image existing"
     print_usage
     exit 1
 fi
