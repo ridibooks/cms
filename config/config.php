@@ -55,7 +55,7 @@ $config = [
             'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
             'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
             'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-            'resource' => $_ENV['AZURE_RESOURCE'],
+            'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
         ],
     ],
 

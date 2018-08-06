@@ -1,12 +1,16 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Seed\AbstractSeed;
-
-class User extends AbstractSeed
+class UserSeeder extends BaseSeeder
 {
+    const TABLE_NAME = 'tb_admin2_user';
+
     public function run()
     {
+        if (!$this->isTableEmpty(self::TABLE_NAME)) {
+            return;
+        }
+
         $data = [
             [
                 'id' => 'admin',
@@ -19,7 +23,7 @@ class User extends AbstractSeed
             ],
         ];
 
-        $posts = $this->table('tb_admin2_user');
+        $posts = $this->table(self::TABLE_NAME);
         $posts->insert($data)->save();
     }
 }

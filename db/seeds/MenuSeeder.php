@@ -1,12 +1,16 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Seed\AbstractSeed;
-
-class Menu extends AbstractSeed
+class MenuSeeder extends BaseSeeder
 {
+    const TABLE_NAME = 'tb_admin2_menu';
+
     public function run()
     {
+        if (!$this->isTableEmpty(self::TABLE_NAME)) {
+            return;
+        }
+
         $data = [
             [
                 'menu_title' => 'CMS 권한 관리',
@@ -90,7 +94,7 @@ class Menu extends AbstractSeed
             ],
         ];
 
-        $posts = $this->table('tb_admin2_menu');
+        $posts = $this->table(self::TABLE_NAME);
         $posts->insert($data)->save();
     }
 }

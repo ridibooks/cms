@@ -1,12 +1,16 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Seed\AbstractSeed;
-
-class Tag extends AbstractSeed
+class TagSeeder extends BaseSeeder
 {
+    const TABLE_NAME = 'tb_admin2_tag';
+
     public function run()
     {
+        if (!$this->isTableEmpty(self::TABLE_NAME)) {
+            return;
+        }
+
         $data = [
             [
                 'name' => '권한 관리',
@@ -31,7 +35,7 @@ class Tag extends AbstractSeed
             ],
         ];
 
-        $posts = $this->table('tb_admin2_tag');
+        $posts = $this->table(self::TABLE_NAME);
         $posts->insert($data)->save();
     }
 }

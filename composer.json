@@ -6,19 +6,19 @@
   "require": {
     "illuminate/database": "^5.2",
     "jguyomard/silex-capsule-eloquent": "^2.0",
+    "guzzlehttp/guzzle": "^6.3",
+    "monolog/monolog": "^1.23",
     "moriony/silex-sentry-provider": "~2.0.0",
     "ridibooks/cms-sdk": "~2.3.7",
     "sentry/sentry": "^1.6",
     "silex/silex": "^2.0",
+    "thenetworg/oauth2-azure": "dev-master#d7c25245b1d185a01b497318a094bfe128de786c",
     "twig/twig": "^2.0.0",
-    "vlucas/phpdotenv": "^2.4",
-    "guzzlehttp/guzzle": "^6.3",
-    "monolog/monolog": "^1.23",
-    "thenetworg/oauth2-azure": "dev-master#d7c25245b1d185a01b497318a094bfe128de786c"
+    "vlucas/phpdotenv": "^2.4"
   },
   "require-dev": {
-    "robmorgan/phinx": "^0.9.2",
-    "phpunit/phpunit": "^6.5"
+    "phpunit/phpunit": "^6.5",
+    "robmorgan/phinx": "^0.10"
   },
   "minimum-stability": "RC",
   "prefer-stable" : true,

@@ -23,8 +23,13 @@ before_install:
 script:
   - make build
   - make up
-  - sleep 30s && make init-db
-  - sleep 5s && make test
+  - echo "Wait for DB start and building.."; sleep 60s
+  - make db
+  - echo "Wait for applying DB schema change.."; sleep 3s
+  - make test
+
+after_scipt:
+  - make down
 
 deploy:
   # Push Docker image

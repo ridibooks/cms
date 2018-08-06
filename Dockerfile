@@ -1,18 +1,25 @@
 FROM ktkang/node-composer:1.0.1 AS builder
 
-RUN npm install -g bower
+RUN apk --no-cache add \
+    bash \
+    php7-dom \
+    php7-pdo \
+    php7-pdo_mysql \
+&& rm -rf /var/cache/apk/* \
+&& npm install -g bower
 
 WORKDIR /build
 
-# Instll Bower modules
-COPY bower.json .bowerrc ./
-RUN bower install --allow-root \
-&& bower prune -p --allow-root
+# Copy commands
+COPY bin/build bin/init_db bin/run_test /usr/local/bin/
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["build", "dev"]
 
-# Install Composer packages
-COPY composer.json composer.lock ./
-RUN composer install --optimize-autoloader --ignore-platform-reqs
+# Copy package manifest Files
+COPY bower.json composer.json composer.lock ./
 
+# Run build
+RUN build prod
 
 
 FROM ridibooks/performance-apache-base:7.1
