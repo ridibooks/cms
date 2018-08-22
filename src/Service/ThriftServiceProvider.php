@@ -19,8 +19,6 @@ class ThriftServiceProvider implements ServiceProviderInterface, BootableProvide
         $app['thrift.logger'] = null;
         $app['thrift.loglevel'] = LogLevel::INFO;
 
-        $app['thrift.end_point'] = '/';
-
         $app['thrift.acceptable_checker'] = function () {
             return function (Request $request) {
                 $request->setFormat('thrift', 'application/x-thrift');
@@ -54,7 +52,11 @@ class ThriftServiceProvider implements ServiceProviderInterface, BootableProvide
 
     public function boot(Application $app)
     {
-        $app->post($app['thrift.end_point'], $app['thrift.processor'])
+        $app->post('/', $app['thrift.processor'])
+            ->before($app['thrift.acceptable_checker']);
+
+        // For backward competibiltiy
+        $app->post('/v2', $app['thrift.processor'])
             ->before($app['thrift.acceptable_checker']);
     }
 }
