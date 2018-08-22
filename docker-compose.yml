@@ -19,7 +19,7 @@ services:
     build:
       context: .
       target: builder
-    command: ["build", "dev"]
+    command: ["build.sh", "dev"]
     volumes:
       - .:/build
     depends_on:

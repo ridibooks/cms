@@ -2,4 +2,3 @@
 .php_cs.cache
 web/static/bower_components
 vendor
-!tests/.env

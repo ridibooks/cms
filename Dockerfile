@@ -11,15 +11,15 @@ RUN apk --no-cache add \
 WORKDIR /build
 
 # Copy commands
-COPY bin/build bin/init_db bin/run_test /usr/local/bin/
+COPY bin/build.sh bin/init_db.sh bin/run_test.sh /usr/local/bin/
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["build", "dev"]
+CMD ["build.sh", "dev"]
 
 # Copy package manifest Files
 COPY bower.json composer.json composer.lock ./
 
 # Run build
-RUN build prod
+RUN build.sh prod
 
 
 FROM ridibooks/performance-apache-base:7.1
