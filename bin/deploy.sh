@@ -16,14 +16,14 @@ function print_usage
     echo "  deploy prod YOUR_CI_TRIGGER_TOKEN 1.0.2"
 }
 
-if [[ -z ${ENVIRONMENT} ]]
+if [[ -z "${ENVIRONMENT}" ]]
 then
     echo "No ENVIRONMENT specified."
     print_usage
     exit 1
 fi
 
-if [[ -z ${CI_TRIGGER_TOKEN} ]]
+if [[ -z "${CI_TRIGGER_TOKEN}" ]]
 then
     echo "No CI_TRIGGER_TOKEN specified."
     print_usage
@@ -32,7 +32,7 @@ fi
 
 # Trigger CI Pipeline
 curl -fsS -X POST \
-    -F token=${CI_TRIGGER_TOKEN} \
+    -F "token=${CI_TRIGGER_TOKEN}" \
     -F "ref=master" \
     -F "variables[ENV]=${ENVIRONMENT}" \
     -F "variables[TARGET]=cms-restart" \
