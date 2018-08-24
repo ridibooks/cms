@@ -48,14 +48,14 @@ if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
 }
 
 $config = [
-    'debug' => $_ENV['DEBUG'],
+    'debug' => $_ENV['DEBUG'] ?? false,
     'oauth2.options' => [
         AzureClient::PROVIDER_NAME => [
             'tenent' => $_ENV['AZURE_TENENT'] ?? '',
             'clientId' => $_ENV['AZURE_CLIENT_ID'] ?? '',
             'clientSecret' => $_ENV['AZURE_CLIENT_SECRET'] ?? '',
             'redirectUri' => $_ENV['AZURE_REDIRECT_URI'] ?? '',
-            'resource' => $_ENV['AZURE_RESOURCE'],
+            'resource' => $_ENV['AZURE_RESOURCE'] ?? '',
         ],
     ],
 

@@ -8,19 +8,43 @@
 ## Overview
 This is a main server of RIDI CMS service.
 
-## Getting started
-```
+## Getting Started
+```bash
 git clone https://github.com/ridi/cms.git
 cd cms
-make all phinx env-dev
+
+make build      # Build Docker image
+make up         # Run services
+
+sleep 30s       # (Wait for DB creating..)
+make db         # Initialize DB schema
+
+sleep 3s        # (Wait for DB schema changing..)
+make test       # Run test
+
+open http://localhost
+
+make log        # Watch docker-compose logs
+make down       # Clean Docker resources
 ```
-This assumes that you are running MySQL DB at localhost. (user=root, password='')  
-If you want to use another, write that endpoint on .env
-```
-MYSQL_HOST=yourhost
-MYSQL_USER=yourid
-MYSQL_PASSWORD=yourpassword
-MYSQL_DATABASE=yourdb
+
+## Build
+You can get the following images as a result of the `make build`. See docker-compose.build.yml
+
+- cms
+- cms-builder
+
+## Manage DB schema
+We use [Phinx](https://phinx.org) to manage DB schema.
+```bash
+# Create new DB migration.
+vendor/bin/phinx create NewMigrationName
+
+# Edit the skeleton file created in db/migrations
+vim db/migrations/20180123123456_new_migration_name.php
+
+# Apply the migration.
+vendor/bin/phinx migrate
 ```
 
 ## Deployment

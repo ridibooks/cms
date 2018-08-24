@@ -1,12 +1,16 @@
 <?php 
-declare(strict_types=1); 
+declare(strict_types=1);
  
-use Phinx\Seed\AbstractSeed; 
- 
-class Group extends AbstractSeed 
-{ 
+class GroupSeeder extends BaseSeeder
+{
+    const TABLE_NAME = 'tb_admin2_group';
+
     public function run() 
-    { 
+    {
+        if (!$this->isTableEmpty(self::TABLE_NAME)) {
+            return;
+        }
+
         $data = [ 
             [ 
                 'name' => 'my_team', 
@@ -15,7 +19,7 @@ class Group extends AbstractSeed
             ], 
         ]; 
  
-        $posts = $this->table('tb_admin2_group'); 
+        $posts = $this->table(self::TABLE_NAME);
         $posts->insert($data)->save(); 
     } 
 } 
