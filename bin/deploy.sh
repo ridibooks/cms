@@ -36,5 +36,5 @@ curl -fsS -X POST \
     -F "ref=master" \
     -F "variables[ENV]=${ENVIRONMENT}" \
     -F "variables[TARGET]=cms-restart" \
-    -F "variables[TAG]=${DOCKER_TAG}" \
-    https://gitlab.ridi.io/api/v4/projects/329/trigger/pipeline
+    -F "variables[DOCKER_TAG]=${DOCKER_TAG}" \
+    https://gitlab.ridi.io/api/v4/projects/373/trigger/pipeline
