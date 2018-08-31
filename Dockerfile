@@ -16,7 +16,7 @@ ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["build.sh", "dev"]
 
 # Copy package manifest Files
-COPY bower.json composer.json composer.lock ./
+COPY bower.json .bowerrc composer.json composer.lock ./
 
 # Run build
 RUN build.sh prod
