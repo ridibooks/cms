@@ -37,4 +37,4 @@ curl -fsS -X POST \
     -F "variables[ENV]=${ENVIRONMENT}" \
     -F "variables[TARGET]=cms-auth-deploy" \
     -F "variables[DOCKER_TAG]=${DOCKER_TAG}" \
-    https://gitlab.ridi.io/api/v4/projects/373/trigger/pipeline
+    https://gitlab.com/api/v4/projects/8980863/trigger/pipeline
