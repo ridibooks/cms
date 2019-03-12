@@ -95,11 +95,11 @@ class AdminAuthService extends Container
      */
     public function authorizeByTag(string $token, array $tags)
     {
-        $user_id = self::introspectToken($token);
-
-        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+        if (!empty($token) && !empty($_ENV['TEST_AUTH_DISABLE'])) {
             return;
         }
+
+        $user_id = self::introspectToken($token);
 
         if (!self::checkAuthByTag($user_id, $tags)) {
             throw new UnauthorizedException([
