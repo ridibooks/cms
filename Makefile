@@ -21,8 +21,11 @@ db: ## Initialize DB schema.
 log: ## View Docker logs.
 	docker-compose logs -f
 
-push: ## Push image to Docker repo
-	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} cms:latest ridibooks/cms ${TRAVIS_TAG:-TRAVIS_BRANCH}
+push: ## Push image to Docker repo (production)
+	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} cms:latest ridibooks/cms ${TRAVIS_TAG}
+
+push-dev: ## Push image to Docker repo (development)
+	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} cms:latest ridibooks/cms ${TRAVIS_BRANCH}
 
 deploy: ## Trigger CI pipeline for deploying (production)
 	bin/deploy.sh prod ${CI_TRIGGER_TOKEN} ${TRAVIS_TAG}

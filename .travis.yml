@@ -34,7 +34,7 @@ after_scipt:
 deploy:
   # Trigger deploying CI pipeline (dev)
   - provider: script
-    script: make push && make deploy-dev
+    script: make push-dev && make deploy-dev
     on:
       branch: 2.x
 
