@@ -75,6 +75,8 @@ class AuthControllerTest extends TestCase
 
         $app->get('/oauth2/{provider}/code', [$this->controller, 'getAuthorizationCode'])->bind('oauth2_code');
 
+        $app->get('/oauth2/{provider}/token', [$this->controller, 'getToken'])->bind('oauth2_token');
+
         $app->get('/oauth2/authorize', [$this->controller, 'authorizeWithOAuth2'])
             ->bind('oauth2_authorize');
 
@@ -264,5 +266,43 @@ class AuthControllerTest extends TestCase
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('state is not matched', $response->getContent());
+    }
+
+    public function testGetTokenIfNoTokenExists()
+    {
+        $request = Request::create('/oauth2/' . AzureClient::PROVIDER_NAME . '/token', 'GET');
+
+        $response = $this->app->handle($request);
+        $this->assertEquals($response->getStatusCode(), Response::HTTP_UNAUTHORIZED);
+        $this->assertEquals($response->getContent(), json_encode([
+            'message' => 'no token exists',
+        ]));
+
+        $session = $this->app['auth.session'];
+        $this->assertNull($session->get(OAuth2Authenticator::KEY_ACCESS_TOKEN));
+        $this->assertNull($session->get(OAuth2Authenticator::KEY_REFRESH_TOKEN));
+    }
+
+    public function testGetTokenIfRefreshTokenExists()
+    {
+        $refresh_token = 'some-refresh-token';
+
+        $request = Request::create('/oauth2/' . AzureClient::PROVIDER_NAME . '/token', 'GET', [], [
+            'auth_type' => OAuth2Authenticator::AUTH_TYPE,
+            'oauth2_provider' => AzureClient::PROVIDER_NAME,
+            'cms-refresh' => $refresh_token,
+        ]);
+
+        $response = $this->app->handle($request);
+        $this->assertEquals($response->getStatusCode(), Response::HTTP_OK);
+        $this->assertEquals($response->getContent(), json_encode([
+            'message' => 'success',
+        ]));
+
+        $session = $this->app['auth.session'];
+        $this->assertEquals($session->get(BaseAuthenticator::KEY_AUTH_TYPE), OAuth2Authenticator::AUTH_TYPE);
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_PROVIDER), AzureClient::PROVIDER_NAME);
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_ACCESS_TOKEN), MockOAuth2Client::getMockAccessTokenWithRefreshGrant($refresh_token));
+        $this->assertEquals($session->get(OAuth2Authenticator::KEY_REFRESH_TOKEN), MockOAuth2Client::getMockRefreshTokenWithRefreshGrant($refresh_token));
     }
 }
