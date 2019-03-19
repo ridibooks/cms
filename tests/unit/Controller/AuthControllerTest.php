@@ -275,7 +275,7 @@ class AuthControllerTest extends TestCase
         $response = $this->app->handle($request);
         $this->assertEquals($response->getStatusCode(), Response::HTTP_UNAUTHORIZED);
         $this->assertEquals($response->getContent(), json_encode([
-            'result' => 'fail',
+            'message' => 'no token exists',
         ]));
 
         $session = $this->app['auth.session'];
@@ -296,7 +296,7 @@ class AuthControllerTest extends TestCase
         $response = $this->app->handle($request);
         $this->assertEquals($response->getStatusCode(), Response::HTTP_OK);
         $this->assertEquals($response->getContent(), json_encode([
-            'result' => 'success',
+            'message' => 'success',
         ]));
 
         $session = $this->app['auth.session'];

@@ -116,12 +116,12 @@ class AuthController
             $auth->createCredential($request);
         } catch (NoCredentialException | InvalidStateException $e) {
             return new JsonResponse([
-                'result' => 'fail'
+                'message' => $e->getMessage(),
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         return new JsonResponse([
-            'result' => 'success'
+            'message' => 'success'
         ], Response::HTTP_OK);
     }
 
