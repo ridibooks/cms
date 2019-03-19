@@ -15,6 +15,7 @@ $auth_controller->get('/logout', [$auth, 'logout'])->bind('logout');
 
 // Possible value for ${provider} is only 'azure' now
 $auth_controller->get('/auth/oauth2/{provider}/code', [$auth, 'getAuthorizationCode'])->bind('oauth2_code');
+$auth_controller->get('/auth/oauth2/{provider}/token', [$auth, 'getToken'])->bind('oauth2_token');
 $auth_controller->get('/auth/oauth2/callback', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_callback');
 $auth_controller->get('/auth/oauth2/authorize', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_authorize');
 

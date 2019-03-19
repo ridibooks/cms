@@ -4,6 +4,7 @@
   "type": "project",
   "license": "MIT",
   "require": {
+    "ext-json": "*",
     "illuminate/database": "^5.2",
     "jguyomard/silex-capsule-eloquent": "^2.0",
     "guzzlehttp/guzzle": "^6.3",

@@ -12,6 +12,7 @@ use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -104,6 +105,24 @@ class AuthController
         $authorization_url = $auth->getAuthorizationUrl($scope);
 
         return new RedirectResponse($authorization_url);
+    }
+
+    public function getToken(Request $request, Application $app)
+    {
+        /** @var OAuth2Authenticator $auth */
+        $auth = $app['auth.authenticator.oauth2'];
+
+        try {
+            $auth->createCredential($request);
+        } catch (NoCredentialException | InvalidStateException $e) {
+            return new JsonResponse([
+                'result' => 'fail'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'result' => 'success'
+        ], Response::HTTP_OK);
     }
 
     public function authorizeWithOAuth2(Request $request, Application $app)
