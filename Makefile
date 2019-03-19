@@ -22,7 +22,7 @@ log: ## View Docker logs.
 	docker-compose logs -f
 
 push: ## Push image to Docker repo
-	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} cms:latest ridibooks/cms ${TRAVIS_TAG}
+	bin/docker_push.sh ${DOCKER_USER} ${DOCKER_PASS} cms:latest ridibooks/cms ${TRAVIS_TAG:-TRAVIS_BRANCH}
 
 deploy: ## Trigger CI pipeline for deploying (production)
 	bin/deploy.sh prod ${CI_TRIGGER_TOKEN} ${TRAVIS_TAG}

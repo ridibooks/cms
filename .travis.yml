@@ -32,22 +32,15 @@ after_scipt:
   - make down
 
 deploy:
-  # Push Docker image
-  - provider: script
-    skip_cleanup: true
-    script: make push
-    on:
-      tags: true
-
   # Trigger deploying CI pipeline (dev)
   - provider: script
-    script: make deploy-dev
+    script: make push && make deploy-dev
     on:
       branch: 2.x
 
   # Trigger deploying CI pipeline (prod)
   - provider: script
-    script: make deploy
+    script: make push && make deploy
     on:
       tags: true
 
