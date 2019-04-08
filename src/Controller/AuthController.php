@@ -145,8 +145,20 @@ class AuthController
         }
 
         $user_service = new AdminUserService();
+        $user = $this->removePersonalInfo($user, $app);
         $user_service->updateOrCreateUser($user);
 
         return new RedirectResponse($return_url);
+    }
+
+    private function removePersonalInfo(array $user, Application $app)
+    {
+        // Remove personal information in non-production.
+        if ($app['debug']) {
+            unset($user['name']);
+            unset($user['team']);
+            unset($user['email']);
+        }
+        return $user;
     }
 }
