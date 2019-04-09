@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [2.3.0] - 2019-04-09
+### Added
+- Added robots.txt (#88)
+- Added token API (#91)
+### Fixed
+- Updated a legacy; gitlab.ridi.io -> gitlab.com(#89)
+- Fix the bug that prevents authorizing-by-tag on dev environment (#90)
+
 ## [2.2.0] - 2018-08-31
 ### Changed
 - Apply Docker multistage build
