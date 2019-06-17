@@ -7,7 +7,6 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
-use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Silex\Api\BootableProviderInterface;
 use Silex\Application;
@@ -20,7 +19,6 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
 
         $app['auth.enabled'] = $app['auth.enabled'] ?? [
             OAuth2Authenticator::AUTH_TYPE,
-            PasswordAuthenticator::AUTH_TYPE,
             TestAuthenticator::AUTH_TYPE,
         ];
 
@@ -100,21 +98,18 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             ],
         ];
 
-        $app['auth.authenticator.oauth2'] = function (Container $app) {
-            return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients']);
-        };
+        if (in_array(OAuth2Authenticator::AUTH_TYPE, $app['auth.enabled'])) {
+            $app['auth.authenticator.oauth2'] = function (Container $app) {
+                return new OAuth2Authenticator($app['auth.session'], $app['auth.oauth2.clients']);
+            };
+        }
 
-        // Password authenticators
-        $app['auth.authenticator.password'] = function (Container $app) {
-            return new PasswordAuthenticator($app['auth.session']);
-        };
-
-        // Test authenticators
-        $app['auth.authenticator.test'] = function (Container $app) {
-            $test_option = $app['auth.options']['test'] ?? [];
-
-            return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
-        };
+        if (in_array(TestAuthenticator::AUTH_TYPE, $app['auth.enabled'])) {
+            $app['auth.authenticator.test'] = function (Container $app) {
+                $test_option = $app['auth.options']['test'] ?? [];
+                return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
+            };
+        }
     }
 
     public function boot(Application $app)
@@ -123,7 +118,6 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             throw new \InvalidArgumentException(
                 'You should enable one of \'' .
                 OAuth2Authenticator::AUTH_TYPE . '\', \'' .
-                PasswordAuthenticator::AUTH_TYPE . '\', \'' .
                 TestAuthenticator::AUTH_TYPE . '\''
             );
         }

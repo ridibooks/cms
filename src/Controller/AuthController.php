@@ -5,7 +5,6 @@ namespace Ridibooks\Cms\Controller;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
-use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
@@ -41,14 +40,6 @@ class AuthController
             ]);
             $azure_authorize_url .= '?return_url=' . urlencode($return_url);
             $twig_params['azure_authorize_url'] = $azure_authorize_url;
-        }
-
-        if (in_array(PasswordAuthenticator::AUTH_TYPE, $auth_enabled)) {
-            $password_authorize_url = $url_generator->generate('default_authorize', [
-                'auth_type' => PasswordAuthenticator::AUTH_TYPE,
-            ]);
-            $password_authorize_url .= '?return_url=' . urlencode($return_url);
-            $twig_params['password_authorize_url'] = $password_authorize_url;
         }
 
         if (in_array(TestAuthenticator::AUTH_TYPE, $auth_enabled)) {

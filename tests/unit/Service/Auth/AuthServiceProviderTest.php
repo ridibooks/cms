@@ -8,7 +8,6 @@ use Pimple\Container;
 use Ridibooks\Cms\Service\Auth\AuthenticationServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
-use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 
@@ -21,7 +20,6 @@ class AuthServiceProviderTest extends TestCase
         $app->register(new AuthenticationServiceProvider(), [
             'auth.enabled' => [
                 OAuth2Authenticator::AUTH_TYPE,
-                PasswordAuthenticator::AUTH_TYPE,
                 TestAuthenticator::AUTH_TYPE,
             ],
             'auth.options' => [
@@ -59,8 +57,6 @@ class AuthServiceProviderTest extends TestCase
         $this->assertNull($app['auth.authenticator']);
         $app['auth.session']->set(BaseAuthenticator::KEY_AUTH_TYPE, OAuth2Authenticator::AUTH_TYPE);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator', $app['auth.authenticator']);
-        $app['auth.session']->set(BaseAuthenticator::KEY_AUTH_TYPE, PasswordAuthenticator::AUTH_TYPE);
-        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator', $app['auth.authenticator']);
         $app['auth.session']->set(BaseAuthenticator::KEY_AUTH_TYPE, TestAuthenticator::AUTH_TYPE);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator', $app['auth.authenticator']);
 
@@ -72,9 +68,6 @@ class AuthServiceProviderTest extends TestCase
         $this->assertArrayHasKey('auth.cookie.oauth2', $app);
         $this->assertArrayHasKey('auth.authenticator.oauth2', $app);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator', $app['auth.authenticator.oauth2']);
-
-        $this->assertArrayHasKey('auth.authenticator.password', $app);
-        $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator', $app['auth.authenticator.password']);
 
         $this->assertArrayHasKey('auth.authenticator.test', $app);
         $this->assertInstanceOf('\Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator', $app['auth.authenticator.test']);

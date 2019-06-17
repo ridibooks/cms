@@ -2,7 +2,6 @@
 
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
-use Ridibooks\Cms\Service\Auth\Authenticator\PasswordAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +14,6 @@ if (!empty($_ENV['AUTH_USE_TEST'])) {
     $auth_enabled[] = TestAuthenticator::AUTH_TYPE;
 }
 
-if (!empty($_ENV['AUTH_USE_PASSWORD'])) {
-    $auth_enabled[] = PasswordAuthenticator::AUTH_TYPE;
-}
 
 $request = Request::createFromGlobals();
 // trust *all* requests
@@ -67,10 +63,6 @@ $config = [
 
         // oauth2 authenticator
         'oauth2' => [
-        ],
-
-        // password authenticator
-        'password' => [
         ],
 
         // test authenticator
