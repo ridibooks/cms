@@ -29,7 +29,7 @@ class AuthController
 
         try{
             $uri = new Uri(htmlentities($return_url, ENT_QUOTES));
-            // return_url 을 scheme 없이 relative_path 로 요청한 경우
+            // return_url 을 scheme와 함께 absolute_path 로 요청한 경우
             if ($uri->getScheme() !== "") {
                 throw new \InvalidArgumentException('Only Accepted a relative path');
             }
