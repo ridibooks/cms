@@ -74,7 +74,7 @@ class AuthController
 
     public function loginPage(Request $request, Application $app)
     {
-        $return_url = $request->get('return_url') ;
+        $return_url = $request->get('return_url');
         if (!is_null($return_url)) {
             $filted_return_url = $this->getFilteredReturnUrl($return_url);
             if ($return_url !== $filted_return_url) {
@@ -121,7 +121,14 @@ class AuthController
         if (isset($auth)) {
             $auth->signOut();
         }
-        return new RedirectResponse($login_url);
+
+        $return_url = $request->get('return_url');
+        $filted_return_url = $this->getFilteredReturnUrl($return_url);
+        if ($return_url !== $filted_return_url) {
+            return new RedirectResponse($login_url);
+        }
+
+        return new RedirectResponse($filted_return_url);
     }
 
     public function authorize(Request $request, Application $app, string $auth_type)
