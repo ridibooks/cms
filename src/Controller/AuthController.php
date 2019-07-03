@@ -79,7 +79,7 @@ class AuthController
             $filted_return_url = $this->getFilteredReturnUrl($return_url);
             if ($return_url !== $filted_return_url) {
                 $login_url = $app['url_generator']->generate('login');
-                return new RedirectResponse($login_url . '?return_url=');
+                return new RedirectResponse($login_url . '?return_url=' . $filted_return_url);
             }
         }
 
@@ -122,13 +122,13 @@ class AuthController
             $auth->signOut();
         }
 
-        $return_url = $request->get('return_url');
+        $return_url = $request->get('return_url', $login_url);
         $filted_return_url = $this->getFilteredReturnUrl($return_url);
-        if ($return_url !== $filted_return_url) {
-            return new RedirectResponse($login_url);
+        if ($return_url === $filted_return_url) {
+            return new RedirectResponse($filted_return_url);
         }
 
-        return new RedirectResponse($filted_return_url);
+        return new RedirectResponse($login_url);
     }
 
     public function authorize(Request $request, Application $app, string $auth_type)
