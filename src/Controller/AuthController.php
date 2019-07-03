@@ -29,12 +29,6 @@ class AuthController
 
         try{
             $uri = new Uri(htmlentities($return_url, ENT_QUOTES));
-            // Uri()->with{*} 메서드에서 Uri::validateState() 를 호출하는데, host==='' 일 경우 host 를 'localhost' 로 캐스팅하므로,
-            // Scheme 검사보다 Host 검사가 먼저 이루어 져야 함.
-            if ($uri->getHost() === "") {
-                $uri = $uri->withHost($_SERVER['HTTP_HOST']);
-            }
-
             // return_url 을 scheme 없이 relative_path 로 요청한 경우
             if ($uri->getScheme() !== "") {
                 throw new \InvalidArgumentException('Only Accepted a relative path');
@@ -42,7 +36,7 @@ class AuthController
         } catch (\InvalidArgumentException $e) {
             $uri = new Uri('/welcome');
         } finally {
-            $return_url = (string)$uri;
+            return (string)$uri;
         }
     }
 
