@@ -87,7 +87,7 @@ class AuthControllerTest extends TestCase
 
     public function testLoginPage()
     {
-        $return_url = '/some/return/url';
+        $return_url = 'https://test.ridibooks.com/some/return/url';
 
         $request = Request::create('/login?return_url=' . $return_url, 'GET', [], [
             'auth_type' => OAuth2Authenticator::AUTH_TYPE,
