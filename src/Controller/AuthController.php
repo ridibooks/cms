@@ -42,7 +42,15 @@ class AuthController
 
     public function loginPage(Request $request, Application $app)
     {
-        $return_url = $this->getFilteredReturnUrl($request->get('return_url'));
+        $return_url = $request->get('return_url') ;
+        if (!is_null($return_url)) {
+            $filted_return_url = $this->getFilteredReturnUrl($return_url);
+            if ($return_url !== $filted_return_url) {
+                $login_url = $app['url_generator']->generate('login');
+                return new RedirectResponse($login_url . '?return_url=' . urlencode('/welcome'));
+            }
+        }
+
         $authorize_urls = $this->createAuthorizeUrls($app['auth.enabled'], $app['url_generator'], $return_url);
         return $app['twig']->render('login.twig', $authorize_urls);
     }
