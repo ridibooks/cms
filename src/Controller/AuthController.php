@@ -17,13 +17,39 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use GuzzleHttp\Psr7\Uri;
+
 class AuthController
 {
+    public function getFilteredReturnUrl(string $return_url)
+    {
+        if (empty($return_url)) {
+            return $return_url;
+        }
+
+        try{
+            $uri = new Uri(htmlentities($return_url, ENT_QUOTES));
+            // Uri()->with{*} 메서드에서 Uri::validateState() 를 호출하는데, host==='' 일 경우 host 를 'localhost' 로 캐스팅하므로,
+            // Scheme 검사보다 Host 검사가 먼저 이루어 져야 함.
+            if ($uri->getHost() === "") {
+                $uri = $uri->withHost($_SERVER['HTTP_HOST']);
+            }
+
+            // return_url 을 scheme 없이 relative_path 로 요청한 경우
+            if ($uri->getScheme() !== "") {
+                throw new \InvalidArgumentException('Only Accepted a relative path');
+            }
+        } catch (\InvalidArgumentException $e) {
+            $uri = new Uri('/welcome');
+        } finally {
+            $return_url = (string)$uri;
+        }
+    }
+
     public function loginPage(Request $request, Application $app)
     {
-        $return_url = $request->get('return_url');
+        $return_url = $this->getFilteredReturnUrl($request->get('return_url'));
         $authorize_urls = $this->createAuthorizeUrls($app['auth.enabled'], $app['url_generator'], $return_url);
-
         return $app['twig']->render('login.twig', $authorize_urls);
     }
 
@@ -56,16 +82,12 @@ class AuthController
     public function logout(Request $request, Application $app)
     {
         $login_url = $app['url_generator']->generate('login');
-
         /** @var BaseAuthenticator $auth */
         $auth = $app['auth.authenticator'];
         if (isset($auth)) {
             $auth->signOut();
         }
-
-        $return_url = $request->get('return_url', $login_url);
-
-        return new RedirectResponse($return_url);
+        return new RedirectResponse($login_url);
     }
 
     public function authorize(Request $request, Application $app, string $auth_type)
