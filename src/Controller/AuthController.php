@@ -21,20 +21,52 @@ use GuzzleHttp\Psr7\Uri;
 
 class AuthController
 {
+    private function endsWith($haystack, $needle) {
+      return 0 === substr_compare($haystack, $needle, -strlen($needle));
+    }
+
+    private function isAllowedHost(URI $uri)
+    {
+        $allowed_host = ".ridibooks.com";
+        $requested_host = $uri->getHost();
+        $is_allowed = $this->endsWith($requested_host, $allowed_host);
+        return $is_allowed;
+    }
+
+    /**
+     * Forked by store/store getFilteredReturnUrl
+     * source: https://gitlab.com/ridicorp/store/store/blob/46e3e72b1fe6bd11ee45c6f20de4556cbbec5cd5/src/Ridibooks/Store/Library/UrlGenerator.php#L251
+     */
     public function getFilteredReturnUrl(string $return_url)
     {
         if (empty($return_url)) {
             return $return_url;
         }
 
-        try{
+        try {
             $uri = new Uri(htmlentities($return_url, ENT_QUOTES));
-            // return_url 을 scheme와 함께 absolute_path 로 요청한 경우
-            if ($uri->getScheme() !== "") {
-                throw new \InvalidArgumentException('Only Accepted a relative path');
+
+            // Uri()->with{*} 메서드에서 Uri::validateState() 를 호출하는데, host==='' 일 경우 host 를 'localhost' 로 캐스팅하므로,
+            // Scheme 검사보다 Host 검사가 먼저 이루어 져야 함.
+            if ($uri->getHost() === "") {
+                $uri = $uri->withHost($_SERVER['HTTP_HOST']);
+            }
+            // return_url 을 scheme 없이 relative_path 로 요청한 경우
+            if ($uri->getScheme() === "") {
+                $uri = $uri->withScheme('https');
+            }
+
+            $scheme = strtolower($uri->getScheme());
+
+            if ($scheme === 'https') {
+                if (!$this->isAllowedHost($uri)) {
+                    $uri = $uri->withHost($_SERVER['HTTP_HOST']);
+                }
+            } else {
+                throw new \InvalidArgumentException('Invalid URL Scheme');
             }
         } catch (\InvalidArgumentException $e) {
-            $uri = new Uri('/welcome');
+            $uri = new Uri('https://' . $_SERVER['HTTP_HOST']);
         } finally {
             return (string)$uri;
         }
@@ -47,7 +79,7 @@ class AuthController
             $filted_return_url = $this->getFilteredReturnUrl($return_url);
             if ($return_url !== $filted_return_url) {
                 $login_url = $app['url_generator']->generate('login');
-                return new RedirectResponse($login_url . '?return_url=' . urlencode('/welcome'));
+                return new RedirectResponse($login_url . '?return_url=');
             }
         }
 
