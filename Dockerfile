@@ -26,6 +26,8 @@ FROM ridibooks/performance-apache-base:7.1
 MAINTAINER Kang Ki Tae <kt.kang@ridi.com>
 
 ENV APACHE_DOC_ROOT /var/www/html/web
+RUN a2enmod headers
+COPY config/apache2/security.conf /etc/apache2/conf-available/security.conf
 
 COPY --from=builder /build ./
 COPY . ./

@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+body {
+  padding-top: 120px;
+  padding-bottom: 40px;
+}
+
+.comment {
+  color: #999;
+  text-align: center;
+}
