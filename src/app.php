@@ -56,8 +56,8 @@ $app->after(function (Request $request, Response $response) {
     $response->headers->set('X-Frame-Options', 'DENY');
     $response->headers->set('X-Content-Type-Options', 'nosniff');
     $response->headers->set('X-XSS-Protection', '1; mode=block');
-    $response->headers->set('Content-Security-Policy-Report-Only', "default-src 'self'; report-uri /cms_csp_report;");
-});
+    $response->headers->set('Content-Security-Policy-Report-Only', "default-src 'self'; report-uri https://gyx3tts4g8.execute-api.ap-northeast-2.amazonaws.com/default/perf-csp-reports-lambda;");
+});$
 
 // TODO: error handler
 //$app->error(function () {

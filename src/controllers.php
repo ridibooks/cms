@@ -41,7 +41,5 @@ $common_controller->get('/welcome', [$common, 'getWelcomePage'])->bind('home');
 $common_controller->get('/me', [$common, 'getMyInfo'])->bind('me');
 $common_controller->post('/me', [$common, 'updateMyInfo']);
 $common_controller->get('/comm/user_list.ajax', [$common, 'userList']); // TODO: Remove this
-// TODO: Be append a 'Content Security Policy' reporting path
-// $common_controller->get('/cms_csp_report', [$common, 'cspReport']); 
 
 $app->mount('/', $common_controller);
