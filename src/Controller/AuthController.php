@@ -33,7 +33,7 @@ class AuthController
         return $is_allowed;
     }
 
-    public static function escapeUrl($url)
+    private function escapeUrl($url)
     {
         // customized escape charset
         $escape_charset = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
@@ -54,7 +54,7 @@ class AuthController
         }
 
         try {
-            $uri = new Uri(self::escapeUrl($return_url));
+            $uri = new Uri($this->escapeUrl($return_url));
 
             // Uri()->with{*} 메서드에서 Uri::validateState() 를 호출하는데, host==='' 일 경우 host 를 'localhost' 로 캐스팅하므로,
             // Scheme 검사보다 Host 검사가 먼저 이루어 져야 함.
