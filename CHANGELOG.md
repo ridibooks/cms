@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.4.0] - 2019-07-11
+### Added
+- Apply a security header with CMS Middleware #(95)
+
 ## [2.3.2] - 2019-07-08
 ### Fixed
 - Fixed a open redirect and reflected xss vuln on login/logout pages (#94)
