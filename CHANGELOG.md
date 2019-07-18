@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.3.3] - 2019-07-18
+### Added
+- Apply a security header with CMS Middleware (#95)
+### Improved
+- Improved a getFilteredReturnUrl() function to strictly (#97)
+
 ## [2.3.2] - 2019-07-08
 ### Fixed
 - Fixed a open redirect and reflected xss vuln on login/logout pages (#94)
