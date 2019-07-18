@@ -33,9 +33,19 @@ class AuthController
         return $is_allowed;
     }
 
+    private function escapeUrl($url)
+    {
+        // customized escape charset
+        $escape_charset = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+        $escape_charset['\\'] = '';
+        unset($escape_charset['&']);
+
+        return str_replace(array_keys($escape_charset), array_values($escape_charset), $url);
+    }
+
     /**
      * Forked by store/store getFilteredReturnUrl
-     * source: https://gitlab.com/ridicorp/store/store/blob/46e3e72b1fe6bd11ee45c6f20de4556cbbec5cd5/src/Ridibooks/Store/Library/UrlGenerator.php#L251
+     * source: https://gitlab.com/ridicorp/store/store/blob/7406f65d89bd5724e92156243048955f3a2672e7/src/Ridibooks/Store/Library/UrlGenerator.php#L251
      */
     public function getFilteredReturnUrl(string $return_url)
     {
@@ -44,7 +54,7 @@ class AuthController
         }
 
         try {
-            $uri = new Uri(htmlentities($return_url, ENT_QUOTES));
+            $uri = new Uri($this->escapeUrl($return_url));
 
             // Uri()->with{*} 메서드에서 Uri::validateState() 를 호출하는데, host==='' 일 경우 host 를 'localhost' 로 캐스팅하므로,
             // Scheme 검사보다 Host 검사가 먼저 이루어 져야 함.
