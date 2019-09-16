@@ -2,12 +2,14 @@
 
 use Moriony\Silex\Provider\SentryServiceProvider;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\CFAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Symfony\Component\HttpFoundation\Request;
 
 $auth_enabled = [
     OAuth2Authenticator::AUTH_TYPE,
+    CFAuthenticator::AUTH_TYPE,
 ];
 
 if (!empty($_ENV['AUTH_USE_TEST'])) {
