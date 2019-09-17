@@ -112,10 +112,9 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
             };
         }
 
-        $app['auth.cookie.oauth2'] = [
+        $app['auth.cookie.cloudflare'] = [
             CFAuthenticator::KEY_CF_TOKEN => [
                 'key' => CFAuthenticator::KEY_CF_TOKEN,
-                'lifetime' => 60 * 60 * 2, // 2 hours,
             ],
         ];
         if (in_array(CFAuthenticator::AUTH_TYPE, $app['auth.enabled'])) {
