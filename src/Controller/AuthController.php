@@ -8,6 +8,7 @@ use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\CFAuthenticator;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
+use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
@@ -94,6 +95,11 @@ class AuthController
             }
         }
 
+        if (!empty($app['auth.instant_auth'])) {
+            $authorize_url = $this->createAuthorizeUrl($app['auth.instant_auth'], $app['url_generator'], $return_url);
+            return new RedirectResponse($authorize_url['url']);
+        }
+
         return $this->loginPage($request, $app, $return_url);
     }
 
@@ -163,9 +169,16 @@ class AuthController
     {
         /** @var BaseAuthenticator $auth */
         $auth = $app['auth.authenticator.' . $auth_type];
-        $auth->signIn($request);
 
-        // TODO: When it comes to fail?
+        try {
+            $auth->signIn($request);
+        } catch (NoCredentialException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNAUTHORIZED);
+        } catch (InvalidCredentialException $e) {
+            $auth->signOut();
+        }
 
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);

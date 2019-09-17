@@ -61,6 +61,7 @@ $config = [
     'auth.is_secure' => $request->isSecure(),
 
     'auth.enabled' => $auth_enabled,
+    'auth.instant_auth' => $_ENV['INSTANT_AUTH'],
     'auth.options' => [
 
         // oauth2 authenticator

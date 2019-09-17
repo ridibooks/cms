@@ -5,6 +5,7 @@ namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 
 class CFJwtValidator
 {
@@ -15,7 +16,12 @@ class CFJwtValidator
         if (empty($key)) {
             $key = $this->getPublicKey();
         }
-        $decoded = JWT::decode($jwt, $key, ['RS256']);
+        try {
+            $decoded = JWT::decode($jwt, $key, ['RS256']);
+        } catch (\Firebase\JWT\ExpiredException |
+                \Firebase\JWT\SignatureInvalidException $e) {
+            throw new InvalidCredentialException($e->getMessage());
+        }
 
         return $decoded;
     }
