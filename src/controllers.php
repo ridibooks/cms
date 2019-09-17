@@ -10,7 +10,7 @@ use Silex\ControllerCollection;
 $auth_controller = $app['controllers_factory'];
 
 $auth = new Controller\AuthController();
-$auth_controller->get('/login', [$auth, 'loginPage'])->bind('login');
+$auth_controller->get('/login', [$auth, 'login'])->bind('login');
 $auth_controller->get('/logout', [$auth, 'logout'])->bind('logout');
 
 // Possible value for ${provider} is only 'azure' now
@@ -19,7 +19,7 @@ $auth_controller->get('/auth/oauth2/{provider}/token', [$auth, 'getToken'])->bin
 $auth_controller->get('/auth/oauth2/callback', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_callback');
 $auth_controller->get('/auth/oauth2/authorize', [$auth, 'authorizeWithOAuth2'])->bind('oauth2_authorize');
 
-// Possible values for ${auth_type} are 'password', and 'test'
+// Possible values for ${auth_type} are 'cloudflare' and 'test'
 $auth_controller->get('/auth/{auth_type}/authorize', [$auth, 'authorize'])->bind('default_authorize');
 
 // For Backward compatibility.
