@@ -5,7 +5,6 @@ namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
 use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
-use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidCredentialException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CFAuthenticator extends BaseAuthenticator
@@ -43,7 +42,7 @@ class CFAuthenticator extends BaseAuthenticator
     public function getUserInfo($credential): array
     {
         $id = explode('@', $credential->email)[0];
-        
+
         return ['id' => $id];
     }
 

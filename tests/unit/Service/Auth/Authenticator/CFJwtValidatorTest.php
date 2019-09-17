@@ -6,7 +6,6 @@ namespace Ridibooks\Cms\Tests\Service\Auth\Authenticator;
 use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
 use Ridibooks\Cms\Service\Auth\Authenticator\CFJwtValidator;
-use Symfony\Component\HttpFoundation\Request;
 
 class CFJwtValidatorTest extends TestCase
 {

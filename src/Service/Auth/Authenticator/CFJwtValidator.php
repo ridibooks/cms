@@ -35,9 +35,9 @@ class CFJwtValidator
             throw \Exception($response->getReasonPhrase());
         }
         $contents = (string)$response->getBody();
-        
+
         $json = json_decode($contents);
-        
+
         return $json->public_cert->cert;
     }
 }
