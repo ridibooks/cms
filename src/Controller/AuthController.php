@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Controller;
 
+use Illuminate\Support\Collection;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
@@ -106,11 +107,15 @@ class AuthController
     private function loginPage(Request $request, Application $app, ?string $return_url)
     {
         $url_generator = $app['url_generator'];
-        $twig_params = array_map(function(string $auth_type) use ($url_generator, $return_url) {
-            $auth_url = $this->createAuthorizeUrl($auth_type, $url_generator, $return_url);
-            return [$auth_url['type'] . '_authorize_url' => $auth_url['url']];
-        }, $app['auth.enabled']);
-        $twig_params = array_merge(...$twig_params); // flatten
+        $twig_params = collect($app['auth.enabled'])
+        ->map(function (string $auth_type) use ($url_generator, $return_url) {
+            return $this->createAuthorizeUrl($auth_type, $url_generator, $return_url);
+        })
+        ->reduce(function ($result, $item) {
+            list('type' => $type, 'url' => $url) = $item;
+            $result[$type . '_authorize_url'] = $url;
+            return $result;
+        }, []);
 
         return $app['twig']->render('login.twig', $twig_params);
     }
