@@ -72,6 +72,25 @@ class AdminAuthThrift implements AdminAuthServiceIf
 
     /**
      * @throws NoTokenException
+     * @throws UnauthorizedException
+     */
+    public function authorizeAdminByTag($admin_id, array $tags)
+    {
+        $this->server->authorizeAdminByTag($admin_id, $tags);
+    }
+
+    /**
+     * @throws NoTokenException
+     * @throws MalformedTokenException
+     * @throws UnauthorizedException
+     */
+    public function authorizeAdminByUrl($admin_id, $check_url)
+    {
+        $this->server->authorizeAdminByUrl($admin_id, $check_url);
+    }
+
+    /**
+     * @throws NoTokenException
      * @throws MalformedTokenException
      */
     public function introspectToken($token)
