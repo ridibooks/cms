@@ -129,7 +129,7 @@ class AdminAuthService extends Container
     /**
      * @throws UnauthorizedException
      */
-    public function authorizeAdminByUrl(string $user_id, array $check_url)
+    public function authorizeAdminByUrl(string $user_id, string $check_url)
     {
         if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
             return;
