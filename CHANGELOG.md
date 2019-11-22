@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.0.0] - 2019-11-22
+### Added 
+- Cloudflare Access integration (#99)
+
 ## [2.3.3] - 2019-07-18
 ### Added
 - Apply a security header with CMS Middleware (#95)
