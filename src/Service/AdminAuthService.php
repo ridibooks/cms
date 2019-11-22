@@ -110,6 +110,40 @@ class AdminAuthService extends Container
     }
 
     /**
+     * @throws UnauthorizedException
+     */
+    public function authorizeAdminByTag(string $user_id, array $tags)
+    {
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
+        if (!self::checkAuthByTag($user_id, $tags)) {
+            throw new UnauthorizedException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '접근 권한이 없습니다.',
+            ]);
+        }
+    }
+
+    /**
+     * @throws UnauthorizedException
+     */
+    public function authorizeAdminByUrl(string $user_id, string $check_url)
+    {
+        if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
+            return;
+        }
+
+        if (!self::checkAuth([], $check_url, $user_id)) {
+            throw new UnauthorizedException([
+                'code' => ErrorCode::BAD_REQUEST,
+                'message' => '접근 권한이 없습니다.',
+            ]);
+        }
+    }
+
+    /**
      * @throws NoTokenException
      * @throws MalformedTokenException
      */

@@ -6,6 +6,7 @@ namespace Ridibooks\Cms\Service\Auth;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\CFAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
 use Silex\Api\BootableProviderInterface;
@@ -107,7 +108,19 @@ class AuthenticationServiceProvider implements ServiceProviderInterface, Bootabl
         if (in_array(TestAuthenticator::AUTH_TYPE, $app['auth.enabled'])) {
             $app['auth.authenticator.test'] = function (Container $app) {
                 $test_option = $app['auth.options']['test'] ?? [];
+
                 return new TestAuthenticator($app['auth.session'], $test_option['test_user_id']);
+            };
+        }
+
+        $app['auth.cookie.cloudflare'] = [
+            CFAuthenticator::KEY_CF_TOKEN => [
+                'key' => CFAuthenticator::KEY_CF_TOKEN,
+            ],
+        ];
+        if (in_array(CFAuthenticator::AUTH_TYPE, $app['auth.enabled'])) {
+            $app['auth.authenticator.cloudflare'] = function (Container $app) {
+                return new CFAuthenticator($app['auth.session']);
             };
         }
     }

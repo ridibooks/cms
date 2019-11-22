@@ -64,7 +64,7 @@ class AuthControllerTest extends TestCase
         $app->get('/home')
             ->bind('home');
 
-        $app->get('/login', [$this->controller, 'loginPage'])
+        $app->get('/login', [$this->controller, 'login'])
             ->bind('login');
 
         $app->get('/logout', [$this->controller, 'logout']);
@@ -104,8 +104,8 @@ class AuthControllerTest extends TestCase
             'auth_type' => TestAuthenticator::AUTH_TYPE,
         ]);
 
-        $this->assertContains('href=\'' . $oauth2_authorize_url . '?return_url=' . urlencode($return_url) . '\'', $response->getContent());
-        $this->assertContains('href=\'' . $test_authorize_url . '?return_url=' . urlencode($return_url) . '\'', $response->getContent());
+        $this->assertContains('href=\'' . $oauth2_authorize_url . '?return_url=https%3A//test.ridibooks.com/some/return/url' . '\'', $response->getContent());
+        $this->assertContains('href=\'' . $test_authorize_url . '?return_url=https%3A//test.ridibooks.com/some/return/url' . '\'', $response->getContent());
     }
 
     public function testLogout()

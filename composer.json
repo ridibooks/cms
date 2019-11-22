@@ -10,7 +10,7 @@
     "guzzlehttp/guzzle": "^6.3",
     "monolog/monolog": "^1.23",
     "moriony/silex-sentry-provider": "~2.0.0",
-    "ridibooks/cms-sdk": "~2.3.7",
+    "ridibooks/cms-sdk": "~3.0.0",
     "sentry/sentry": "^1.6",
     "silex/silex": "^2.0",
     "thenetworg/oauth2-azure": "dev-master#d7c25245b1d185a01b497318a094bfe128de786c",

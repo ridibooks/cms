@@ -2,11 +2,14 @@
 
 namespace Ridibooks\Cms\Controller;
 
+use Illuminate\Support\Collection;
 use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
+use Ridibooks\Cms\Service\Auth\Authenticator\CFAuthenticator;
 use Ridibooks\Cms\Service\Auth\Exception\NoCredentialException;
+use Ridibooks\Cms\Service\Auth\Exception\InvalidCredentialException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Client\AzureClient;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\InvalidStateException;
 use Ridibooks\Cms\Service\Auth\OAuth2\Exception\OAuth2Exception;
@@ -82,7 +85,7 @@ class AuthController
         }
     }
 
-    public function loginPage(Request $request, Application $app)
+    public function login(Request $request, Application $app)
     {
         $return_url = $request->get('return_url');
         if (!is_null($return_url)) {
@@ -93,34 +96,60 @@ class AuthController
             }
         }
 
-        $authorize_urls = $this->createAuthorizeUrls($app['auth.enabled'], $app['url_generator'], $return_url);
-        return $app['twig']->render('login.twig', $authorize_urls);
+        if (!empty($app['auth.instant_auth'])) {
+            $authorize_url = $this->createAuthorizeUrl($app['auth.instant_auth'], $app['url_generator'], $return_url);
+            return new RedirectResponse($authorize_url['url']);
+        }
+
+        return $this->loginPage($request, $app, $return_url);
     }
 
-    private function createAuthorizeUrls(array $auth_enabled, UrlGeneratorInterface $url_generator, ?string $return_url): array
+    private function loginPage(Request $request, Application $app, ?string $return_url)
+    {
+        $url_generator = $app['url_generator'];
+        $twig_params = collect($app['auth.enabled'])
+        ->map(function (string $auth_type) use ($url_generator, $return_url) {
+            return $this->createAuthorizeUrl($auth_type, $url_generator, $return_url);
+        })
+        ->reduce(function ($result, $item) {
+            list('type' => $type, 'url' => $url) = $item;
+            $result[$type . '_authorize_url'] = $url;
+            return $result;
+        }, []);
+
+        return $app['twig']->render('login.twig', $twig_params);
+    }
+
+    private function createAuthorizeUrl(string $auth_type, UrlGeneratorInterface $url_generator, ?string $return_url = null): array
     {
         if (empty($return_url)) {
             $return_url = $url_generator->generate('home');
         }
 
-        $twig_params = [];
-        if (in_array(OAuth2Authenticator::AUTH_TYPE, $auth_enabled)) {
-            $azure_authorize_url = $url_generator->generate('oauth2_code', [
+        if (OAuth2Authenticator::AUTH_TYPE == $auth_type) {
+            $authorize_url = $url_generator->generate('oauth2_code', [
                 'provider' => AzureClient::PROVIDER_NAME,
+                'return_url' => $return_url
             ]);
-            $azure_authorize_url .= '?return_url=' . urlencode($return_url);
-            $twig_params['azure_authorize_url'] = $azure_authorize_url;
-        }
-
-        if (in_array(TestAuthenticator::AUTH_TYPE, $auth_enabled)) {
-            $test_authorize_url = $url_generator->generate('default_authorize', [
+            $type = AzureClient::PROVIDER_NAME;
+        } else if (TestAuthenticator::AUTH_TYPE == $auth_type) {
+            $authorize_url = $url_generator->generate('default_authorize', [
                 'auth_type' => TestAuthenticator::AUTH_TYPE,
+                'return_url' => $return_url
             ]);
-            $test_authorize_url .= '?return_url=' . urlencode($return_url);
-            $twig_params['test_authorize_url'] = $test_authorize_url;
+            $type = $auth_type;
+        } else if (CFAuthenticator::AUTH_TYPE == $auth_type) {
+            $authorize_url = $url_generator->generate('default_authorize', [
+                'auth_type' => CFAuthenticator::AUTH_TYPE,
+                'return_url' => $return_url
+            ]);
+            $type = $auth_type;
         }
 
-        return $twig_params;
+        return [
+            'type' => $type,
+            'url' => $authorize_url,
+        ];
     }
 
     public function logout(Request $request, Application $app)
@@ -145,9 +174,16 @@ class AuthController
     {
         /** @var BaseAuthenticator $auth */
         $auth = $app['auth.authenticator.' . $auth_type];
-        $auth->signIn($request);
 
-        // TODO: When it comes to fail?
+        try {
+            $auth->signIn($request);
+        } catch (NoCredentialException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNAUTHORIZED);
+        } catch (InvalidCredentialException $e) {
+            $auth->signOut();
+        }
 
         $home_url = $app['url_generator']->generate('home');
         $return_url = $request->get('return_url', $home_url);
