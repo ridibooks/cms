@@ -42,8 +42,10 @@ if (!empty($_ENV['TEST_AUTH_DISABLE'])) {
 
 // Create a dynamic redirect uri based on request domain.
 if (!empty($_ENV['AZURE_REDIRECT_PATH'])) {
-    if (empty(parse_url($url, PHP_URL_SCHEME))) {
+    if (empty(parse_url($_ENV['AZURE_REDIRECT_PATH'], PHP_URL_SCHEME))) {
         $_ENV['AZURE_REDIRECT_URI'] = $request->getSchemeAndHttpHost() . $_ENV['AZURE_REDIRECT_PATH'];
+    } else {
+        $_ENV['AZURE_REDIRECT_URI'] = $_ENV['AZURE_REDIRECT_PATH'];
     }
 }
 
