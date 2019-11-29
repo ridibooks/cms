@@ -51,22 +51,4 @@ class AuthMiddlewareTest extends TestCase
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertEquals('success', $response->getContent());
     }
-
-    public function testAuthRequiredNotSignedIn()
-    {
-        $response = $this->app->handle(Request::create('/some/resource', 'GET'));
-
-        $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
-        $this->assertEquals('/login?return_url=' . urlencode('/some/resource'), $response->headers->get('location'));
-    }
-
-    public function testAuthRequiredWrongCredential()
-    {
-        $this->app['auth.authenticator'] = new MockAuthenticator(false); // Force a validation to fail
-
-        $response = $this->app->handle(Request::create('/some/resource', 'GET'));
-
-        $this->assertEquals(Response::HTTP_FOUND, $response->getStatusCode());
-        $this->assertEquals('/login?return_url=' . urlencode('/some/resource'), $response->headers->get('location'));
-    }
 }
