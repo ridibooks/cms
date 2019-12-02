@@ -77,7 +77,6 @@ $config = [
             'test_user_id' => $user_id_for_test_domain ?? $_ENV['TEST_ID'],
         ],
     ],
-    'auth.test_id' =>  $_ENV['TEST_ID'],
     'capsule.connections' => [
         'default' => [
             'driver' => 'mysql',
@@ -104,6 +103,8 @@ $config = [
     'twig.path' => [
         __DIR__ . '/../views/'
     ],
+    'thrift.rpc_url' => $_ENV['CMS_RPC_URL'],
+    'auth.test_id' =>  $_ENV['TEST_ID'],
 ];
 
 return $config;

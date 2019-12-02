@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6c9c4497c8411f15e3bc3cd46ad123f8",
+    "content-hash": "0ae7881093008f4aa62de7c87a456d1e",
     "packages": [
         {
             "name": "apache/thrift",
@@ -122,23 +122,20 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v5.0.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "9984a4d3a32ae7673d6971ea00bae9d0a1abba0e"
+                "reference": "dccf163dc8ed7ed6a00afc06c51ee5186a428d35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/9984a4d3a32ae7673d6971ea00bae9d0a1abba0e",
-                "reference": "9984a4d3a32ae7673d6971ea00bae9d0a1abba0e",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/dccf163dc8ed7ed6a00afc06c51ee5186a428d35",
+                "reference": "dccf163dc8ed7ed6a00afc06c51ee5186a428d35",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": " 4.8.35"
             },
             "type": "library",
             "autoload": {
@@ -164,7 +161,7 @@
             ],
             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
             "homepage": "https://github.com/firebase/php-jwt",
-            "time": "2017-06-27T22:17:23+00:00"
+            "time": "2016-07-18T04:51:16+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1190,20 +1187,21 @@
         },
         {
             "name": "ridibooks/cms-sdk",
-            "version": "v3.0.0-rc.1",
+            "version": "3.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ridi/cms-sdk.git",
-                "reference": "ae1c95ec9d83d4d8757be3865de33b07ce391e12"
+                "reference": "d5baf0b26a5fbc38bab09598a9ea8b942603fafc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/ae1c95ec9d83d4d8757be3865de33b07ce391e12",
-                "reference": "ae1c95ec9d83d4d8757be3865de33b07ce391e12",
+                "url": "https://api.github.com/repos/ridi/cms-sdk/zipball/d5baf0b26a5fbc38bab09598a9ea8b942603fafc",
+                "reference": "d5baf0b26a5fbc38bab09598a9ea8b942603fafc",
                 "shasum": ""
             },
             "require": {
                 "apache/thrift": "^0.10.0",
+                "firebase/php-jwt": "^4.0.0",
                 "silex/silex": "^2.0",
                 "twig/twig": "^2.0"
             },
@@ -1221,7 +1219,7 @@
                 "MIT"
             ],
             "description": "Ridibooks CMS SDK",
-            "time": "2019-11-08T03:02:00+00:00"
+            "time": "2019-12-02T04:59:33+00:00"
         },
         {
             "name": "sentry/sentry",
@@ -3164,6 +3162,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-07-13T03:27:23+00:00"
         },
         {
@@ -4133,6 +4132,7 @@
     "aliases": [],
     "minimum-stability": "RC",
     "stability-flags": {
+        "ridibooks/cms-sdk": 20,
         "thenetworg/oauth2-azure": 20
     },
     "prefer-stable": true,
