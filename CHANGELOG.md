@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.0.3] - 2019-12-02
+### Changed
+- Fix error on XDEBUG_ENABLE not set
+
 ## [3.0.2] - 2019-12-02
 ### Changed
 - Remove auth for dev
