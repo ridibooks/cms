@@ -104,7 +104,10 @@ $config = [
         __DIR__ . '/../views/'
     ],
     'thrift.rpc_url' => $_ENV['CMS_RPC_URL'],
+    'thrift.rpc_secret' => $_ENV['CMS_RPC_SECRET'],
     'auth.test_id' =>  $_ENV['TEST_ID'],
+    'auth.cf_access_domain' => $_ENV['CF_ACCESS_DOMAIN'],
+    'auth.cf_audience_tag' => $_ENV['CF_AUDIENCE_TAG'],
 ];
 
 return $config;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ridibooks\Cms\Service\Auth\Authenticator;
 
+use Ridibooks\Cms\Auth\LoginService;
 use Ridibooks\Cms\Service\Auth\Session\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -29,7 +30,11 @@ abstract class BaseAuthenticator
         // This is necessary to remember which type of authenticator was used.
         $this->session->set(self::KEY_AUTH_TYPE, $this->auth_type);
 
-        return $this->getUserInfo($credential);
+        $user = $this->getUserInfo($credential);
+        // TODO: Hack to inject admin id to CmsApplication
+        LoginService::initialize('', '', $user['id']);
+
+        return $user;
     }
 
     public function signOut()

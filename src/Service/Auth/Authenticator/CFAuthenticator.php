@@ -26,7 +26,7 @@ class CFAuthenticator extends BaseAuthenticator
         if (empty($jwt)) {
             throw new NoCredentialException('No cloudflare token exists');
         }
-        $credential = $this->decodeCFToken($jwt, $_ENV['CMS_HOST'] ?? $request->getHost());
+        $credential = $this->decodeCFToken($jwt, $_ENV['CF_ACCESS_DOMAIN'] ?? $request->getHost());
         $user = $this->getUserInfo($credential);
         $this->session->set(OAuth2Authenticator::KEY_USER_ID, $user['id']);
         $this->session->set(OAuth2Authenticator::KEY_ACCESS_TOKEN, 'cloudflare');
