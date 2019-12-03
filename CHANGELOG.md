@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.0.4] - 2019-12-03
+### Fixed
+- Fix security alerts: symfony/http-foundation
 
 ## [3.0.3] - 2019-12-02
 ### Changed
