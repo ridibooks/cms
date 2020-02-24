@@ -28,7 +28,7 @@ script:
   - echo "Wait for applying DB schema change.."; sleep 3s
   - make test
 
-after_scipt:
+after_script:
   - make down
 
 deploy:
