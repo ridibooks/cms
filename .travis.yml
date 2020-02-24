@@ -1,5 +1,4 @@
 os: linux
-sudo: false
 dist: trusty
 language: generic
 
