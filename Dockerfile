@@ -6,7 +6,7 @@ RUN apk --no-cache add \
     php7-pdo \
     php7-pdo_mysql \
 && rm -rf /var/cache/apk/* \
-&& npm install -g bower
+&& npm install --unsafe-perm=true -g bower
 
 WORKDIR /build
 
