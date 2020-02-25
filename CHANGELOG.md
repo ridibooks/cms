@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Fix logout error and logout is now overriden by auth type
 
+### Removed
+- Remove a csp report header on response (#101)
+
 ## [3.0.5] - 2019-12-04
 ### Fixed
 - Fix not showing menus
