@@ -154,20 +154,17 @@ class AuthController
 
     public function logout(Request $request, Application $app)
     {
-        $login_url = $app['url_generator']->generate('login');
         /** @var BaseAuthenticator $auth */
         $auth = $app['auth.authenticator'];
         if (isset($auth)) {
-            $auth->signOut();
+            $redirect_url = $auth->signOut();
         }
 
-        $return_url = $request->get('return_url', $login_url);
-        $filted_return_url = $this->getFilteredReturnUrl($return_url);
-        if ($return_url === $filted_return_url) {
-            return new RedirectResponse($filted_return_url);
+        if (empty($redirect_url)) {
+            $redirect_url = $app['url_generator']->generate('login');
         }
 
-        return new RedirectResponse($login_url);
+        return new RedirectResponse($redirect_url);
     }
 
     public function authorize(Request $request, Application $app, string $auth_type)

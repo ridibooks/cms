@@ -37,9 +37,11 @@ abstract class BaseAuthenticator
         return $user;
     }
 
-    public function signOut()
+    public function signOut(): ?string
     {
         $this->removeCredential();
+        
+        return $this->getSignOutUrl();
     }
 
     abstract public function createCredential(Request $request);
@@ -49,6 +51,11 @@ abstract class BaseAuthenticator
     public function removeCredential()
     {
         $this->session->clearAll();
+    }
+
+    function getSignOutUrl()
+    {
+        return null;
     }
 
     abstract public function getUserInfo($credentials): array;

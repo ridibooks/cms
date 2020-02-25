@@ -53,6 +53,11 @@ class CFAuthenticator extends BaseAuthenticator
         $this->session->set(self::KEY_CF_TOKEN, null);
     }
 
+    public function getSignOutUrl(): ?string
+    {
+        return "/cdn-cgi/access/logout";
+    }
+
     private function decodeCFToken(string $payload, string $host)
     {
         $validator = new CFJwtValidator();
