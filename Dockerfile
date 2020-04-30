@@ -28,6 +28,7 @@ MAINTAINER Kang Ki Tae <kt.kang@ridi.com>
 ENV APACHE_DOC_ROOT /var/www/html/web
 RUN a2enmod headers
 COPY config/apache2/security.conf /etc/apache2/conf-available/security.conf
+COPY config/apache2/apache2.conf /etc/apache2/apache2.conf
 
 COPY --from=builder /build ./
 COPY . ./
