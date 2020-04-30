@@ -61,8 +61,8 @@ class CFAuthenticator extends BaseAuthenticator
     private function decodeCFToken(string $payload, string $host)
     {
         $validator = new CFJwtValidator();
-        $key = $validator->getPublicKey($host);
-        $decoded = $validator->decodeJwt($payload, $key);
+        $keys = $validator->getPublicKeys($host);
+        $decoded = $validator->decodeJwt($payload, $keys);
 
         return $decoded;
     }

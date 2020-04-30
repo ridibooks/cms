@@ -11,22 +11,21 @@ class CFJwtValidator
 {
     const PUBLIC_KEY_PATH = "/cdn-cgi/access/certs";
 
-    public function decodeJwt(string $jwt, ?string $key = null)
+    public function decodeJwt($jwt, $keys)
     {
-        if (empty($key)) {
-            $key = $this->getPublicKey();
-        }
-        try {
-            $decoded = JWT::decode($jwt, $key, ['RS256']);
-        } catch (\Firebase\JWT\ExpiredException |
-                \Firebase\JWT\SignatureInvalidException $e) {
-            throw new InvalidCredentialException($e->getMessage());
+        foreach ($keys as $key) {
+            try {
+                return JWT::decode($jwt, $key, ['RS256']);
+            } catch (\Exception $e) {
+                error_log('Decode has failed. Try with other key');
+                #pass
+            }
         }
 
-        return $decoded;
+        throw new InvalidCredentialException(var_export($keys, true));
     }
 
-    public function getPublicKey(string $base_url)
+    public function getPublicKeys(string $base_url)
     {
         $url = $base_url . self::PUBLIC_KEY_PATH;
         $client = new Client();
@@ -36,8 +35,15 @@ class CFJwtValidator
         }
         $contents = (string)$response->getBody();
 
-        $json = json_decode($contents);
+        $json = json_decode($contents, true);
 
-        return $json->public_cert->cert;
+        $keys[] = $json["public_cert"]["cert"];
+        if (!empty($json["public_certs"])) {
+            foreach ($json["public_certs"] as $cert) {
+                $keys[] = $cert["cert"];
+            }
+        }
+
+        return array_unique($keys);
     }
 }
