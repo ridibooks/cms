@@ -49,7 +49,7 @@ ehde/zUxo6UvS7UrBQIDAQAB
         $jwt = JWT::encode($token, $this->test_private, 'RS256');
 
         $validator = new CFJwtValidator();
-        $payload = $validator->decodeJwt($jwt, $this->test_public);
+        $payload = $validator->decodeJwt($jwt, [$this->test_public]);
 
         $this->assertEquals($token, (array)$payload);
     }
@@ -57,8 +57,8 @@ ehde/zUxo6UvS7UrBQIDAQAB
     public function testGetPublicKey()
     {
         $validator = new CFJwtValidator();
-        $key = $validator->getPublicKey('https://cms.ridi.io');
+        $keys = $validator->getPublicKeys('https://cms.ridi.io');
 
-        $this->assertNotEmpty($key);
+        $this->assertNotEmpty($keys);
     }
 }
