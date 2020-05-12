@@ -2,6 +2,7 @@
 
 namespace Ridibooks\Cms\Service;
 
+use DateTime;
 use Illuminate\Database\Capsule\Manager as DB;
 use Ridibooks\Cms\Auth\PasswordService;
 use Ridibooks\Cms\Model\AdminUser;
@@ -164,6 +165,7 @@ class AdminUserService implements AdminUserServiceIf
                 'email' => $new_values['email'] ?? $user['email'] ?? '',
                 'name' => $new_values['name'] ?? $user['name'] ?? '',
                 'team' => $new_values['team'] ?? $user['team'] ?? '',
+                'last_login_at' => new DateTime(),
                 'is_use' => 1,
             ]);
         }

@@ -18,6 +18,7 @@ class AdminUser extends Model
         'team',
         'is_use',
         'reg_date',
+        'last_login_at',
     ];
 
     protected $casts = [

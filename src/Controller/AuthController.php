@@ -2,8 +2,6 @@
 
 namespace Ridibooks\Cms\Controller;
 
-use Illuminate\Support\Collection;
-use Ridibooks\Cms\Service\AdminUserService;
 use Ridibooks\Cms\Service\Auth\Authenticator\BaseAuthenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\OAuth2Authenticator;
 use Ridibooks\Cms\Service\Auth\Authenticator\TestAuthenticator;
@@ -241,21 +239,6 @@ class AuthController
             return Response::create($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $user_service = new AdminUserService();
-        $user = $this->removePersonalInfo($user, $app);
-        $user_service->updateOrCreateUser($user);
-
         return new RedirectResponse($return_url);
-    }
-
-    private function removePersonalInfo(array $user, Application $app)
-    {
-        // Remove personal information in non-production.
-        if ($app['debug']) {
-            unset($user['name']);
-            unset($user['team']);
-            unset($user['email']);
-        }
-        return $user;
     }
 }
