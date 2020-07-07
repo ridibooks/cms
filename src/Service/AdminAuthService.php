@@ -183,13 +183,12 @@ class AdminAuthService extends Container
     public function checkAuth(array $check_method, string $check_url, string $admin_id): bool
     {
         $parsed = parse_url($check_url);
-        $check_url = $parsed['path'];
 
         if (!$this->isValidUser($admin_id)) {
             return false;
         }
 
-        if ($this->isWhiteListUrl($check_url)) {
+        if ($this->isWhiteListUrl($parsed['path'])) {
             return true;
         }
 
@@ -221,17 +220,20 @@ class AdminAuthService extends Container
 
     private function hasAuthority($check_url, $menu_url)
     {
-        if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
+        $check_host = parse_url($check_url, PHP_URL_HOST);
+        $check_path = parse_url($check_url, PHP_URL_PATH);
+        if (strpos($check_path, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
             return true;
         }
-        $menu = preg_replace('/(\?|#).*/', '', $menu_url);
-        $menu_parts = parse_url($menu);
-        $check_parts = parse_url($check_url);
-        if ($menu_parts['host'] ?? '' !== $check_parts['host'] ?? '') {
+
+        $menu_url = preg_replace('/(\?|#).*/', '', $menu_url);
+        $menu_host = parse_url($menu_url, PHP_URL_HOST);
+        $menu_path = parse_url($menu_url, PHP_URL_PATH);
+        if (!empty($menu_host) && $menu_host !== $check_host) {
             return false;
         }
-        if (!empty($menu_parts['path']) 
-            && strpos($check_parts['path'], $menu_parts['path']) !== false) {
+
+        if (!empty($menu_path) && strpos($check_path, $menu_path) !== false) {
             return true;
         }
 
