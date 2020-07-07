@@ -221,11 +221,17 @@ class AdminAuthService extends Container
 
     private function hasAuthority($check_url, $menu_url)
     {
-        $auth_url = preg_replace('/(\?|#).*/', '', $menu_url);
         if (strpos($check_url, '/comm/')) { // /comm/으로 시작하는 url은 권한을 타지 않는다.
             return true;
         }
-        if ($auth_url != '' && strpos($check_url, $auth_url) !== false) { //현재 url과 권한 url이 같은지 비교
+        $menu = preg_replace('/(\?|#).*/', '', $menu_url);
+        $menu_parts = parse_url($menu);
+        $check_parts = parse_url($check_url);
+        if ($menu_parts['host'] ?? '' !== $check_parts['host'] ?? '') {
+            return false;
+        }
+        if (!empty($menu_parts['path']) 
+            && strpos($check_parts['path'], $menu_parts['path']) !== false) {
             return true;
         }
 
