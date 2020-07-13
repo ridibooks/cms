@@ -31,7 +31,7 @@ class CFJwtValidator
         $client = new Client();
         $response = $client->get($url);
         if ($response->getStatusCode() !== 200) {
-            throw \Exception($response->getReasonPhrase());
+            throw new \Exception($response->getReasonPhrase());
         }
         $contents = (string)$response->getBody();
 
