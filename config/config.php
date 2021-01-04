@@ -80,10 +80,10 @@ $config = [
     'capsule.connections' => [
         'default' => [
             'driver' => 'mysql',
-            'host' => $_ENV['MYSQL_HOST'] ?? 'localhost',
-            'database' => $_ENV['MYSQL_DATABASE'] ?? 'cms',
-            'username' => $_ENV['MYSQL_USER'] ?? 'root',
-            'password' => $_ENV['MYSQL_PASSWORD'] ?? '',
+            'host' => $_ENV['DB_HOST'] ?? 'localhost',
+            'database' => $_ENV['DB_DATABASE'] ?? 'cms',
+            'username' => $_ENV['DB_USER'] ?? 'root',
+            'password' => $_ENV['DB_PASSWORD'] ?? '',
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
         ]
@@ -94,7 +94,7 @@ $config = [
         'enableQueryLog' => false,
     ],
     SentryServiceProvider::SENTRY_OPTIONS => [
-        SentryServiceProvider::OPT_DSN => $_ENV['SENTRY_KEY'] ?? ''
+        SentryServiceProvider::OPT_DSN => $_ENV['SENTRY_DSN'] ?? ''
     ],
     'twig.globals' => [
         'STATIC_URL' => '/static',

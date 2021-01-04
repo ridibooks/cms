@@ -1,0 +1,88 @@
+on:
+  push:
+    branches:
+      - github-actions
+    paths:
+      - .github/workflows/dev.yml
+      - src/**
+      - Dockerfile
+      - task-definition.json.template
+
+name: Deploy to Amazon ECS (dev)
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          tags: ${{ steps.login-ecr.outputs.registry }}/infosec/cms-auth:commit-${{ github.sha }}
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Substitute envs in a task definition
+        uses: danielr1996/envsubst-action@1.0.0
+        env:
+          DEBUG: 1
+          AUTH_USE_TEST: 1
+          TEST_SECURED_DISABLE: 1
+          TEST_AUTH_DISABLE: 1
+          TEST_ID: admin
+          INSTANT_AUTH: oauth2
+          CF_ACCESS_DOMAIN: cms.ridi.io
+          CMS_HOST: https://admin.ridi.io
+          CMS_RPC_URL: http://127.0.0.1
+          VERSION: commit-${{ github.sha }}
+          EXECUTION_ROLE_ARN: arn:aws:iam::119269236144:role/role-task-exec-infosec
+          CPU: 256
+          MEMORY: 512
+          AWSLOGS_GROUP: /ecs/infosec-apps/infosec-cms-auth
+        with:
+          input: task-definition.json.template
+          output: task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: web
+          image: ${{ steps.login-ecr.outputs.registry }}/infosec/cms-auth:commit-${{ github.sha }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          cluster: infosec-apps
+          service: infosec-cms-auth
+          wait-for-service-stability: true
