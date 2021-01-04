@@ -30,7 +30,7 @@ function build_composer()
 function build_bower()
 {
     echo "Run Bower.."
-    bower install --allow-root && bower prune -p --allow-root
+    bower install --allow-root --force && bower prune -p --allow-root
 }
 
 build_composer

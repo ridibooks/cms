@@ -4,6 +4,7 @@ on:
       - github-actions
     paths:
       - .github/workflows/dev.yml
+      - bin/**
       - src/**
       - Dockerfile
       - task-definition.json.template
