@@ -10,20 +10,20 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = new Dotenv\Dotenv(__DIR__ . '/..', '.env.docker');
 $dotenv->overload();
 $dotenv->required([
-    'MYSQL_HOST',
-    'MYSQL_DATABASE',
-    'MYSQL_USER',
-    'MYSQL_PASSWORD',
+    'DB_HOST',
+    'DB_DATABASE',
+    'DB_USER',
+    'DB_PASSWORD',
 ]);
 
 $capsule = new Capsule();
 
 $capsule->addConnection([
     'driver' => 'mysql',
-    'host' => $_ENV['MYSQL_HOST'],
-    'database' => $_ENV['MYSQL_DATABASE'],
-    'username' => $_ENV['MYSQL_USER'],
-    'password' => $_ENV['MYSQL_PASSWORD'],
+    'host' => $_ENV['DB_HOST'],
+    'database' => $_ENV['DB_DATABASE'],
+    'username' => $_ENV['DB_USER'],
+    'password' => $_ENV['DB_PASSWORD'],
     'charset' => 'utf8',
     'collation' => 'utf8_unicode_ci',
 ]);
