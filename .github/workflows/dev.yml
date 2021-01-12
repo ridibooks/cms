@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - github-actions
+      - 3.x
     paths:
       - .github/workflows/dev.yml
       - bin/**
