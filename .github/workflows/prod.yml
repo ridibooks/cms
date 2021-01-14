@@ -57,13 +57,11 @@ jobs:
         env:
           DEBUG: 0
           AUTH_USE_TEST: 0
-          TEST_SECURED_DISABLE: 1
           TEST_AUTH_DISABLE: 0
           TEST_ID: 0
           INSTANT_AUTH: cloudflare
           CF_ACCESS_DOMAIN: admin.ridibooks.com
-          CMS_HOST: https://admin.ridibooks.com
-          CMS_RPC_URL: https://cms.ridibooks.com/v2
+          CMS_RPC_URL: http://127.0.0.1
           VERSION: tag-${{ steps.get_version.outputs.ref_tag }}
           EXECUTION_ROLE_ARN: arn:aws:iam::697122891294:role/role-task-exec-infosec
           CPU: 256

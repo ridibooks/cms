@@ -56,12 +56,10 @@ jobs:
         env:
           DEBUG: 1
           AUTH_USE_TEST: 1
-          TEST_SECURED_DISABLE: 1
           TEST_AUTH_DISABLE: 1
           TEST_ID: admin
           INSTANT_AUTH: oauth2
           CF_ACCESS_DOMAIN: cms.ridi.io
-          CMS_HOST: https://admin.ridi.io
           CMS_RPC_URL: http://127.0.0.1
           VERSION: commit-${{ github.sha }}
           EXECUTION_ROLE_ARN: arn:aws:iam::119269236144:role/role-task-exec-infosec

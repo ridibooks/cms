@@ -17,12 +17,10 @@
       "environment": [
         {"name": "DEBUG", "value": "$DEBUG"},
         {"name": "AUTH_USE_TEST", "value": "$AUTH_USE_TEST"},
-        {"name": "TEST_SECURED_DISABLE", "value": "$TEST_SECURED_DISABLE"},
         {"name": "TEST_AUTH_DISABLE", "value": "$TEST_AUTH_DISABLE"},
         {"name": "TEST_ID", "value": "$TEST_ID"},
         {"name": "INSTANT_AUTH", "value": "$INSTANT_AUTH"},
         {"name": "CF_ACCESS_DOMAIN", "value": "$CF_ACCESS_DOMAIN"},
-        {"name": "CMS_HOST", "value": "$CMS_HOST"},
         {"name": "CMS_RPC_URL", "value": "$CMS_RPC_URL"},
         {"name": "DB_HOST", "value": "infosec.rds.aws"},
         {"name": "DB_DATABASE", "value": "cms"},
