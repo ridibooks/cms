@@ -64,8 +64,8 @@ jobs:
           CMS_RPC_URL: http://127.0.0.1
           VERSION: tag-${{ steps.get_version.outputs.ref_tag }}
           EXECUTION_ROLE_ARN: arn:aws:iam::697122891294:role/role-task-exec-infosec
-          CPU: 256
-          MEMORY: 512
+          CPU: 512
+          MEMORY: 1024
           AWSLOGS_GROUP: /ecs/infosec-apps/infosec-cms-auth
         with:
           input: task-definition.json.template
