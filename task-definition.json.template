@@ -22,7 +22,7 @@
         {"name": "INSTANT_AUTH", "value": "$INSTANT_AUTH"},
         {"name": "CF_ACCESS_DOMAIN", "value": "$CF_ACCESS_DOMAIN"},
         {"name": "CMS_RPC_URL", "value": "$CMS_RPC_URL"},
-        {"name": "DB_HOST", "value": "infosec.rds.aws"},
+        {"name": "DB_HOST", "value": "$DB_HOST"},
         {"name": "DB_DATABASE", "value": "cms"},
         {"name": "AZURE_TENENT", "value": "ridicorp.com"},
         {"name": "AZURE_RESOURCE", "value": "https://graph.windows.net"},

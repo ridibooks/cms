@@ -62,6 +62,7 @@ jobs:
           INSTANT_AUTH: cloudflare
           CF_ACCESS_DOMAIN: admin.ridibooks.com
           CMS_RPC_URL: http://127.0.0.1
+          DB_HOST: infosec.rds.prod.ridi.zone
           VERSION: tag-${{ steps.get_version.outputs.ref_tag }}
           EXECUTION_ROLE_ARN: arn:aws:iam::697122891294:role/role-task-exec-infosec
           CPU: 512

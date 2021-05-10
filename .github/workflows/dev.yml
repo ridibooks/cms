@@ -61,6 +61,7 @@ jobs:
           INSTANT_AUTH: oauth2
           CF_ACCESS_DOMAIN: cms.ridi.io
           CMS_RPC_URL: http://127.0.0.1
+          DB_HOST: infosec.rds.dev.ridi.zone
           VERSION: commit-${{ github.sha }}
           EXECUTION_ROLE_ARN: arn:aws:iam::119269236144:role/role-task-exec-infosec
           CPU: 256
