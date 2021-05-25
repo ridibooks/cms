@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          tags: ${{ steps.login-ecr.outputs.registry }}/cms-auth:commit-${{ github.sha }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/cms-auth:commit-${{ github.sha }}, ${{ steps.login-ecr.outputs.registry }}/cms-auth:latest
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
