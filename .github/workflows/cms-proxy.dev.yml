@@ -4,6 +4,7 @@ on:
       - 3.x
     paths:
       - .github/workflows/cms-proxy.dev.yml
+      - proxy/haproxy.dev.cfg
       - proxy/Dockerfile
 
 name: Deploy cms-proxy to Amazon ECS (dev)
